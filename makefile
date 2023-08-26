@@ -1,8 +1,10 @@
 SHELL := /bin/bash
 
+-include .env-gdc-local
 -include ./devops-tooling/envs.makefile
 -include ./devops-tooling/nonenv.makefile
 -include ./devops-tooling/pulumi.makefile
+-include ./devops-tooling/cdktf.makefile
 
 .PHONY: clean update-deps delete-zips iac-shared local-top-level
 
@@ -29,63 +31,9 @@ stop-localstack:
 iac-shared:
 	pushd $(STACK_DIR)/../iac-shared && npm install && npm run build && popd
 
-cdktfdeploy:
-	cd $(STACK_DIR) && cdktf deploy $(TFSTACK_NAME)
-
-cdktfdestroy:
-	cd $(STACK_DIR) && cdktf destroy $(TFSTACK_NAME)
-
-cdktfinstall:
-	cd $(STACK_DIR) && npm install
-
-stack-init: iac-shared
-	mkdir -p ./global-iac
-	pushd $(STACK_DIR) && npm install && popd;
-	echo $(PULUMI_BACKEND_URL)
-	echo $(PULUMI_CONFIG_PASSPHRASE)
-	$(VENV_RUN); $(PULUMI_EXE) stack select -c $(STACK_PREFIX).$(STACK_SUFFIX) --non-interactive --cwd $(STACK_DIR)
-
-up-deploy: venv stack-init stack-init-application
-	$(VENV_RUN) && $(PULUMI_EXE) up -ys $(STACK_PREFIX).$(STACK_SUFFIX) --cwd $(STACK_DIR) -v=4
-
-local-pulumi-clean:
-	rm -rf global-iac
-
-pulumi-preview: stack-init stack-init-application
-	$(VENV_RUN); $(PULUMI_EXE) preview --diff --cwd $(STACK_DIR)
-
-pulumi-outputs: stack-init stack-init-application
-	$(VENV_RUN); $(PULUMI_EXE) stack output -s $(STACK_PREFIX).$(STACK_SUFFIX) --cwd $(STACK_DIR) --show-secrets
-
-destroy: stack-init stack-init-application
-	$(VENV_RUN); $(PULUMI_EXE) destroy --cwd $(STACK_DIR)
-
-remove: stack-init stack-init-application
-	$(VENV_RUN); $(PULUMI_EXE) stack rm $(STACK_PREFIX).$(STACK_SUFFIX) --cwd $(STACK_DIR)
-
-refresh: stack-init stack-init-application
-	$(VENV_RUN); $(PULUMI_EXE) refresh -s $(STACK_PREFIX).$(STACK_SUFFIX) --cwd $(STACK_DIR)
-
-cancel: stack-init stack-init-application
-	$(VENV_RUN); $(PULUMI_EXE) cancel -s $(STACK_PREFIX).$(STACK_SUFFIX) --cwd $(STACK_DIR)
-
-stack-output: stack-init stack-init-application
-	$(VENV_RUN); $(PULUMI_EXE) stack -u -s $(STACK_PREFIX).$(STACK_SUFFIX) --cwd $(STACK_DIR)
-
-# Set Pulumi Configuration here
-#
-#   Configuration should be added using the template;
-#   	$(PULUMI_CONFIG) set <pulumi-variable> $(<makefile-variable>)
-#
-stack-init-application:
-	$(VENV_RUN) && $(PULUMI_CONFIG) set-all \
-	--plaintext local_arch=$(LOCAL_ARCH) \
-	--plaintext aws_region=$(AWS_REGION) \
-	--plaintext aws_account=$(AWS_ACCOUNT) \
-	--plaintext aws_account_type=$(AWS_ACCOUNT_TYPE) \
-	--plaintext logging_level=$(LOGGING_LEVEL) \
-	--plaintext account_json_config=$(ACCOUNT_JSON_CONFIG)
-
+build:
+	cd src/lambda-hello-name && npm install
+	cd src/lambda-hello-name && npm run compile
 
 # Setup python
 setup-venv: requirements-dev.txt

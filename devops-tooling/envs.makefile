@@ -39,13 +39,11 @@ export LOGGING_LEVEL=DEBUG
 export AWS_ACCOUNT=000000000000
 export AWS_ACCOUNT_TYPE=LOCALSTACK
 export STACK_SUFFIX=local
-export TERRAFORM_CMD=terraform
 export CDK_CMD=cdklocal
 
 # Pattern specific variables for each pipeline
 local%: export ACCOUNT_JSON_CONFIG=../../../../devops-tooling/accounts/localstack.json
 local%: export LOCALSTACK=1
-local%: export TERRAFORM_CMD=tflocal
 local-cdktf%: export STACK_DIR=iac/terraform/cdk
 
 # AWS nonprod env
@@ -60,4 +58,4 @@ non-cdktf%: export STACK_DIR=iac/terraform/cdk
 uname_m := $(shell uname -m) # store the output of the command in a variable
 export LOCAL_ARCH=$(uname_m)
 
-export TFSTACK_NAME=LsLambdaSample.$(STACK_SUFFIX)
+export TFSTACK_NAME=LsLambdaS3Sample.$(STACK_SUFFIX)
