@@ -1,4 +1,4 @@
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
+import {APIGatewayProxyEventV2, APIGatewayProxyResultV2} from "aws-lambda";
 
 export const handler = async (
     event: APIGatewayProxyEventV2
@@ -15,8 +15,8 @@ export const handler = async (
     return {
         statusCode: 200,
         headers: {
-            'Content-Type': 'text/html; charset=utf-8',
+            'Content-Type': 'application/json; charset=utf-8',
         },
-        body: `<p>Hello ${name}!</p>`,
+        body: JSON.stringify({body: `Hello ${name}`}),
     }
 }

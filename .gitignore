@@ -93,4 +93,4 @@ nonenv.makefile
 !devops-tooling/accounts/localstack.json
 devops-tooling/accounts/*.json
 
-auto_tests
+auto_tests/*-output.json

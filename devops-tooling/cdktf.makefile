@@ -5,6 +5,9 @@ cdktfdestroy: iac-shared
 cdktfinstall:
 	cd $(STACK_DIR) && npm install
 	cd $(STACK_DIR) && cdktf get
+cdktfoutput:
+	cd $(STACK_DIR) && cdktf output $(TFSTACK_NAME) $(ARGS)
+
 
 # LocalStack target groups
 local-cdktf-install: cdktfinstall
@@ -14,3 +17,4 @@ local-cdktf-vpc-destroy: cdktfdestroy
 # Lambda - APIGW - S3
 local-cdktf-deploy: build cdktfdeploy
 local-cdktf-destroy: cdktfdestroy
+local-cdktf-output: cdktfoutput

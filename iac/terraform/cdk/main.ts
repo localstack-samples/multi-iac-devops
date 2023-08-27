@@ -127,7 +127,7 @@ import * as random from "@cdktf/provider-random";
 
             // Create Lambda role
             const role = new aws.iamRole.IamRole(this, "lambda-exec", {
-                name: `livedebug-role`,
+                name: `lambda-role`,
                 assumeRolePolicy: JSON.stringify(lambdaAssumeRolePolicy)
             });
 
@@ -154,7 +154,7 @@ import * as random from "@cdktf/provider-random";
             }
             // Create Lambda function
             const lambdaFunc = new aws.lambdaFunction.LambdaFunction(this, "livedebug-lambda", {
-                functionName: `livedebug-lambda`,
+                functionName: `name-lambda`,
                 architectures: [arch],
                 s3Bucket: lambdaBucketName,
                 timeout: 15,
@@ -167,7 +167,7 @@ import * as random from "@cdktf/provider-random";
 
             // Create and configure API gateway
             const api = new aws.apigatewayv2Api.Apigatewayv2Api(this, "livedebug", {
-                name: 'livedebug-api',
+                name: 'basic-api',
                 protocolType: "HTTP",
                 target: lambdaFunc.arn
             });
