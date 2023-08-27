@@ -9,7 +9,7 @@
       "vpcName": "lstack",
       "vpcConfig": {
         "cidrBlock": "10.10.0.0/16",
-        "numberOfAvailabilityZones": 3,
+        "numberOfAvailabilityZones": 4,
         "subnetCidrMask": 20
       }
     }

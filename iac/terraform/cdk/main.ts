@@ -8,7 +8,7 @@ import * as path from 'path';
 import {endpoints} from "./ls-endpoints";
 import {TerraformOutput} from "cdktf/lib";
 import {S3Bucket,} from "@cdktf/provider-aws/lib/s3-bucket";
-
+import {VpcStack} from "./vpc";
 import * as aws from "@cdktf/provider-aws";
 import * as random from "@cdktf/provider-random";
 
@@ -197,6 +197,12 @@ import * as random from "@cdktf/provider-random";
 
 
     const app = new App();
+    new VpcStack(app, "LsVpc.local", {
+        isLocal: true,
+        vpcConfigPath: path.resolve() + "/../../../devops-tooling/accounts/localstack.json",
+        region: "us-east-1",
+        accountType: "localstack"
+    });
     new MyStack(app, "LsLambdaS3Sample.local", {
         isLocal: true,
         environment: 'local',

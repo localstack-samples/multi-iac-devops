@@ -45,6 +45,8 @@ export CDK_CMD=cdklocal
 local%: export ACCOUNT_JSON_CONFIG=../../../../devops-tooling/accounts/localstack.json
 local%: export LOCALSTACK=1
 local-cdktf%: export STACK_DIR=iac/terraform/cdk
+local-cdktf%: export TFSTACK_NAME=LsLambdaS3Sample.$(STACK_SUFFIX)
+local-cdktf-vpc%: export TFSTACK_NAME=LsVpc.$(STACK_SUFFIX)
 
 # AWS nonprod env
 non%: export DOCKER_DEFAULT_PLATFORM=linux/arm64
@@ -54,8 +56,9 @@ non%: export AWS_ACCOUNT_TYPE=NONPROD
 non%: export AWS_REGION=us-east-1
 non%: export STACK_SUFFIX=non
 non-cdktf%: export STACK_DIR=iac/terraform/cdk
+non-cdktf%: export TFSTACK_NAME=LsLambdaS3Sample.$(STACK_SUFFIX)
+non-cdktf-vpc%: export TFSTACK_NAME=LsVpc.$(STACK_SUFFIX)
 
 uname_m := $(shell uname -m) # store the output of the command in a variable
 export LOCAL_ARCH=$(uname_m)
 
-export TFSTACK_NAME=LsLambdaS3Sample.$(STACK_SUFFIX)
