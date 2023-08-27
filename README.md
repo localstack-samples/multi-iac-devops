@@ -17,18 +17,19 @@ To deploy your infrastructure, follow the steps below.
 1. [Install Watchman](https://facebook.github.io/watchman/)
 2. [Install LATEST AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 3. [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+4. [Install JQ](https://jqlang.github.io/jq/download/)
 
 
-4. Install Node Version Manager (NVM)
+5. Install Node Version Manager (NVM)
    https://github.com/nvm-sh/nvm#installing-and-updating
 
-5. Select Node version 18
+6. Select Node version 18
 
 ```shell
 nvm install 18
 ```
 
-6. Install Terraform CDK
+7. Install Terraform CDK
    Install cdktf in the node 18 version you just installed in step (4).
 
 ```shell
