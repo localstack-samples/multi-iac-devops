@@ -88,3 +88,5 @@ output.txt
 .terraform*
 terraform.tfstate*
 nonenv.makefile
+
+auto_tests

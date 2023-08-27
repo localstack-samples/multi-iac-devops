@@ -29,7 +29,7 @@ stop-localstack:
 #	make local-toplevel-destroy
 
 iac-shared:
-	pushd $(STACK_DIR)/../iac-shared && npm install && npm run build && popd
+	pushd iac/iac-shared && npm install && npm run build && popd
 
 build:
 	cd src/lambda-hello-name && npm install

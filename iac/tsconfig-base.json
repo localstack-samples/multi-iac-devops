@@ -3,8 +3,11 @@
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "alwaysStrict": true,
+    "composite": true,
     "declaration": true,
-    "esModuleInterop": true,
+    "declarationMap": true,
+    "esModuleInterop": true
+    /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "importsNotUsedAsValues": "remove",
@@ -15,6 +18,7 @@
       "dom"
     ],
     "module": "CommonJS",
+    "moduleResolution": "Node",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -23,15 +27,22 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "pretty": true,
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
+    /* Include modules imported with .json extension. */,
     "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": true,
     "target": "esnext",
     "incremental": true,
-    "skipLibCheck": true,
-    "sourceMap": true
-    //    "moduleResolution": "node",
-  }
+    "skipLibCheck": true
+    //    "sourceMap": true /* cannot be used with inlineSourceMap */
+  },
+  "references": [
+    {
+      "path": "./iac-shared"
+      // add 'prepend' if you want to include the referenced project in your output file
+      // "prepend": true,
+    }
+  ]
 }

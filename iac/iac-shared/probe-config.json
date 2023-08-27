@@ -1,0 +1,12 @@
+{
+  "blacklisted": [
+    {
+      "name": "no us-west-2 to eu-west-1",
+      "rule": "region:us-west-2:region:eu-west-1"
+    },
+    {
+      "name": "no prod to network account",
+      "rule": "env:PROD:account:047020932298"
+    }
+  ]
+}
