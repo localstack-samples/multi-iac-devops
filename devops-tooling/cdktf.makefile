@@ -18,3 +18,19 @@ local-cdktf-vpc-destroy: cdktfdestroy
 local-cdktf-deploy: build cdktfdeploy
 local-cdktf-destroy: cdktfdestroy
 local-cdktf-output: cdktfoutput
+
+
+# AWS Sandbox target groups
+# VPC
+sbx-cdktf-vpc-deploy: build cdktfdeploy
+sbx-cdktf-vpc-destroy: cdktfdestroy
+# Lambda - APIGW - S3
+sbx-cdktf-deploy: build cdktfdeploy
+sbx-cdktf-destroy: cdktfdestroy
+sbx-cdktf-output: cdktfoutput
+
+sbx-cdktf-invoke:
+	make sbx-cdktf-output ARGS="--outputs-file ../../../cdktf-output.json" && \
+	APIGW=$$(jq -r '."LsLambdaS3Sample.sbx".apigwUrl' cdktf-output.json) && \
+	curl "$${APIGW}";
+	@rm -f cdktf-output.json

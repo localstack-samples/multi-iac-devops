@@ -24,7 +24,7 @@ import * as random from "@cdktf/provider-random";
         listBucketName: string;
         stageName: string;
         version: string;
-        region?: string;
+        region: string;
     }
 
     class MyStack extends TerraformStack {
@@ -46,13 +46,20 @@ import * as random from "@cdktf/provider-random";
             // Create NullProvider to run CMD Line
             // new Null.provider.NullProvider(this, 'Null');
             new random.provider.RandomProvider(this, "random");
+            // Create random value
+            const randomId = new random.stringResource.StringResource(this, "random-name", {
+                length: 4,
+                lower: true,
+                upper: false,
+                numeric: true,
+            });
 
 
             // define resources here
             if (config.isLocal) {
                 console.log("LocalStack Deploy");
                 // LocalStack AWS Provider
-                new AwsProvider(this, "AWS", {
+                new AwsProvider(this, "aws", {
                     region: config.region,
                     accessKey: 'test',
                     secretKey: 'test',
@@ -71,13 +78,13 @@ import * as random from "@cdktf/provider-random";
                     region: config.region
                 });
                 // Use AWS Provider with no LocalStack overrides
-                new AwsProvider(this, "AWS", {
+                new AwsProvider(this, "aws", {
                     region: config.region
                 });
             }
             // Bucket the lambda is going to get a list of objects from
             const listBucket = new S3Bucket(this, "list-bucket", {
-                bucket: config.listBucketName,
+                bucket: `${config.listBucketName}-${randomId.id}`,
             });
 
             const lambdaAssumeRolePolicy = {
@@ -197,6 +204,24 @@ import * as random from "@cdktf/provider-random";
 
 
     const app = new App();
+    new VpcStack(app, "LsVpc.sbx", {
+        isLocal: false,
+        vpcConfigPath: path.resolve() + "/../../../devops-tooling/accounts/my-sb.json",
+        region: "us-east-1",
+        accountType: "sandbox"
+    });
+    new MyStack(app, "LsLambdaS3Sample.sbx", {
+        isLocal: false,
+        environment: 'sbx',
+        lambdaDistPath: "/../../../src/lambda-hello-name/dist",
+        handler: "index.handler",
+        runtime: "nodejs18.x",
+        stageName: "hello-name",
+        listBucketName: process.env.LIST_BUCKET_NAME || 'lambda-work',
+        version: '0.0.1',
+        region: 'us-east-1'
+    });
+
     new VpcStack(app, "LsVpc.local", {
         isLocal: true,
         vpcConfigPath: path.resolve() + "/../../../devops-tooling/accounts/localstack.json",
@@ -211,17 +236,6 @@ import * as random from "@cdktf/provider-random";
         runtime: "nodejs18.x",
         stageName: "hello-name",
         listBucketName: `sample-bucket`,
-        version: '0.0.1',
-        region: 'us-east-1'
-    });
-    new MyStack(app, "LsLambdaS3Sample.non", {
-        isLocal: false,
-        environment: 'non',
-        lambdaDistPath: "/../../../src/lambda-hello-name/dist",
-        handler: "index.handler",
-        runtime: "nodejs18.x",
-        stageName: "hello-name",
-        listBucketName: process.env.LIST_BUCKET_NAME || 'placeholder-bucket',
         version: '0.0.1',
         region: 'us-east-1'
     });

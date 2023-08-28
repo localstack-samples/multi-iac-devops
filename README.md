@@ -79,6 +79,10 @@ aws_secret_access_key=test
 
 [Solution Guide for Terrform CDK](./docs/README-cdktf.md "Solution Guide for TerraformCDK")
 
-## Pulumi Instructions
+## AWS CDK (Work in Progress)
+
+[Solution Guide for AWS CDK](./docs/README-awscdk.md "Solution Guide for AWS CDK")
+
+## Pulumi Instructions (Work in Progress)
 
 [Solution Guide for Pulumi](./docs/README-pulumi.md "Solution Guide for Pulumi")

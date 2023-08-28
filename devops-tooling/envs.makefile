@@ -40,6 +40,7 @@ export AWS_ACCOUNT=000000000000
 export AWS_ACCOUNT_TYPE=LOCALSTACK
 export STACK_SUFFIX=local
 export CDK_CMD=cdklocal
+export DOCKER_DEFAULT_PLATFORM=linux/arm64
 
 # Pattern specific variables for each pipeline
 local%: export ACCOUNT_JSON_CONFIG=../../../../devops-tooling/accounts/localstack.json
@@ -49,7 +50,6 @@ local-cdktf%: export TFSTACK_NAME=LsLambdaS3Sample.$(STACK_SUFFIX)
 local-cdktf-vpc%: export TFSTACK_NAME=LsVpc.$(STACK_SUFFIX)
 
 # AWS nonprod env
-non%: export DOCKER_DEFAULT_PLATFORM=linux/arm64
 non%: export IS_LOCAL=false
 non%: export LOGGING_LEVEL=INFO
 non%: export AWS_ACCOUNT_TYPE=NONPROD
@@ -58,6 +58,18 @@ non%: export STACK_SUFFIX=non
 non-cdktf%: export STACK_DIR=iac/terraform/cdk
 non-cdktf%: export TFSTACK_NAME=LsLambdaS3Sample.$(STACK_SUFFIX)
 non-cdktf-vpc%: export TFSTACK_NAME=LsVpc.$(STACK_SUFFIX)
+
+# AWS nonprod env
+sbx%: export IS_LOCAL=false
+sbx%: export LOGGING_LEVEL=INFO
+sbx%: export AWS_ACCOUNT_TYPE=sandbox
+sbx%: export AWS_REGION=us-east-1
+sbx%: export STACK_SUFFIX=sbx
+sbx-cdktf%: export STACK_DIR=iac/terraform/cdk
+sbx-cdktf%: export TFSTACK_NAME=LsLambdaS3Sample.$(STACK_SUFFIX)
+sbx-cdktf-vpc%: export TFSTACK_NAME=LsVpc.$(STACK_SUFFIX)
+
+
 
 uname_m := $(shell uname -m) # store the output of the command in a variable
 export LOCAL_ARCH=$(uname_m)

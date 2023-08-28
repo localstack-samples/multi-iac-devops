@@ -11,7 +11,6 @@ import * as random from "@cdktf/provider-random";
 import {AwsProvider} from "@cdktf/provider-aws/lib/provider";
 import {endpoints} from "./ls-endpoints";
 
-const cidrPrefix = "10.0.0.0/16";
 const nameLabel = "Vpc";
 const nameIdentifier = "vpc";
 
@@ -131,14 +130,14 @@ export class VpcStack extends TerraformStack {
             azs.push(zone);
         }
         const privateSubnetCidrBlocks = getSubnetCidrBlocks(
-            cidrPrefix,
+            vpcDef.cidrBlock,
             vpcDef.numberOfAvailabilityZones,
             8,
             0
         );
 
         const publicSubnetCidrBlocks = getSubnetCidrBlocks(
-            cidrPrefix,
+            vpcDef.cidrBlock,
             vpcDef.numberOfAvailabilityZones,
             8,
             vpcDef.numberOfAvailabilityZones
@@ -148,7 +147,7 @@ export class VpcStack extends TerraformStack {
         const vpcOptions = {
             name: nameLabel,
             azs: azs,
-            cidr: cidrPrefix,
+            cidr: vpcDef.cidrBlock,
             publicSubnets: publicSubnetCidrBlocks,
             publicSubnetTags: {
                 "Name": nameLabel + " public"
