@@ -52,6 +52,7 @@ import * as random from "@cdktf/provider-random";
                 lower: true,
                 upper: false,
                 numeric: true,
+                special: false,
             });
 
 
