@@ -88,3 +88,20 @@ aws_secret_access_key=test
 ## Pulumi Instructions (Work in Progress)
 
 [Solution Guide for Pulumi](./docs/README-pulumi.md "Solution Guide for Pulumi")
+
+# Hot Reloading!
+The Lambda is setup for hot reloading in this project on LocalStack by default. After everything is deployed by following one of complete
+IaC deployments above, you can work with the Lambda in hot-reload mode. See [LocalStack Hot Reloading](https://docs.localstack.cloud/user-guide/tools/lambda-tools/hot-reloading)
+
+Now, your DevX looks like a rapid TDD cycle. There's a test in `auto_tests/test_apigw_name.py`. Run watchman to do a build whenever code changes in the Lambda.
+```shell
+make watch-lambda
+```
+Then run the test(s)
+```shell
+make test-cdktf
+```
+After you run the tests once, you don't have to save the IaC output again, so you can just run this and save some time.
+```shell
+make test-cdktf-bare
+```
