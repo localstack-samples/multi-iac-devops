@@ -1,0 +1,17 @@
+{
+  "accountNum": "<YOUR AWS ACCOUNT NUM for this config>",
+  "accountName": "yoursb",
+  "description": "Sandbox VPC",
+  "regions": [
+    {
+      "region": "us-east-1",
+      "accountType": "sandbox",
+      "vpcName": "mysb",
+      "vpcConfig": {
+        "cidrBlock": "10.42.0.0/16",
+        "numberOfAvailabilityZones": 4,
+        "subnetCidrMask": 20
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig-base.json",
+  "compilerOptions": {
+    "incremental": true,
+    "outDir": "build/main",
+    "rootDir": "src",
+    "typeRoots": ["node_modules/@types", "src/types"]
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.json"
+  ],
+  "exclude": [
+    "**/node_modules/**"
+  ],
+  "references": []  // * Any project that is referenced must itself have a `references` array (which may be empty).
+}
