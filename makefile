@@ -36,13 +36,10 @@ build:
 	cd src/lambda-hello-name && npm install
 	cd src/lambda-hello-name && npm run compile
 
-test-cdktf:
+test-cdktf: venv
 	make local-cdktf-output ARGS="--outputs-file ../../../auto_tests/cdktf-output.json"
 	cd auto_tests && jq '."LsLambdaS3Sample.local"' cdktf-output.json > iac-output.json
 	$(VENV_RUN) && cd auto_tests && AWS_PROFILE=localstack pytest $(ARGS);
-
-local-lsgdc-test-tags:
-	make test ARGS="auto_tests/test_s3_tags.py"
 
 reset:
 	- stop-ls.sh
