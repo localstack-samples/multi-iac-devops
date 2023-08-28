@@ -1,8 +1,8 @@
-# Multi-IaC Pipeline ECS Solution
+# Multi-IaC Pipeline Solution
 
-Example with multiple IaC pipelines to setup infrastructure, platform, and an ECS solution.
+Example with multiple IaC pipelines to setup a basic AWS solution with Terraform CDK, Pulumi, and AWS CDK.
 
-## E2E S3 Solution
+## Multi-IaC DevOps Solution
 
 ![Basic Solution](./docs/img/solution-diags-overview.drawio.png "Basic Solution")
 
@@ -42,7 +42,7 @@ npm install --global cdktf-cli@latest
 
 After cloning this repo, from this working directory, run these commands:
 
-1. Set your LocalStack pro key
+1. Set your LocalStack pro key. Add this line of code to a file named `.env-gdc-local` at the root of this project. Set your actual LocalStack key.
 
       ```bash
       export LOCALSTACK_API_KEY=<your key>
