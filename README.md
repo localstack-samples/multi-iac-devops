@@ -4,9 +4,11 @@ Example with multiple IaC pipelines to setup infrastructure, platform, and an EC
 
 ## E2E S3 Solution
 
-![S3 Solution](./docs/img/solution-diags.drawio.png "S3 Solution")
+![Basic Solution](./docs/img/solution-diags-overview.drawio.png "Basic Solution")
 
 ## Cloud Infrastructure, Platform, Solution Layers
+
+![Cloud Arch Layers](./docs/img/solution-diags-layers.drawio.png "Cloud Arch Layers")
 
 # Deploying the App to LocalStack
 
