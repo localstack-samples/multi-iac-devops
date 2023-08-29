@@ -16,3 +16,4 @@ requests==2.31.0
 simplejson==3.19.1
 tomli==2.0.1
 urllib3==2.0.4
+pulumi-local==0.6

@@ -30,11 +30,6 @@ start-localstack-no-enforce-iam:
 stop-localstack:
 	cd devops-tooling && docker compose down
 
-#
-#local-destroy-all:
-#	make local-ecr-destroy
-#	make local-toplevel-destroy
-
 iac-shared:
 	pushd iac/iac-shared && npm install && npm run build && popd
 
@@ -42,8 +37,6 @@ build:
 	cd src/lambda-hello-name && npm install
 	cd src/lambda-hello-name && npm run compile
 
-
 # Hot reloading watching to run build
 watch-lambda:
 	bin/watchman.sh $(PROJECT_MODULE_NAME) "make build"
-

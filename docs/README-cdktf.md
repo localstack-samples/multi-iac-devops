@@ -40,6 +40,8 @@ make watch-lambda
 
 Then run the test(s)
 
+## Run Integration Tests against LocalStack
+
 ```shell
 make test-cdktf
 ```
@@ -48,6 +50,12 @@ After you run the tests once, you don't have to save the IaC output again, so yo
 
 ```shell
 make test-cdktf-bare
+```
+
+## Invoke API Gateway on LocalStack
+
+```shell
+make local-cdktf-invoke
 ```
 
 ## Cleanup Local Env

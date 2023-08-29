@@ -18,6 +18,12 @@ local-cdktf-vpc-destroy: cdktfdestroy
 local-cdktf-deploy: build cdktfdeploy
 local-cdktf-destroy: cdktfdestroy
 local-cdktf-output: cdktfoutput
+local-cdktf-invoke:
+	make local-cdktf-output ARGS="--outputs-file ../../../local-cdktf-output.json" && \
+	APIGW=$$(jq -r '."LsLambdaS3Sample.local".apigwUrl' local-cdktf-output.json) && \
+	curl "http://$${APIGW}";
+	@rm -f local-cdktf-output.json
+
 
 test-cdktf:
 	make local-cdktf-output ARGS="--outputs-file ../../../auto_tests/cdktf-output.json"
