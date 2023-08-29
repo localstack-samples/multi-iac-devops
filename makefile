@@ -1,5 +1,7 @@
 SHELL := /bin/bash
 
+PROJECT_MODULE_NAME = ./src/lambda-hello-name/src/
+
 -include .env-gdc-local
 -include ./devops-tooling/envs.makefile
 -include ./devops-tooling/nonenv.makefile
@@ -36,9 +38,16 @@ build:
 	cd src/lambda-hello-name && npm install
 	cd src/lambda-hello-name && npm run compile
 
-test-cdktf: venv
+# Hot reloading watching to run build
+watch-lambda:
+	bin/watchman.sh $(PROJECT_MODULE_NAME) "make build"
+
+test-cdktf:
 	make local-cdktf-output ARGS="--outputs-file ../../../auto_tests/cdktf-output.json"
-	cd auto_tests && jq '."LsLambdaS3Sample.local"' cdktf-output.json > iac-output.json
+	cd auto_tests && jq '."LsLambdaS3Sample.local"' cdktf-output.json > iac-output.json;
+	make test-cdktf-bare
+
+test-cdktf-bare:
 	$(VENV_RUN) && cd auto_tests && AWS_PROFILE=localstack pytest $(ARGS);
 
 reset:
