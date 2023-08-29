@@ -38,7 +38,6 @@ build:
 	cd src/lambda-hello-name && npm install
 	cd src/lambda-hello-name && npm run compile
 
-
 # Hot reloading watching to run build
 watch-lambda:
 	bin/watchman.sh $(PROJECT_MODULE_NAME) "make build"
@@ -50,7 +49,6 @@ test-cdktf:
 
 test-cdktf-bare:
 	$(VENV_RUN) && cd auto_tests && AWS_PROFILE=localstack pytest $(ARGS);
-
 
 reset:
 	- stop-ls.sh

@@ -96,4 +96,5 @@ devops-tooling/sandboxenv.makefile
 
 auto_tests/*-output.json
 
+local-cdktf-output.json
 cdktf-output.json

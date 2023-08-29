@@ -24,6 +24,18 @@ This will deploy the S3 bucket, Lambda in hot reload mode, all roles and policie
 make local-cdktf-deploy
 ```
 
+## Run Integration Tests against LocalStack
+
+```shell
+make test-cdktf
+```
+
+## Invoke API Gateway on LocalStack
+
+```shell
+make local-cdktf-invoke
+```
+
 # AWS Deploy Instructions
 
 We use the same IaC pipelines to deploy to AWS! This is a very important point that LocalStack enables teams
