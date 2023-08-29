@@ -205,13 +205,13 @@ import * as random from "@cdktf/provider-random";
 
 
     const app = new App();
-    new VpcStack(app, "LsVpc.sbx", {
+    new VpcStack(app, "LsMultiEnvVpc.sbx", {
         isLocal: false,
         vpcConfigPath: path.resolve() + "/../../../devops-tooling/accounts/my-sb.json",
         region: "us-east-1",
         accountType: "sandbox"
     });
-    new MyStack(app, "LsLambdaS3Sample.sbx", {
+    new MyStack(app, "LsMultiEnvApp.sbx", {
         isLocal: false,
         environment: 'sbx',
         lambdaDistPath: "/../../../src/lambda-hello-name/dist",
@@ -223,13 +223,13 @@ import * as random from "@cdktf/provider-random";
         region: 'us-east-1'
     });
 
-    new VpcStack(app, "LsVpc.local", {
+    new VpcStack(app, "LsMultiEnvVpc.local", {
         isLocal: true,
         vpcConfigPath: path.resolve() + "/../../../devops-tooling/accounts/localstack.json",
         region: "us-east-1",
         accountType: "localstack"
     });
-    new MyStack(app, "LsLambdaS3Sample.local", {
+    new MyStack(app, "LsMultiEnvApp.local", {
         isLocal: true,
         environment: 'local',
         lambdaDistPath: "/../../../src/lambda-hello-name/dist",

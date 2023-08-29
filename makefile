@@ -8,6 +8,7 @@ PROJECT_MODULE_NAME = ./src/lambda-hello-name/src/
 -include ./devops-tooling/sandboxenv.makefile
 -include ./devops-tooling/pulumi.makefile
 -include ./devops-tooling/cdktf.makefile
+-include ./devops-tooling/awscdk.makefile
 
 .PHONY: clean update-deps delete-zips iac-shared local-top-level
 
@@ -22,6 +23,9 @@ update-deps: $(PKG_SUB_DIRS)
 
 start-localstack:
 	cd devops-tooling && docker compose -p $(APP_NAME) up
+
+start-localstack-no-enforce-iam:
+	cd devops-tooling && ENFORCE_IAM=0 docker compose -p $(APP_NAME) up
 
 stop-localstack:
 	cd devops-tooling && docker compose down

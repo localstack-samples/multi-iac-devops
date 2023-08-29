@@ -1,6 +1,6 @@
 # Terraform CDK IaC Instructions
 
-### Install pipeline packages
+### Install CDKTF packages
 
 You need to do this initially, and if you manually add packages to `iac/terraform/cdk/package.json`
 
@@ -8,7 +8,7 @@ You need to do this initially, and if you manually add packages to `iac/terrafor
 make local-cdktf-install
 ```
 
-### Deploy the Terraform CDK IaC VPC Stack
+### Deploy VPC Stack on LocalStack
 
 This will deploy a VPC using the configuration in `devops-tooling/accounts`.
 
@@ -16,7 +16,7 @@ This will deploy a VPC using the configuration in `devops-tooling/accounts`.
 make local-cdktf-vpc-deploy
 ```
 
-### Deploy the Terraform CDK IaC API Gateway Stack
+### Deploy App Stack on LocalStack
 
 This will deploy the resources.
 
