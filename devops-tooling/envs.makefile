@@ -30,7 +30,7 @@ freeze:                   ## Run pip freeze -l in the virtual environment
 
 # default localhost env vars
 export LOCALSTACK_ENDPOINT=http://host.docker.internal:4566
-export APP_NAME = lss3
+export APP_NAME = lsmulti
 export APP_VERSION = 0.0.1
 export API_VERSION = v1
 export AWS_REGION=us-east-1

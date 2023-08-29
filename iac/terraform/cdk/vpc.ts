@@ -2,11 +2,8 @@ import {Construct} from "constructs";
 import {TerraformStack, Fn, TerraformOutput, S3Backend} from "cdktf";
 import * as aws from "@cdktf/provider-aws";
 import {Vpc} from "./.gen/modules/vpc";
-import {AccountEntity, AccountConfig, VpcConfig, getAccountConfig} from '../../iac-shared';
+import {AccountEntity, AccountConfig, VpcConfig, getAccountConfig, getSubnetCidrBlocks} from '../../iac-shared';
 
-import {
-    getSubnetCidrBlocks
-} from './utils';
 import * as random from "@cdktf/provider-random";
 import {AwsProvider} from "@cdktf/provider-aws/lib/provider";
 import {endpoints} from "./ls-endpoints";
