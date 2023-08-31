@@ -21,11 +21,11 @@ update-deps: $(PKG_SUB_DIRS)
         pushd $$i && ncu -u && npm install && popd; \
     done
 
-start-localstack:
-	cd devops-tooling && docker compose -p $(APP_NAME) up
-
 start-localstack-no-enforce-iam:
 	cd devops-tooling && ENFORCE_IAM=0 docker compose -p $(APP_NAME) up
+
+start-localstack:
+	cd devops-tooling && docker compose -p $(APP_NAME) up
 
 stop-localstack:
 	cd devops-tooling && docker compose down
@@ -40,3 +40,7 @@ build:
 # Hot reloading watching to run build
 watch-lambda:
 	cd src/lambda-hello-name && npm run watch
+
+# Run the tests
+test:
+	$(VENV_RUN) && cd auto_tests && AWS_PROFILE=localstack pytest $(ARGS);

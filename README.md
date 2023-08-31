@@ -78,7 +78,7 @@ aws_secret_access_key=test
 
 [Solution Guide for Terrform CDK](./docs/README-cdktf.md "Solution Guide for TerraformCDK")
 
-## AWS CDK (Work in Progress)
+## AWS CDK
 
 [Solution Guide for AWS CDK](./docs/README-awscdk.md "Solution Guide for AWS CDK")
 
@@ -93,21 +93,9 @@ following one of complete
 IaC deployments above, you can work with the Lambda in hot-reload mode.
 See [LocalStack Hot Reloading](https://docs.localstack.cloud/user-guide/tools/lambda-tools/hot-reloading)
 
-Now, your DevX looks like a rapid TDD cycle. There's a test in `auto_tests/test_apigw_name.py`. Run watch to do a build
-whenever code changes in the Lambda.
+Now, your DevX looks like a rapid TDD cycle. There's a test in `auto_tests/test_apigw_name.py`.
+Run watch to do a build whenever code changes in the Lambda.
 
 ```shell
 make watch-lambda
-```
-
-Then run the test(s)
-
-```shell
-make test-cdktf
-```
-
-After you run the tests once, you don't have to save the IaC output again, so you can just run this and save some time.
-
-```shell
-make test-cdktf-bare
 ```

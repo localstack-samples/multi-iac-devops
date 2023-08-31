@@ -31,8 +31,10 @@ following one of complete
 IaC deployments above, you can work with the Lambda in hot-reload mode.
 See [LocalStack Hot Reloading](https://docs.localstack.cloud/user-guide/tools/lambda-tools/hot-reloading)
 
-Now, your DevX looks like a rapid TDD cycle. There's a test in `auto_tests/test_apigw_name.py`. Run watchman to do a
-build whenever code changes in the Lambda.
+Now, your DevX looks like a rapid TDD cycle. There's a test in `auto_tests/test_apigw_name.py`.
+
+Run watchman to do a build whenever code changes in the Lambda.
+Change the Lambda in `./src/lambda-hello-name/src`. It'll recompile and redeploy on the fly. Then rerun the tests.
 
 ```shell
 make watch-lambda
@@ -43,13 +45,13 @@ Then run the test(s)
 ## Run Integration Tests against LocalStack
 
 ```shell
-make test-cdktf
+make local-cdktf-test
 ```
 
 After you run the tests once, you don't have to save the IaC output again, so you can just run this and save some time.
 
 ```shell
-make test-cdktf-bare
+make test
 ```
 
 ## Invoke API Gateway on LocalStack
@@ -61,7 +63,7 @@ make local-cdktf-invoke
 ## Cleanup Local Env
 
 ```shell
-make local-clean-cdktf
+make local-cdktf-clean
 ```
 
 # AWS Deploy Instructions
@@ -125,7 +127,7 @@ This will deploy a VPC using the configuration in `devops-tooling/accounts`.
 make sbx-cdktf-vpc-deploy
 ```
 
-### Deploy the Terraform CDK IaC API Gateway Stack
+### Deploy the Terraform CDK IaC App Stack
 
 This will deploy the resources.
 
