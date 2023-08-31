@@ -99,4 +99,10 @@ make sbx-awscdk-deploy
 
 ```shell
 make sbx-awscdk-invoke
-``
+```
+
+### Destroy the CDK Stack in AWS
+
+```shell
+make sbx-awscdk-destroy
+```

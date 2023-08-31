@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib'
-import {aws_s3 as s3, Duration} from 'aws-cdk-lib'
+import {aws_s3 as s3, Duration, RemovalPolicy} from 'aws-cdk-lib'
 import {Function, Runtime, AssetCode, Code, S3Code, Architecture} from "aws-cdk-lib/aws-lambda"
 import {Construct} from 'constructs'
 import {PolicyStatement} from "aws-cdk-lib/aws-iam"
@@ -49,6 +49,7 @@ export class AwscdkStack extends cdk.Stack {
         // Create a bucket for something future purpose
         this.bucket = new s3.Bucket(this, 'lambdawork', {
             enforceSSL: false,
+            removalPolicy: RemovalPolicy.DESTROY,
         })
 
         // API Gateway V2 Http API
