@@ -39,7 +39,7 @@ export class AwscdkStack extends cdk.Stack {
             const lambdaBucket = s3.Bucket.fromBucketName(this, "HotReloadingBucket", "hot-reload")
             this.lambdaCode = Code.fromBucket(lambdaBucket, props.lambdaDistPath)
         } else {
-            this.lambdaCode = new AssetCode(`../../src/lambda-hello-name`)
+            this.lambdaCode = new AssetCode(`../../src/lambda-hello-name/dist`)
         }
 
         this.bucket = new s3.Bucket(this, 'lambdawork', {
