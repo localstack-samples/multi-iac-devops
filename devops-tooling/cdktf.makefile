@@ -6,7 +6,7 @@ cdktfinstall:
 	cd $(STACK_DIR) && npm install
 	cd $(STACK_DIR) && cdktf get
 cdktfoutput:
-	cd $(STACK_DIR) && cdktf output $(TFSTACK_NAME) $(ARGS)
+	@cd $(STACK_DIR) && cdktf output $(TFSTACK_NAME) $(ARGS)
 
 
 # LocalStack target groups
@@ -19,20 +19,16 @@ local-cdktf-deploy: build cdktfdeploy
 local-cdktf-destroy: cdktfdestroy
 local-cdktf-output: cdktfoutput
 local-cdktf-invoke:
-	make local-cdktf-output ARGS="--outputs-file ../../../local-cdktf-output.json" && \
-	APIGW=$$(jq -r '."LsLambdaS3Sample.local".apigwUrl' local-cdktf-output.json) && \
+	@make local-cdktf-output ARGS="--outputs-file ../../../local-cdktf-output.json" && \
+	APIGW=$$(jq -r '."$(TFSTACK_NAME)".apigwUrl' local-cdktf-output.json) && \
 	curl "http://$${APIGW}";
 	@rm -f local-cdktf-output.json
 
 
-test-cdktf:
+local-cdktf-test:
 	make local-cdktf-output ARGS="--outputs-file ../../../auto_tests/cdktf-output.json"
-	cd auto_tests && jq '."LsMultiEnvApp.local"' cdktf-output.json > iac-output.json;
-	make test-cdktf-bare
-
-test-cdktf-bare:
-	$(VENV_RUN) && cd auto_tests && AWS_PROFILE=localstack pytest $(ARGS);
-
+	cd auto_tests && jq '."$(TFSTACK_NAME)"' cdktf-output.json > iac-output.json;
+	make test
 
 local-clean-cdktf:
 	- rm -rf iac/terraform/cdk/terraform.Ls*
@@ -50,6 +46,6 @@ sbx-cdktf-output: cdktfoutput
 
 sbx-cdktf-invoke:
 	make sbx-cdktf-output ARGS="--outputs-file ../../../cdktf-output.json" && \
-	APIGW=$$(jq -r '."LsLambdaS3Sample.sbx".apigwUrl' cdktf-output.json) && \
+	APIGW=$$(jq -r '."$(TFSTACK_NAME)".apigwUrl' cdktf-output.json) && \
 	curl "$${APIGW}";
 	@rm -f cdktf-output.json

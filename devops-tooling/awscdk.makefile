@@ -8,7 +8,11 @@ awscdkdestroy: iac-shared
 #	cd $(STACK_DIR) && npm install
 #	cd $(STACK_DIR) && $(CDK_CMD) get
 awscdkoutput:
-	cd $(STACK_DIR) && $(CDK_CMD) output $(TFSTACK_NAME) $(ARGS)
+	@aws cloudformation describe-stacks \
+  --stack-name $(TFSTACK_NAME) \
+  --query "Stacks[0].Outputs[?ExportName=='HttpApiEndpoint'].OutputValue" \
+  --output text \
+  --profile localstack | jq -R -c '{apigwUrl: .}'
 
 
 # LocalStack target groups
@@ -22,16 +26,15 @@ local-awscdk-deploy: build awscdkdeploy
 local-awscdk-destroy: awscdkdestroy
 local-awscdk-output: awscdkoutput
 
-test-awscdk:
-	make local-awscdk-output ARGS="--outputs-file ../../../auto_tests/awscdk-output.json"
-	cd auto_tests && jq '."LsLambdaS3Sample.local"' awscdk-output.json > iac-output.json;
-	make test-awscdk-bare
+local-awscdk-test:
+	make local-awscdk-output > auto_tests/iac-output.json;
+	make test
 
-test-awscdk-bare:
-	$(VENV_RUN) && cd auto_tests && AWS_PROFILE=localstack pytest $(ARGS);
+local-awscdk-invoke:
+	@APIGW=$$(make local-awscdk-output | jq -r '.apigwUrl') && \
+	curl "http://$${APIGW}";
 
-
-local-clean-awscdk:
+local-awscdk-clean:
 	- rm -rf iac/awscdk/cdk.out
 
 # AWS Sandbox target groups
@@ -45,7 +48,9 @@ sbx-awscdk-destroy: awscdkdestroy
 sbx-awscdk-output: awscdkoutput
 
 sbx-awscdk-invoke:
-	make sbx-awscdk-output ARGS="--outputs-file ../../../awscdk-output.json" && \
-	APIGW=$$(jq -r '."LsLambdaS3Sample.sbx".apigwUrl' awscdk-output.json) && \
+	@APIGW=$$(aws cloudformation describe-stacks \
+  --stack-name LsMultiEnvApp-sbx \
+  --query "Stacks[0].Outputs[?ExportName=='HttpApiEndpoint'].OutputValue" \
+  --output text) && \
 	curl "$${APIGW}";
 	@rm -f awscdk-output.json
