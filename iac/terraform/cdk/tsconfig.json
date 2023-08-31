@@ -7,5 +7,12 @@
   "exclude": [
     "node_modules",
     "cdktf.out"
-  ]
+  ],
+  "references": [
+        {
+            "path": "../../iac-shared",
+            // add 'prepend' if you want to include the referenced project in your output file
+            // "prepend": true,
+        }
+      ]
 }

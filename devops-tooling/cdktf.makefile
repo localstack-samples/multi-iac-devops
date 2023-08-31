@@ -25,6 +25,19 @@ local-cdktf-invoke:
 	@rm -f local-cdktf-output.json
 
 
+test-cdktf:
+	make local-cdktf-output ARGS="--outputs-file ../../../auto_tests/cdktf-output.json"
+	cd auto_tests && jq '."LsMultiEnvApp.local"' cdktf-output.json > iac-output.json;
+	make test-cdktf-bare
+
+test-cdktf-bare:
+	$(VENV_RUN) && cd auto_tests && AWS_PROFILE=localstack pytest $(ARGS);
+
+
+local-clean-cdktf:
+	- rm -rf iac/terraform/cdk/terraform.Ls*
+	- rm -rf iac/terraform/cdk/cdktf.out
+
 
 # AWS Sandbox target groups
 # VPC

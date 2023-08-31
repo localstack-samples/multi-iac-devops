@@ -1,14 +1,14 @@
-import {APIGatewayProxyEventV2, APIGatewayProxyResultV2} from "aws-lambda";
+import {APIGatewayProxyEventV2, APIGatewayProxyResultV2} from "aws-lambda"
 
 export const handler = async (
     event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyResultV2> => {
-    const queries = event.queryStringParameters;
-    let name = 'there';
+    const queries = event.queryStringParameters
+    let name = 'there'
 
     if (queries !== null && queries !== undefined) {
         if (queries["name"]) {
-            name = queries["name"];
+            name = queries["name"]
         }
     }
 

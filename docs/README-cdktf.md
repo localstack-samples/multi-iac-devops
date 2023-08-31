@@ -1,6 +1,6 @@
-## Terraform CDK IaC Instructions
+# Terraform CDK IaC Instructions
 
-### Install pipeline packages
+### Install CDKTF packages
 
 You need to do this initially, and if you manually add packages to `iac/terraform/cdk/package.json`
 
@@ -8,7 +8,7 @@ You need to do this initially, and if you manually add packages to `iac/terrafor
 make local-cdktf-install
 ```
 
-### Deploy the Terraform CDK IaC VPC Stack
+### Deploy VPC Stack on LocalStack
 
 This will deploy a VPC using the configuration in `devops-tooling/accounts`.
 
@@ -16,13 +16,29 @@ This will deploy a VPC using the configuration in `devops-tooling/accounts`.
 make local-cdktf-vpc-deploy
 ```
 
-### Deploy the Terraform CDK IaC API Gateway Stack
+### Deploy App Stack on LocalStack
 
-This will deploy the S3 bucket, Lambda in hot reload mode, all roles and policies.
+This will deploy the resources.
 
 ```shell
 make local-cdktf-deploy
 ```
+
+## Testing and Hot Reloading!
+
+The Lambda is setup for hot reloading in this project on LocalStack by default. After everything is deployed by
+following one of complete
+IaC deployments above, you can work with the Lambda in hot-reload mode.
+See [LocalStack Hot Reloading](https://docs.localstack.cloud/user-guide/tools/lambda-tools/hot-reloading)
+
+Now, your DevX looks like a rapid TDD cycle. There's a test in `auto_tests/test_apigw_name.py`. Run watchman to do a
+build whenever code changes in the Lambda.
+
+```shell
+make watch-lambda
+```
+
+Then run the test(s)
 
 ## Run Integration Tests against LocalStack
 
@@ -30,10 +46,22 @@ make local-cdktf-deploy
 make test-cdktf
 ```
 
+After you run the tests once, you don't have to save the IaC output again, so you can just run this and save some time.
+
+```shell
+make test-cdktf-bare
+```
+
 ## Invoke API Gateway on LocalStack
 
 ```shell
 make local-cdktf-invoke
+```
+
+## Cleanup Local Env
+
+```shell
+make local-clean-cdktf
 ```
 
 # AWS Deploy Instructions
@@ -99,7 +127,7 @@ make sbx-cdktf-vpc-deploy
 
 ### Deploy the Terraform CDK IaC API Gateway Stack
 
-This will deploy the S3 bucket, Lambda in hot reload mode, all roles and policies.
+This will deploy the resources.
 
 ```shell
 make sbx-cdktf-deploy

@@ -3,6 +3,7 @@ import {lstatSync, readdirSync} from "fs";
 import {join as pathJoin, sep as pathSep} from "path";
 import {Writable} from "stream";
 import {writeFileSync} from "fs";
+import {Fn} from "cdktf";
 
 /***
  * Returns true if running pulumi in preview mode
@@ -270,3 +271,17 @@ export class AutoIncrementDelayedPromise {
 
 export const autoIncrementDelayedPromise: AutoIncrementDelayedPromise =
     new AutoIncrementDelayedPromise();
+
+
+export const getSubnetCidrBlocks = (cidrPrefix: string,
+                                    subnetCount: number,
+                                    newbits: number,
+                                    netNumStart: number) => {
+    const subnetCidrBlocks: string[] = [];
+
+    for (let index = 0; index < subnetCount; index++) {
+        subnetCidrBlocks[index] = Fn.cidrsubnet(cidrPrefix, newbits, netNumStart + index);
+    }
+
+    return subnetCidrBlocks;
+}
