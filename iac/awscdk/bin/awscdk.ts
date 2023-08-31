@@ -7,6 +7,8 @@ import path from "path"
 
 
 const app = new cdk.App()
+
+// AWS CDK App Stack on LocalStack
 new AwscdkStack(app, 'LsMultiEnvApp-local', {
     /* If you don't specify 'env', this stack will be environment-agnostic.
      * Account/Region-dependent features and context lookups will not work,
@@ -31,6 +33,8 @@ new AwscdkStack(app, 'LsMultiEnvApp-local', {
     version: '0.0.1',
     region: 'us-east-1'
 })
+
+// AWS CDK App Stack on AWS
 new AwscdkStack(app, 'LsMultiEnvApp-sbx', {
     /* If you don't specify 'env', this stack will be environment-agnostic.
      * Account/Region-dependent features and context lookups will not work,

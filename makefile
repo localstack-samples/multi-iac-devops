@@ -39,4 +39,4 @@ build:
 
 # Hot reloading watching to run build
 watch-lambda:
-	bin/watchman.sh $(PROJECT_MODULE_NAME) "make build"
+	cd src/lambda-hello-name && npm run watch
