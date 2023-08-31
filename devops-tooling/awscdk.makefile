@@ -1,5 +1,5 @@
 awscdkbootstrap: iac-shared
-	cd $(STACK_DIR) && $(CDK_CMD) bootstrap --profile localstack
+	cd $(STACK_DIR) && $(CDK_CMD) bootstrap
 awscdkdeploy: iac-shared
 	cd $(STACK_DIR) && $(CDK_CMD) deploy $(TFSTACK_NAME)
 awscdkdestroy: iac-shared
@@ -32,14 +32,14 @@ test-awscdk-bare:
 
 
 local-clean-awscdk:
-	- echo "no implemented yet"
-
+	- rm -rf iac/awscdk/cdk.out
 
 # AWS Sandbox target groups
 # VPC
 sbx-awscdk-vpc-deploy: build awscdkdeploy
 sbx-awscdk-vpc-destroy: awscdkdestroy
 # Lambda - APIGW - S3
+sbx-awscdk-bootstrap: awscdkbootstrap
 sbx-awscdk-deploy: build awscdkdeploy
 sbx-awscdk-destroy: awscdkdestroy
 sbx-awscdk-output: awscdkoutput

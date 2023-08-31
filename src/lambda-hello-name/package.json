@@ -2,10 +2,11 @@
   "name": "lambda-hello-name",
   "version": "1.0.0",
   "scripts": {
-    "compile": "tsc"
+    "build": "tsc",
+    "watch": "tsc -w"
   },
-  "author": "Terraform Education",
-  "license": "ISC",
+  "author": "LocalStack",
+  "license": "LocalStack",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.119"
   },

@@ -27,7 +27,7 @@ local-cdktf-invoke:
 
 test-cdktf:
 	make local-cdktf-output ARGS="--outputs-file ../../../auto_tests/cdktf-output.json"
-	cd auto_tests && jq '."LsLambdaS3Sample.local"' cdktf-output.json > iac-output.json;
+	cd auto_tests && jq '."LsMultiEnvApp.local"' cdktf-output.json > iac-output.json;
 	make test-cdktf-bare
 
 test-cdktf-bare:

@@ -35,7 +35,7 @@ iac-shared:
 
 build:
 	cd src/lambda-hello-name && npm install
-	cd src/lambda-hello-name && npm run compile
+	cd src/lambda-hello-name && npm run build
 
 # Hot reloading watching to run build
 watch-lambda:

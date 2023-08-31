@@ -77,6 +77,9 @@ sbx-cdktf%: export STACK_DIR=iac/terraform/cdk
 sbx-cdktf%: export TFSTACK_NAME=LsMultiEnvApp.$(STACK_SUFFIX)
 sbx-cdktf-vpc%: export TFSTACK_NAME=LsMultiEnvVpc.$(STACK_SUFFIX)
 
+sbx-awscdk%: export STACK_DIR=iac/awscdk
+sbx-awscdk%: export TFSTACK_NAME=LsMultiEnvApp-$(STACK_SUFFIX)
+sbx-awscdk-vpc%: export TFSTACK_NAME=LsMultiEnvVpc-$(STACK_SUFFIX)
 
 
 uname_m := $(shell uname -m) # store the output of the command in a variable
