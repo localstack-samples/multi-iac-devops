@@ -21,9 +21,6 @@ update-deps: $(PKG_SUB_DIRS)
         pushd $$i && ncu -u && npm install && popd; \
     done
 
-start-localstack-no-enforce-iam:
-	cd devops-tooling && ENFORCE_IAM=0 docker compose -p $(APP_NAME) up
-
 start-localstack:
 	cd devops-tooling && docker compose -p $(APP_NAME) up
 
