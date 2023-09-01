@@ -18,10 +18,8 @@ npm install -g aws-cdk-local aws-cdk
 
 ## Start LocalStack
 
-We're using ENFORCE_IAM=0. The issue regarding this is merged but not released yet.
-
 ```shell
-make start-localstack-no-enforce-iam
+make start-localstack
 ```
 
 ## Install on LocalStack
