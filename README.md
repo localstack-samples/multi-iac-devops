@@ -1,12 +1,23 @@
 # Multi-IaC Pipeline Solution
 
-Example with multiple IaC pipelines to setup a basic AWS solution with Terraform CDK, Pulumi, and AWS CDK.
+Example with multiple IaC pipelines to setup a basic AWS solution with Terraform CDK, AWS CDK, and Pulumi.
+The purpose of this sample is to
+
+1. Demonstrate a standard directory layout for IaC, src code
+2. Demonstrate DevOps environment configuration that supports CI pipelines that deploy to LocalStack and AWS
+3. Demonstrate DevOps tooling with multiple flavors of IaC
+4. Demonstrate integration tests running against solutions deployed to LocalStack
+5. Demonstrate Typescript Lambda Hot Reloading in LocalStack
 
 ## Multi-IaC DevOps Solution
 
 ![Basic Solution](./docs/img/solution-diags-overview.drawio.png "Basic Solution")
 
 ## Cloud Infrastructure, Platform, Solution Layers
+
+AWS Customers build cloud-based solutions in layers 3-5. DevOps CI pipelines can also be broken down separately
+along layer boundaries. The [Terraform CDK main.ts](./iac/terraform/cdk/main.ts) file has App solution pipelines
+at layer 5 and account level VPC configuration pipelines at level 3.
 
 ![Cloud Arch Layers](./docs/img/solution-diags-layers.drawio.png "Cloud Arch Layers")
 
