@@ -47,7 +47,7 @@ npm install --global cdktf-cli@latest
 
 ### Steps
 
-After cloning this repo, from this working directory, run these commands:
+From the working directory:
 
 1. Set your LocalStack pro key. Add this line of code to a file named `.env-gdc-local` at the root of this project. Set
    your actual LocalStack key.
