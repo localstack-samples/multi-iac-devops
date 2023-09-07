@@ -38,41 +38,50 @@ See: https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-
 
 ```shell
 aws rds create-global-cluster \
-    --profile localstack \
     --region 'us-east-1'  \
     --global-cluster-identifier 'myrdsglobalcluster' \
-    --engine aurora-postgresql
+    --engine aurora-postgresql \
+    --profile localstack
 ```
 
 ### Describe Global Cluster
 
 ```shell
 aws rds describe-global-clusters \
-    --profile localstack \
     --region 'us-east-1' \
-    --global-cluster-identifier 'myrdsglobalcluster'
+    --global-cluster-identifier 'myrdsglobalcluster' \
+    --profile localstack
 ```
 
 ### Create Primary Aurora Cluster
 
 ```shell
 aws rds create-db-cluster \
-  --profile localstack \
   --region 'us-east-1' \
   --db-cluster-identifier 'gclusterprimary' \
   --master-username userid \
-  --manage-master-user-password \
+  --master-user-password 'test1234' \
   --engine aurora-postgresql \
-  --global-cluster-identifier 'myrdsglobalcluster'
+  --global-cluster-identifier 'myrdsglobalcluster' \
+  --profile localstack
 ```
 
 ### Describe Primary Cluster
 
 ```shell
 aws rds describe-db-clusters \
-    --profile localstack \
     --region 'us-east-1' \
-    --db-cluster-identifier 'gclusterprimary'
+    --db-cluster-identifier 'gclusterprimary' \
+    --profile localstack
+```
+
+### Describe Primary Cluster Endpoints
+
+```shell
+aws rds describe-db-cluster-endpoints \
+    --region 'us-east-1' \
+    --db-cluster-identifier 'gclusterprimary' \
+    --profile localstack
 ```
 
 ### Create DB Instances in Primary Cluster
@@ -81,64 +90,64 @@ aws rds describe-db-clusters \
 
 ```shell
 aws rds create-db-instance \
-  --profile localstack \
   --db-cluster-identifier 'gclusterprimary' \
   --db-instance-class 'db.r7g.large' \
   --db-instance-identifier 'priinst-0' \
   --engine aurora-postgresql \
-  --region 'us-east-1' 
+  --region 'us-east-1' \
+  --profile localstack
 ```
 
 #### Create 2 Reader Instances
 
 ```shell
 aws rds create-db-instance \
-  --profile localstack \
   --db-cluster-identifier 'gclusterprimary' \
   --db-instance-class 'db.r7g.large' \
   --db-instance-identifier 'priinst-1' \
   --engine aurora-postgresql \
-  --region 'us-east-1' 
+  --region 'us-east-1' \
+  --profile localstack
 ```
 
 ```shell
 aws rds create-db-instance \
-  --profile localstack \
   --db-cluster-identifier 'gclusterprimary' \
   --db-instance-class 'db.r7g.large' \
   --db-instance-identifier 'priinst-2' \
   --engine aurora-postgresql \
-  --region 'us-east-1' 
+  --region 'us-east-1' \
+  --profile localstack
 ```
 
 ### Secondary Region Cluster
 
 ```shell
 aws rds create-db-cluster \
-    --profile localstack \
     --region 'us-west-2' \
     --db-cluster-identifier 'gcluster2' \
     --global-cluster-identifier 'myrdsglobalcluster' \
-    --engine aurora-postgresql
+    --engine aurora-postgresql \
+    --profile localstack
 ```
 
 ```shell
 aws rds  create-db-instance \
-    --profile localstack \
     --region 'us-west-2' \
     --db-instance-class 'db.r7g.large' \
     --db-cluster-identifier 'gcluster2' \
     --db-instance-identifier 'secinst0' \
-    --engine aurora-postgresql
+    --engine aurora-postgresql \
+    --profile localstack
 ```
 
 ### Describe Secondary Cluster
 
 ```shell
 aws rds describe-db-clusters \
-    --profile localstack \
     --region 'us-west-2' \
-    --db-cluster-identifier 'gcluster2'
+    --db-cluster-identifier 'gcluster2' \
+    --profile localstack
 ```
 
 # AWS Deploy
@@ -167,7 +176,7 @@ aws rds create-db-cluster \
   --region 'us-east-1' \
   --db-cluster-identifier 'gclusterprimary' \
   --master-username userid \
-  --manage-master-user-password \
+  --master-user-password 'test1234' \
   --engine aurora-postgresql \
   --global-cluster-identifier 'myrdsglobalcluster'
 ```
