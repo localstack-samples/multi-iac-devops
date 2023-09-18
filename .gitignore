@@ -98,3 +98,4 @@ auto_tests/*-output.json
 
 local-cdktf-output.json
 cdktf-output.json
+hello.txt
