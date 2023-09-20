@@ -106,8 +106,9 @@ export class AwscdkStack extends cdk.Stack {
         this.bucket.grantReadWrite(executeRole)
         const s3ListBucketIntegration = this.createS3ListBucketIntegration(this.bucket, executeRole)
         const s3ListIntegration = this.createS3ListIntegration(this.bucket, executeRole)
+        const s3BucketIntegration = this.createS3BucketIntegration(this.bucket, executeRole)
         const s3Integration = this.createS3Integration(this.bucket, executeRole)
-        this.addAssetsEndpoint(apiGateway, s3Integration, s3ListIntegration, s3ListBucketIntegration)
+        this.addAssetsEndpoint(apiGateway, s3BucketIntegration, s3Integration, s3ListIntegration, s3ListBucketIntegration)
         // Output the RestApiUrl
         new cdk.CfnOutput(this, 'RestApiEndpoint', {
             value: apiGateway.url,
@@ -161,6 +162,31 @@ export class AwscdkStack extends cdk.Stack {
         })
     }
 
+    private createS3BucketIntegration(assetsBucket: S3.IBucket, executeRole: Iam.Role) {
+        return new ApiGateway.AwsIntegration({
+            service: "s3",
+            integrationHttpMethod: "GET",
+            path: `${assetsBucket.bucketName}/{folder}/{key}`,
+            options: {
+                credentialsRole: executeRole,
+                passthroughBehavior: ApiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+                integrationResponses: [
+                    {
+                        statusCode: "200",
+                        responseParameters: {
+                            "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                        },
+                    },
+                ],
+
+                requestParameters: {
+                    "integration.request.path.folder": "method.request.path.folder",
+                    "integration.request.path.key": "method.request.path.key",
+                },
+            },
+        })
+    }
+
     private createS3Integration(assetsBucket: S3.IBucket, executeRole: Iam.Role) {
         return new ApiGateway.AwsIntegration({
             service: "s3",
@@ -205,31 +231,16 @@ export class AwscdkStack extends cdk.Stack {
 
     private addAssetsEndpoint(
         apiGateway: ApiGateway.RestApi,
+        s3BucketIntegration: ApiGateway.AwsIntegration,
         s3Integration: ApiGateway.AwsIntegration,
         s3ListIntegration: ApiGateway.AwsIntegration,
         listBucketIntegration: ApiGateway.AwsIntegration
     ) {
-        //Create {folder} API resource to list objects in a given bucket
-        const bucketResource = apiGateway.root.addResource("{folder}")
-        //ListBucket (Objects) method options
-        const listBucketMethodOptions = {
-            authorizationType: AuthorizationType.NONE,
-            requestParameters: {
-                'method.request.path.folder': true
-            },
-            methodResponses: [
-                {
-                    statusCode: '200',
-                    responseParameters: {
-                        'method.response.header.Content-Type': true
-                    }
-                }]
-        }
-
-        bucketResource.addMethod("GET", listBucketIntegration, listBucketMethodOptions)
-
-        bucketResource.addResource("{item}")
-            .addMethod("GET", s3Integration, {
+        apiGateway.root
+            .addResource("assets")
+            .addResource("{folder}")
+            .addResource("{key}")
+            .addMethod("GET", s3BucketIntegration, {
                 authorizationType: AuthorizationType.NONE,
                 methodResponses: [
                     {
@@ -241,23 +252,10 @@ export class AwscdkStack extends cdk.Stack {
                 ],
                 requestParameters: {
                     "method.request.path.folder": true,
-                    "method.request.path.item": true,
+                    "method.request.path.key": true,
                     "method.request.header.Content-Type": true,
                 },
             })
-        apiGateway.root.addMethod("GET", s3ListIntegration, {
-            authorizationType: AuthorizationType.NONE,
-            methodResponses: [
-                {
-                    statusCode: "200",
-                    responseParameters: {
-                        "method.response.header.Content-Type": true,
-                    },
-                },
-            ],
-        })
-
-
     }
 
 }
