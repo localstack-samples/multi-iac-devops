@@ -30,7 +30,7 @@ local-cdktf-test:
 	cd auto_tests && jq '."$(TFSTACK_NAME)"' cdktf-output.json > iac-output.json;
 	make test
 
-local-clean-cdktf:
+local-cdktf-clean:
 	- rm -rf iac/terraform/cdk/terraform.Ls*
 	- rm -rf iac/terraform/cdk/cdktf.out
 

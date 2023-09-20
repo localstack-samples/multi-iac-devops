@@ -11,6 +11,7 @@ import {S3Bucket,} from "@cdktf/provider-aws/lib/s3-bucket"
 import {VpcStack} from "./vpc"
 import * as aws from "@cdktf/provider-aws"
 import * as random from "@cdktf/provider-random"
+import {Vpc} from "./.gen/modules/vpc"
 
 
 (async () => {
@@ -25,6 +26,7 @@ import * as random from "@cdktf/provider-random"
         stageName: string;
         version: string;
         region: string;
+        vpc: Vpc;
     }
 
     class MyStack extends TerraformStack {
@@ -205,7 +207,7 @@ import * as random from "@cdktf/provider-random"
 
 
     const app = new App()
-    new VpcStack(app, "LsMultiEnvVpc.sbx", {
+    const sbxVpc = new VpcStack(app, "LsMultiEnvVpc.sbx", {
         isLocal: false,
         vpcConfigPath: path.resolve("../../../devops-tooling/accounts/my-sb.json"),
         region: "us-east-1",
@@ -220,10 +222,11 @@ import * as random from "@cdktf/provider-random"
         listBucketName: process.env.LIST_BUCKET_NAME || 'lambda-work',
         stageName: "hello-name",
         version: '0.0.1',
-        region: 'us-east-1'
+        region: 'us-east-1',
+        vpc: sbxVpc.vpcOutput
     })
 
-    new VpcStack(app, "LsMultiEnvVpc.local", {
+    const localVpcStack = new VpcStack(app, "LsMultiEnvVpc.local", {
         isLocal: true,
         vpcConfigPath: path.resolve("../../../devops-tooling/accounts/localstack.json"),
         region: "us-east-1",
@@ -238,7 +241,8 @@ import * as random from "@cdktf/provider-random"
         listBucketName: process.env.LIST_BUCKET_NAME || 'lambda-work',
         stageName: "hello-name",
         version: '0.0.1',
-        region: 'us-east-1'
+        region: 'us-east-1',
+        vpc: localVpcStack.vpcOutput
     })
     app.synth()
 })().catch(e => {
