@@ -104,9 +104,9 @@ export class AwscdkStack extends cdk.Stack {
         const apiGateway = this.createAPIGateway()
         const executeRole = this.createExecutionRole(this.bucket)
         this.bucket.grantReadWrite(executeRole)
-        const s3Integration = this.createS3Integration(this.bucket, executeRole)
-        const s3ListIntegration = this.createS3ListIntegration(this.bucket, executeRole)
         const s3ListBucketIntegration = this.createS3ListBucketIntegration(this.bucket, executeRole)
+        const s3ListIntegration = this.createS3ListIntegration(this.bucket, executeRole)
+        const s3Integration = this.createS3Integration(this.bucket, executeRole)
         this.addAssetsEndpoint(apiGateway, s3Integration, s3ListIntegration, s3ListBucketIntegration)
         // Output the RestApiUrl
         new cdk.CfnOutput(this, 'RestApiEndpoint', {
