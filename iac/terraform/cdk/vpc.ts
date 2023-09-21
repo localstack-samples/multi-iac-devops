@@ -1,15 +1,15 @@
-import {Construct} from "constructs";
-import {TerraformStack, Fn, TerraformOutput, S3Backend} from "cdktf";
-import * as aws from "@cdktf/provider-aws";
-import {Vpc} from "./.gen/modules/vpc";
-import {AccountEntity, AccountConfig, VpcConfig, getAccountConfig, getSubnetCidrBlocks} from '../../iac-shared';
+import {Construct} from "constructs"
+import {TerraformStack, Fn, TerraformOutput, S3Backend} from "cdktf"
+import * as aws from "@cdktf/provider-aws"
+import {Vpc} from "./.gen/modules/vpc"
+import {AccountEntity, AccountConfig, VpcConfig, getAccountConfig, getSubnetCidrBlocks} from '../../iac-shared'
 
-import * as random from "@cdktf/provider-random";
-import {AwsProvider} from "@cdktf/provider-aws/lib/provider";
-import {endpoints} from "./ls-endpoints";
+import * as random from "@cdktf/provider-random"
+import {AwsProvider} from "@cdktf/provider-aws/lib/provider"
+import {endpoints} from "./ls-endpoints"
 
-const nameLabel = "Vpc";
-const nameIdentifier = "vpc";
+const nameLabel = "Vpc"
+const nameIdentifier = "vpc"
 
 interface VpcStackConfig {
     isLocal: boolean;
@@ -23,17 +23,9 @@ interface VpcStackConfig {
  * Terraform stack
  */
 export class VpcStack extends TerraformStack {
-    userInput: any;
-    config: VpcStackConfig;
-    vpcOutput: Vpc | {
-        vpcIdOutput: string
-        privateSubnetsOutput: string[]
-        publicSubnetsOutput: string[]
-    };
-    securityGroupOutput: aws.securityGroup.SecurityGroup | {
-        thisSecurityGroupIdOutput: string
-    };
-    iamRole: aws.iamRole.IamRole | {};
+    userInput: any
+    config: VpcStackConfig
+    vpcOutput: Vpc
 
     /**
      * Constructor for the terraform stack
@@ -42,28 +34,19 @@ export class VpcStack extends TerraformStack {
      * @param {string} name
      */
     constructor(scope: Construct, id: string, config: VpcStackConfig) {
-        super(scope, id);
+        super(scope, id)
 
-        this.userInput = {};
-        this.vpcOutput = {
-            vpcIdOutput: '',
-            privateSubnetsOutput: [],
-            publicSubnetsOutput: []
-        };
-        this.securityGroupOutput = {
-            thisSecurityGroupIdOutput: ''
-        };
-        this.iamRole = {};
-        this.config = config;
+        this.userInput = {}
+        this.config = config
 
         // Create NullProvider to run CMD Line
         // new Null.provider.NullProvider(this, 'Null');
-        new random.provider.RandomProvider(this, "random");
+        new random.provider.RandomProvider(this, "random")
 
 
         // define resources here
         if (config.isLocal) {
-            console.log("LocalStack Deploy");
+            console.log("LocalStack Deploy")
             // LocalStack AWS Provider
             new AwsProvider(this, "AWS", {
                 region: config.region,
@@ -71,32 +54,25 @@ export class VpcStack extends TerraformStack {
                 secretKey: 'test',
                 s3UsePathStyle: true,
                 endpoints: endpoints
-            });
+            })
 
 
         } else {
-            console.log("AWS Deploy");
+            console.log("AWS Deploy")
             // AWS Live Deploy
             // Use S3Backend
             new S3Backend(this, {
                 bucket: process.env.TERRAFORM_STATE_BUCKET ?? '',
                 key: id,
                 region: config.region
-            });
+            })
             // Use AWS Provider with no LocalStack overrides
             new AwsProvider(this, "AWS", {
                 region: config.region
-            });
+            })
         }
 
-        this.perform();
-    }
-
-    /**
-     * Main performer of the class.
-     */
-    perform() {
-        this._createVpc();
+        this.vpcOutput = this._createVpc()
     }
 
     /**
@@ -106,39 +82,39 @@ export class VpcStack extends TerraformStack {
      * @private
      */
     _createVpc() {
-        let account: AccountEntity = getAccountConfig(this.config.vpcConfigPath);
-        console.log("account: ", account);
-        let regionConfig = account ? account.regions?.find((item: AccountConfig) => (item.region == this.config.region && item.accountType?.toLowerCase() == this.config.accountType.toLowerCase())) : undefined;
-        console.log("region: ", regionConfig);
+        let account: AccountEntity = getAccountConfig(this.config.vpcConfigPath)
+        console.log("account: ", account)
+        let regionConfig = account ? account.regions?.find((item: AccountConfig) => (item.region == this.config.region && item.accountType?.toLowerCase() == this.config.accountType.toLowerCase())) : undefined
+        console.log("region: ", regionConfig)
 
-        let vpcDef: VpcConfig;
-        vpcDef = regionConfig?.vpcConfig!;
+        let vpcDef: VpcConfig
+        vpcDef = regionConfig?.vpcConfig!
 
         const zones = new aws.dataAwsAvailabilityZones.DataAwsAvailabilityZones(this, 'zones', {
             state: 'available'
-        });
+        })
 
-        let azs: string[] = [];
+        let azs: string[] = []
         for (let i = 0; i < vpcDef.numberOfAvailabilityZones; i++) {
-            let zone = Fn.element(zones.names, i);
+            let zone = Fn.element(zones.names, i)
             new TerraformOutput(this, `zone-${i}`, {
                 value: zone
-            });
-            azs.push(zone);
+            })
+            azs.push(zone)
         }
         const privateSubnetCidrBlocks = getSubnetCidrBlocks(
             vpcDef.cidrBlock,
             vpcDef.numberOfAvailabilityZones,
             8,
             0
-        );
+        )
 
         const publicSubnetCidrBlocks = getSubnetCidrBlocks(
             vpcDef.cidrBlock,
             vpcDef.numberOfAvailabilityZones,
             8,
             vpcDef.numberOfAvailabilityZones
-        );
+        )
 
 
         const vpcOptions = {
@@ -156,15 +132,15 @@ export class VpcStack extends TerraformStack {
             enableNatGateway: true,
             singleNatGateway: true,
             enableDnsHostnames: true
-        };
+        }
 
-        this.vpcOutput = new Vpc(this, nameIdentifier, vpcOptions);
+        const vpc = new Vpc(this, nameIdentifier, vpcOptions)
         new TerraformOutput(this, `publicSubnets`, {
-            value: this.vpcOutput.publicSubnets
-        });
+            value: vpc.publicSubnets
+        })
         new TerraformOutput(this, `privateSubnets`, {
-            value: this.vpcOutput.privateSubnets
-        });
-
+            value: vpc.privateSubnets
+        })
+        return vpc
     }
 }

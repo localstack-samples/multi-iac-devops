@@ -1,12 +1,12 @@
-awscdkbootstrap: iac-shared
+awscdkinstall:
+	cd $(STACK_DIR) && npm install
+#	cd $(STACK_DIR) && $(CDK_CMD) get
+awscdkbootstrap: iac-shared awscdkinstall build
 	cd $(STACK_DIR) && $(CDK_CMD) bootstrap
 awscdkdeploy: iac-shared
 	cd $(STACK_DIR) && $(CDK_CMD) deploy $(TFSTACK_NAME)
 awscdkdestroy: iac-shared
 	cd $(STACK_DIR) && $(CDK_CMD) destroy $(TFSTACK_NAME)
-#awscdkinstall:
-#	cd $(STACK_DIR) && npm install
-#	cd $(STACK_DIR) && $(CDK_CMD) get
 awscdkoutput:
 	@aws cloudformation describe-stacks \
   --stack-name $(TFSTACK_NAME) \
@@ -33,6 +33,10 @@ local-awscdk-test:
 local-awscdk-invoke:
 	@APIGW=$$(make local-awscdk-output | jq -r '.apigwUrl') && \
 	curl "http://$${APIGW}";
+
+local-awscdk-invole-loop:
+	@APIGW=$$(make local-awscdk-output | jq -r '.apigwUrl') && \
+	sh run-lambdas.sh "http://$${APIGW}"
 
 local-awscdk-clean:
 	- rm -rf iac/awscdk/cdk.out
