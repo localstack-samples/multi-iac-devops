@@ -25,7 +25,7 @@ interface VpcStackConfig {
 export class VpcStack extends TerraformStack {
     userInput: any
     config: VpcStackConfig
-    vpcOutput: Vpc
+    vpc: Vpc
 
     /**
      * Constructor for the terraform stack
@@ -55,8 +55,6 @@ export class VpcStack extends TerraformStack {
                 s3UsePathStyle: true,
                 endpoints: endpoints
             })
-
-
         } else {
             console.log("AWS Deploy")
             // AWS Live Deploy
@@ -72,7 +70,7 @@ export class VpcStack extends TerraformStack {
             })
         }
 
-        this.vpcOutput = this._createVpc()
+        this.vpc = this._createVpc()
     }
 
     /**
@@ -134,13 +132,18 @@ export class VpcStack extends TerraformStack {
             enableDnsHostnames: true
         }
 
-        const vpc = new Vpc(this, nameIdentifier, vpcOptions)
+        const vpcLocal = new Vpc(this, nameIdentifier, vpcOptions)
+
+        // new TerraformOutput(this, "privSubnetIds", {
+        //     value: vpc.privateSubnetsOutput,
+        // })
+
         new TerraformOutput(this, `publicSubnets`, {
-            value: vpc.publicSubnets
+            value: vpcLocal.publicSubnets
         })
         new TerraformOutput(this, `privateSubnets`, {
-            value: vpc.privateSubnets
+            value: vpcLocal.privateSubnets
         })
-        return vpc
+        return vpcLocal
     }
 }

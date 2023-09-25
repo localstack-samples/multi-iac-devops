@@ -1,5 +1,7 @@
+# Add --ignore-missing-stack-dependencies. Waiting for issue below to be fixed.
+# https://github.com/hashicorp/terraform-cdk/issues/2976
 cdktfdeploy: iac-shared
-	cd $(STACK_DIR) && cdktf deploy $(TFSTACK_NAME)
+	cd $(STACK_DIR) && cdktf deploy $(TFSTACK_NAME) --ignore-missing-stack-dependencies
 cdktfdestroy: iac-shared
 	cd $(STACK_DIR) && cdktf destroy $(TFSTACK_NAME)
 cdktfinstall:
@@ -9,7 +11,7 @@ cdktfoutput:
 	@cd $(STACK_DIR) && cdktf output $(TFSTACK_NAME) $(ARGS)
 
 
-# LocalStack target groups
+# LocalStack make target groups
 local-cdktf-install: cdktfinstall
 # VPC
 local-cdktf-vpc-deploy: build cdktfdeploy
