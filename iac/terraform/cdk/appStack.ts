@@ -220,25 +220,16 @@ export class AppStack extends TerraformStack {
             this,
             "allow_access_from_alb",
             {
+                // See AWS docs here: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
                 statement: [
+                    // Regions available as of August 2022 or later
                     {
                         effect: "Allow",
-                        resources: [`${alblogsBucket.arn}/AWSLogs/${currentAccountId.accountId}/*`],
+                        resources: [`${alblogsBucket.arn}/privlb/AWSLogs/${currentAccountId.accountId}/*`],
                         actions: ["s3:PutObject"],
                         principals: [
                             {
-                                identifiers: [Token.asString(elbSvcAccount.arn)],
-                                type: "AWS",
-                            },
-                        ],
-                    },
-                    {
-                        effect: "Allow",
-                        resources: [`${alblogsBucket.arn}/AWSLogs/${currentAccountId.accountId}/*`],
-                        actions: ["s3:PutObject"],
-                        principals: [
-                            {
-                                identifiers: ["delivery.logs.amazonaws.com"],
+                                identifiers: ["logdelivery.elasticloadbalancing.amazonaws.com"],
                                 type: "Service",
                             },
                         ],
@@ -250,13 +241,26 @@ export class AppStack extends TerraformStack {
                             }
                         ]
                     },
+                    // Regions available before August 2022
                     {
                         effect: "Allow",
-                        resources: [`${alblogsBucket.arn}`],
-                        actions: ["s3:GetBucketAcl"],
+                        resources: [`${alblogsBucket.arn}/privlb/AWSLogs/${currentAccountId.accountId}/*`],
+                        actions: ["s3:PutObject"],
                         principals: [
                             {
-                                identifiers: ["delivery.logs.amazonaws.com"],
+                                identifiers: [Token.asString(elbSvcAccount.arn)],
+                                type: "AWS",
+                            },
+                        ],
+                    },
+                    // Outposts Zones
+                    {
+                        effect: "Allow",
+                        resources: [`${alblogsBucket.arn}/privlb/AWSLogs/${currentAccountId.accountId}/*`],
+                        actions: ["s3:PutObject"],
+                        principals: [
+                            {
+                                identifiers: ["logdelivery.elb.amazonaws.com"],
                                 type: "Service",
                             },
                         ],
@@ -277,7 +281,7 @@ export class AppStack extends TerraformStack {
             accessLogs: {
                 bucket: alblogsBucket.id,
                 enabled: true,
-                // prefix: "priv-lb",
+                prefix: "privlb",
             },
             enableDeletionProtection: true,
             internal: true,
