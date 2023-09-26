@@ -7,7 +7,7 @@ import {JumphostStack} from "./jumphostStack"
 const app = new App()
 const sbxVpc = new VpcStack(app, "LsMultiEnvVpc.sbx", {
     isLocal: false,
-    vpcConfigPath: path.resolve("../../../devops-tooling/accounts/my-sb.json"),
+    vpcConfigPath: path.resolve("../../../" + process.env.SBX_ACCOUNT_CONFIG),
     region: "us-east-1",
     accountType: "sandbox"
 })

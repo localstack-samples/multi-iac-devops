@@ -33,6 +33,17 @@ make local-cdktf-install
 
 This will deploy a VPC using the configuration in `devops-tooling/accounts`.
 
+Steps
+
+1. In the file `.env-gdc-local` that you created in the Setup instructions in the main README, add an entry
+   for `SBX_ACCOUNT_CONFIG` that points to a file in the `./devops-tooling/accounts` directory named something
+   like `my-sb-yourname.json`. And add this entry to `.env-gdc-local`. Fill in the appropriate values that have
+   placeholders in the `devops-tooling/accounts/my-sb.json` file.
+
+```shell
+export SBX_ACCOUNT_CONFIG=devops-tooling/accounts/my-sb-yourname.json
+```
+
 ```shell
 make local-cdktf-vpc-deploy
 ```
