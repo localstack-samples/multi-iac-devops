@@ -26,6 +26,7 @@ export class VpcStack extends TerraformStack {
     userInput: any
     config: VpcStackConfig
     vpc: Vpc
+    alblogsBucket: aws.s3Bucket.S3Bucket
 
     /**
      * Constructor for the terraform stack
@@ -71,6 +72,11 @@ export class VpcStack extends TerraformStack {
         }
 
         this.vpc = this._createVpc()
+
+        // Create S3 bucket for ALB logs
+        this.alblogsBucket = new aws.s3Bucket.S3Bucket(this, "alblogs", {
+            bucketPrefix: `alblogs`
+        })
     }
 
     /**

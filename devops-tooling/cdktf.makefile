@@ -46,6 +46,11 @@ sbx-cdktf-deploy: build cdktfdeploy
 sbx-cdktf-destroy: cdktfdestroy
 sbx-cdktf-output: cdktfoutput
 
+# Private Jumphost
+sbx-cdktf-jump-deploy: build cdktfdeploy
+sbx-cdktf-jump-destroy: cdktfdestroy
+sbx-cdktf-jump-output: cdktfoutput
+
 sbx-cdktf-invoke:
 	make sbx-cdktf-output ARGS="--outputs-file ../../../cdktf-output.json" && \
 	APIGW=$$(jq -r '."$(TFSTACK_NAME)".apigwUrl' cdktf-output.json) && \

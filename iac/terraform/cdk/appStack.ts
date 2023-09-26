@@ -12,6 +12,11 @@ import {DataAwsIamPolicyDocument} from "@cdktf/provider-aws/lib/data-aws-iam-pol
 import {S3BucketPolicy} from "@cdktf/provider-aws/lib/s3-bucket-policy"
 import {DataAwsElbServiceAccount} from "@cdktf/provider-aws/lib/data-aws-elb-service-account"
 import {DataAwsCallerIdentity} from "@cdktf/provider-aws/lib/data-aws-caller-identity"
+import {LbListener} from "@cdktf/provider-aws/lib/lb-listener"
+import {LbTargetGroup} from "@cdktf/provider-aws/lib/lb-target-group"
+import {LambdaPermission} from "@cdktf/provider-aws/lib/lambda-permission"
+import {LbTargetGroupAttachment} from "@cdktf/provider-aws/lib/lb-target-group-attachment"
+import {SecurityGroup} from "@cdktf/provider-aws/lib/security-group"
 
 export interface MyMultiStackConfig {
     isLocal: boolean;
@@ -24,6 +29,7 @@ export interface MyMultiStackConfig {
     version: string;
     region: string;
     vpc: Vpc;
+    alblogsBucket: aws.s3Bucket.S3Bucket;
 }
 
 export class AppStack extends TerraformStack {
@@ -105,11 +111,24 @@ export class AppStack extends TerraformStack {
             "Version": "2012-10-17",
             "Statement": [
                 {
-                    "Action": ["s3:ListBucket"],
-                    "Sid": "AllowAccessObjectsToS3",
                     "Effect": "Allow",
+                    "Action": ["s3:ListBucket"],
                     "Resource": [`${listBucket.arn}/*`, listBucket.arn],
+                    "Sid": "AllowAccessObjectsToS3",
                 },
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "ec2:DescribeInstances",
+                        "ec2:CreateNetworkInterface",
+                        "ec2:AttachNetworkInterface",
+                        "ec2:DescribeNetworkInterfaces",
+                        "autoscaling:CompleteLifecycleAction",
+                        "ec2:DeleteNetworkInterface"
+                    ],
+                    "Resource": "*",
+                    "Sid": "AllowInVpc",
+                }
             ]
         }
 
@@ -171,6 +190,23 @@ export class AppStack extends TerraformStack {
             environment: {variables: {'BUCKET': listBucket.bucket}},
             role: role.arn
         })
+        // Create Lambda function
+        const lambdaFuncAlb = new aws.lambdaFunction.LambdaFunction(this, "alb-lambda", {
+            functionName: `alb-lambda`,
+            architectures: [arch],
+            s3Bucket: lambdaBucketName,
+            timeout: 15,
+            s3Key: lambdaS3Key,
+            handler: config.handler,
+            runtime: config.runtime,
+            vpcConfig: {
+                subnetIds: Token.asList(this.config.vpc.privateSubnetsOutput),
+                securityGroupIds: [this.config.vpc.defaultSecurityGroupIdOutput]
+            },
+            environment: {variables: {'BUCKET': listBucket.bucket}},
+            role: role.arn
+        })
+
 
         // Create and configure API gateway
         const api = new aws.apigatewayv2Api.Apigatewayv2Api(this, "livedebug", {
@@ -201,21 +237,19 @@ export class AppStack extends TerraformStack {
         })
 
         // Create ALB Solution
-        this.addAlbSolution()
+        this.addAlbSolution(lambdaFuncAlb)
     }
 
 
     //
     // Create an internal Application Load Balancer (ALB) that routes to a Lambda
     //
-    private addAlbSolution() {
-        // Create unique S3 bucket that hosts Lambda executable
-        const alblogsBucket = new aws.s3Bucket.S3Bucket(this, "alblogs", {
-            bucketPrefix: `alblogs`
-        })
+    private addAlbSolution(lambdaFuncAlb: aws.lambdaFunction.LambdaFunction) {
+        // Get the AWS Load Balancer Service account
         const elbSvcAccount = new DataAwsElbServiceAccount(this, "elbSvcAccount", {})
-
+        // Get the current AWS account
         const currentAccountId = new DataAwsCallerIdentity(this, "currentAccount", {})
+        // Allow ALB to put objects into the S3 logging bucket. There are 3 types of policy statements to use here. See below.
         const allowAlbBucketLogAccess = new DataAwsIamPolicyDocument(
             this,
             "allow_access_from_alb",
@@ -225,7 +259,7 @@ export class AppStack extends TerraformStack {
                     // Regions available as of August 2022 or later
                     {
                         effect: "Allow",
-                        resources: [`${alblogsBucket.arn}/privlb/AWSLogs/${currentAccountId.accountId}/*`],
+                        resources: [`${this.config.alblogsBucket.arn}/privlb/AWSLogs/${currentAccountId.accountId}/*`],
                         actions: ["s3:PutObject"],
                         principals: [
                             {
@@ -244,7 +278,7 @@ export class AppStack extends TerraformStack {
                     // Regions available before August 2022
                     {
                         effect: "Allow",
-                        resources: [`${alblogsBucket.arn}/privlb/AWSLogs/${currentAccountId.accountId}/*`],
+                        resources: [`${this.config.alblogsBucket.arn}/privlb/AWSLogs/${currentAccountId.accountId}/*`],
                         actions: ["s3:PutObject"],
                         principals: [
                             {
@@ -256,7 +290,7 @@ export class AppStack extends TerraformStack {
                     // Outposts Zones
                     {
                         effect: "Allow",
-                        resources: [`${alblogsBucket.arn}/privlb/AWSLogs/${currentAccountId.accountId}/*`],
+                        resources: [`${this.config.alblogsBucket.arn}/privlb/AWSLogs/${currentAccountId.accountId}/*`],
                         actions: ["s3:PutObject"],
                         principals: [
                             {
@@ -268,32 +302,88 @@ export class AppStack extends TerraformStack {
                 ],
             }
         )
+        // Attach ALB log access policy to S3 logging bucket
         const awsS3BucketPolicyAllowAccessFromAlb = new S3BucketPolicy(
             this,
-            "allow_access_from_another_account_2",
+            "allow-alb-s3-log-policy",
             {
-                bucket: alblogsBucket.id,
+                bucket: this.config.alblogsBucket.id,
                 policy: Token.asString(allowAlbBucketLogAccess.json),
             }
         )
-
+        // Allow port 80 from private subnets inbound to ALB
+        const privAlbSg = new SecurityGroup(this, "ec2sb", {
+            ingress: [
+                {
+                    cidrBlocks: [this.config.vpc.cidr || '10.42.0.0/16'],
+                    fromPort: 80,
+                    ipv6CidrBlocks: ["::/0"],
+                    protocol: "TCP",
+                    toPort: 80,
+                },
+            ],
+            egress: [
+                {
+                    cidrBlocks: ["0.0.0.0/0"],
+                    fromPort: 0,
+                    ipv6CidrBlocks: ["::/0"],
+                    protocol: "-1",
+                    toPort: 0,
+                },
+            ],
+            vpcId: this.config.vpc.vpcIdOutput
+        })
+        // Create private Application Load Balancer (ALB)
         const privAlb = new Lb(this, "priv-alb", {
             accessLogs: {
-                bucket: alblogsBucket.id,
+                bucket: this.config.alblogsBucket.id,
                 enabled: true,
                 prefix: "privlb",
             },
-            enableDeletionProtection: true,
+            enableDeletionProtection: false,
             internal: true,
             loadBalancerType: "application",
             name: "priv-lb",
-            securityGroups: [this.config.vpc.defaultSecurityGroupIdOutput],
+            securityGroups: [privAlbSg.id],
             subnets: Token.asList(this.config.vpc.privateSubnetsOutput),
             tags: {
                 Environment: "dev",
             },
         })
-
+        // Create ALB Target Group for Lambda
+        const awsLbTargetGroupFrontEnd = new LbTargetGroup(this, "alb-tgroup",
+            {
+                targetType: "lambda"
+            })
+        // Create ALB listener and set the default action to hit the Lambda Target Group
+        const awsLbListenerFrontEnd = new LbListener(this, "alb-listener", {
+            defaultAction: [
+                {
+                    targetGroupArn: Token.asString(awsLbTargetGroupFrontEnd.arn),
+                    type: "forward",
+                },
+            ],
+            loadBalancerArn: privAlb.arn,
+            port: Token.asNumber("80")
+        })
+        // All the ALB to invoke the Lambda
+        const albInvokePerm = new LambdaPermission(this, "alb-invoke-func-perm", {
+            action: "lambda:InvokeFunction",
+            functionName: lambdaFuncAlb.functionName,
+            principal: "elasticloadbalancing.amazonaws.com",
+            sourceArn: Token.asString(awsLbTargetGroupFrontEnd.arn),
+            statementId: "AllowExecutionFromlb",
+        })
+        // TargetGroupAttachment of TargetGroup to Lambda
+        const awsLbTargetGroupAttachmentTest = new LbTargetGroupAttachment(
+            this,
+            "alb-tgroup-attch",
+            {
+                dependsOn: [albInvokePerm],
+                targetGroupArn: Token.asString(awsLbTargetGroupFrontEnd.arn),
+                targetId: lambdaFuncAlb.arn,
+            }
+        )
 
         new TerraformOutput(this, "privAlbDnsName", {
             value: privAlb.dnsName,

@@ -2,6 +2,7 @@ import {App} from "cdktf"
 import * as path from 'path'
 import {VpcStack} from "./vpc"
 import {AppStack} from "./appStack"
+import {JumphostStack} from "./jumphostStack"
 
 const app = new App()
 const sbxVpc = new VpcStack(app, "LsMultiEnvVpc.sbx", {
@@ -20,7 +21,16 @@ new AppStack(app, "LsMultiEnvApp.sbx", {
     stageName: "hello-name",
     version: '0.0.1',
     region: 'us-east-1',
-    vpc: sbxVpc.vpc
+    vpc: sbxVpc.vpc,
+    alblogsBucket: sbxVpc.alblogsBucket
+})
+
+new JumphostStack(app, "LsMultiEnvJump.sbx", {
+    isLocal: false,
+    environment: 'sbx',
+    region: 'us-east-1',
+    instanceType: 't2.micro',
+    vpc: sbxVpc.vpc,
 })
 
 const localVpcStack = new VpcStack(app, "LsMultiEnvVpc.local", {
@@ -39,6 +49,7 @@ new AppStack(app, "LsMultiEnvApp.local", {
     stageName: "hello-name",
     version: '0.0.1',
     region: 'us-east-1',
-    vpc: localVpcStack.vpc
+    vpc: localVpcStack.vpc,
+    alblogsBucket: localVpcStack.alblogsBucket
 })
 app.synth()

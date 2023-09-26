@@ -78,6 +78,7 @@ sbx%: export CDK_CMD=cdk
 sbx-cdktf%: export STACK_DIR=iac/terraform/cdk
 sbx-cdktf%: export TFSTACK_NAME=LsMultiEnvApp.$(STACK_SUFFIX)
 sbx-cdktf-vpc%: export TFSTACK_NAME=LsMultiEnvVpc.$(STACK_SUFFIX)
+sbx-cdktf-jump%: export TFSTACK_NAME=LsMultiEnvJump.$(STACK_SUFFIX)
 
 sbx-awscdk%: export STACK_DIR=iac/awscdk
 sbx-awscdk%: export TFSTACK_NAME=LsMultiEnvApp-$(STACK_SUFFIX)
