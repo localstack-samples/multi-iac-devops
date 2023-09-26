@@ -4,6 +4,23 @@ The AWS CDK code can be found in `./iac/awscdk`. The CDK App definition
 that defines all of the Stacks is located in `./iac/awscdk/bin/awscdk.ts`.
 The App instantiates the Stacks defined in `./iac/awscdk/lib/awscdk-stacks.ts`.
 
+### Overview of AWS CDK Pipeline make targets
+
+Follow instructions in the READMEs.
+
+- make local-awscdk-bootstrap
+- make local-awscdk-deploy
+- make local-awscdk-invoke
+- make local-awscdk-invoke-loop
+- make local-awscdk-test
+- make local-awscdk-clean
+
+**AWS targets**
+
+- make sbx-awscdk-bootstrap
+- make sbx-awscdk-deploy
+- make sbx-awscdk-clean
+
 ## Prerequisites
 
 Follow the prerequisites in the main [README](../README.md).

@@ -1,5 +1,26 @@
 # Terraform CDK IaC Instructions
 
+### Overview of Terraform CDK Pipeline make targets
+
+Follow instructions in the READMEs.
+
+- make local-cdktf-install
+- make local-cdktf-vpc-deploy
+- make local-cdktf-deploy
+- make local-cdktf-test
+- make local-cdktf-invoke
+- make local-cdktf-clean
+
+**AWS targets**
+
+- make sbx-cdktf-install
+- make sbx-cdktf-vpc-deploy
+- make sbx-cdktf-deploy
+- make sbx-cdktf-jump-deploy (deploy jumphost in private VPC subnet)
+- make sbx-cdktf-jump-destroy
+- make sbx-cdktf-destroy
+- make sbx-cdktf-vpc-destroy
+
 ### Install CDKTF packages
 
 You need to do this initially, and if you manually add packages to `iac/terraform/cdk/package.json`
