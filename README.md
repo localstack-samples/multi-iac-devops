@@ -13,13 +13,20 @@ The purpose of this sample is to
 
 Features deploying an HTTP API Gateway, Lambda, as well as S3 and other resources.
 
-![Basic Solution](./docs/img/solution-diags-overview.drawio.png "Basic Solution")
+![APIGW Solution](./docs/img/solution-diags-overview.drawio.png "APIGW Solution")
 
 ## Multi-IaC DevOps Private Application Load Balancer to Lambda Solution
 
 Features deploying a VPC, Private Application Load Balancer (ALB), and Lambda.
 
-![Basic Solution](./docs/img/solution-diags-priv-alb.drawio.png "Basic Solution")
+![ALB Solution](./docs/img/solution-diags-priv-alb.drawio.png "ALB Solution")
+
+## Private Jumphost on Private VPC Subnet Solution
+
+Features using private jumphost in private VPC for secure access to protected resources.
+This jumphost does not have a public IP and does not allow any inbound network traffic.
+
+![Private ALB Solution](./docs/img/solution-diags-priv-jumphost.drawio.png "Private ALB Solution")
 
 ## Cloud Infrastructure, Platform, Solution Layers
 

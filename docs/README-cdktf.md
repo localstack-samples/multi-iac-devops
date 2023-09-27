@@ -33,17 +33,6 @@ make local-cdktf-install
 
 This will deploy a VPC using the configuration in `devops-tooling/accounts`.
 
-Steps
-
-1. In the file `.env-gdc-local` that you created in the Setup instructions in the main README, add an entry
-   for `SBX_ACCOUNT_CONFIG` that points to a file in the `./devops-tooling/accounts` directory named something
-   like `my-sb-yourname.json`. And add this entry to `.env-gdc-local`. Fill in the appropriate values that have
-   placeholders in the `devops-tooling/accounts/my-sb.json` file.
-
-```shell
-export SBX_ACCOUNT_CONFIG=devops-tooling/accounts/my-sb-yourname.json
-```
-
 ```shell
 make local-cdktf-vpc-deploy
 ```
@@ -127,8 +116,16 @@ sbx%: export PULUMI_BACKEND_URL=s3://$(TERRAFORM_STATE_BUCKET)
 
 ### Create VPC Config for Sandbox
 
-Create a file `./devops-tooling/accounts/my-sb.json`.
-Configure a Sandbox VPC. Change the CIDR block to your preferences.
+1. In the file `.env-gdc-local` that you created in the Setup instructions in the main README, add an entry
+   for `SBX_ACCOUNT_CONFIG` that points to a file in the `./devops-tooling/accounts` directory named something
+   like `my-sb-yourname.json`. And add this entry to `.env-gdc-local`. Fill in the appropriate values that have
+   placeholders in the `devops-tooling/accounts/my-sb.json` file.
+
+```shell
+export SBX_ACCOUNT_CONFIG=devops-tooling/accounts/my-sb-yourname.json
+```
+
+Configure a Sandbox VPC in `my-sb-yourname.json`. Change the CIDR block to your preferences.
 
 ```json
 {
@@ -165,6 +162,25 @@ This will deploy the resources.
 
 ```shell
 make sbx-cdktf-deploy
+```
+
+### Deploy Jumphost to Private VPC
+
+```shell
+make sbx-cdktf-jump-deploy
+```
+
+This will output the EC2 ID. You can connect to this EC2 instance by
+
+1. Install the AWS Systems Manager
+   Plugin [https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html]
+2. Clone the GDC to get the `ssm-ssh.sh` script. [https://gitlab.com/probello/generic-dev-container]
+3. Use this script to login to the EC2 instance like
+   this [https://gitlab.com/probello/generic-dev-container/-/blob/main/root/bin/aws/ssm-ssh.sh?ref_type=heads]
+
+```shell
+# Get AWS credentials
+ssm-ssh.sh <ec2 instance id>
 ```
 
 ### Invoke the Lambda in AWS
