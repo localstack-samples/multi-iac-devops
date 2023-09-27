@@ -1,0 +1,17 @@
+{
+  "accountNum": "<your account num>",
+  "accountName": "<your account name - myacct>",
+  "description": "<your account descriptoin>",
+  "regions": [
+    {
+      "region": "us-east",
+      "accountType": "sandbox",
+      "vpcName": "<name of your vpc - myvpc>",
+      "vpcConfig": {
+        "cidrBlock": "<A network CIDR for your VPC - 10.42.0.0/16>",
+        "numberOfAvailabilityZones": 4,
+        "subnetCidrMask": 20
+      }
+    }
+  ]
+}

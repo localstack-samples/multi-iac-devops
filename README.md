@@ -9,9 +9,24 @@ The purpose of this sample is to
 4. Demonstrate integration tests running against solutions deployed to LocalStack
 5. Demonstrate Typescript Lambda Hot Reloading in LocalStack
 
-## Multi-IaC DevOps Solution
+## Multi-IaC DevOps APIGW Lambda Solution
 
-![Basic Solution](./docs/img/solution-diags-overview.drawio.png "Basic Solution")
+Features deploying an HTTP API Gateway, Lambda, as well as S3 and other resources.
+
+![APIGW Solution](./docs/img/solution-diags-overview.drawio.png "APIGW Solution")
+
+## Multi-IaC DevOps Private Application Load Balancer to Lambda Solution
+
+Features deploying a VPC, Private Application Load Balancer (ALB), and Lambda.
+
+![ALB Solution](./docs/img/solution-diags-priv-alb.drawio.png "ALB Solution")
+
+## Private Jumphost on Private VPC Subnet Solution
+
+Features using private jumphost in private VPC for secure access to protected resources.
+This jumphost does not have a public IP and does not allow any inbound network traffic.
+
+![Private ALB Solution](./docs/img/solution-diags-priv-jumphost.drawio.png "Private ALB Solution")
 
 ## Cloud Infrastructure, Platform, Solution Layers
 

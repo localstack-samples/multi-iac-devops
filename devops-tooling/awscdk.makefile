@@ -34,7 +34,7 @@ local-awscdk-invoke:
 	@APIGW=$$(make local-awscdk-output | jq -r '.apigwUrl') && \
 	curl "http://$${APIGW}";
 
-local-awscdk-invole-loop:
+local-awscdk-invoke-loop:
 	@APIGW=$$(make local-awscdk-output | jq -r '.apigwUrl') && \
 	sh run-lambdas.sh "http://$${APIGW}"
 
