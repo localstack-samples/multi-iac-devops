@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 APP_ROOT=$(git rev-parse --show-toplevel)
 
-for i in {1..20}
+for i in {1..15}
 do
   echo $1?name=$i
   curl --request GET \
