@@ -12,6 +12,16 @@
         "numberOfAvailabilityZones": 4,
         "subnetCidrMask": 20
       }
+    },
+    {
+      "region": "us-gov-west-1",
+      "accountType": "LOCALSTACK",
+      "vpcName": "lstack",
+      "vpcConfig": {
+        "cidrBlock": "10.11.0.0/16",
+        "numberOfAvailabilityZones": 4,
+        "subnetCidrMask": 20
+      }
     }
   ]
 }
