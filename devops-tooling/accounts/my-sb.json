@@ -4,7 +4,7 @@
   "description": "<your account descriptoin>",
   "regions": [
     {
-      "region": "us-east",
+      "region": "us-east-1",
       "accountType": "sandbox",
       "vpcName": "<name of your vpc - myvpc>",
       "vpcConfig": {
