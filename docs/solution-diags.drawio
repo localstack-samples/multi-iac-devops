@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-09-27T00:25:05.862Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" etag="sFmF9PRpfGlGSjVEB8bY" version="21.6.8" type="device" pages="4">
+<mxfile host="app.diagrams.net" modified="2023-09-27T17:12:10.138Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" etag="0srbeYonMK-KpWpaYWky" version="21.6.8" type="device" pages="4">
   <diagram name="overview" id="eGIVmkXGgqs6RdcAJEvl">
     <mxGraphModel dx="943" dy="686" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -312,8 +312,14 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="hnauVcB1f5iucrUiOYLP-29" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=2;" edge="1" parent="hnauVcB1f5iucrUiOYLP-1" source="hnauVcB1f5iucrUiOYLP-30" target="hnauVcB1f5iucrUiOYLP-10">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="hnauVcB1f5iucrUiOYLP-29" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=2;exitX=0.855;exitY=0.145;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="hnauVcB1f5iucrUiOYLP-1" source="hnauVcB1f5iucrUiOYLP-30" target="hnauVcB1f5iucrUiOYLP-10">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="136" y="280" />
+              <mxPoint x="188" y="280" />
+              <mxPoint x="188" y="209" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="hnauVcB1f5iucrUiOYLP-30" value="&lt;b&gt;Private Application&lt;br&gt;Load Balancer&lt;/b&gt;" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.application_load_balancer;fillColor=#F58534;gradientColor=none;" vertex="1" parent="hnauVcB1f5iucrUiOYLP-1">
           <mxGeometry x="76.52000000000004" y="280" width="69" height="72" as="geometry" />

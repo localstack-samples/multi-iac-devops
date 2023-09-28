@@ -1,0 +1,14 @@
+FROM public.ecr.aws/lambda/nodejs:18
+
+ENV HOME_DIR=/usr/local/layer
+RUN yum install -y zip
+RUN mkdir -p ${HOME_DIR}
+WORKDIR ${HOME_DIR}
+
+COPY package.json .
+
+RUN mkdir -p ./nodejs/node18/
+RUN npm install
+RUN mv node_modules ./nodejs/node18
+
+RUN zip -rq layer.zip ./nodejs
