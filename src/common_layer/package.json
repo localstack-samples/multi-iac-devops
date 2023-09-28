@@ -1,0 +1,7 @@
+{
+  "name": "layer",
+  "dependencies": {
+    "cdktf": "^0.18.0",
+    "constructs": "^10.2.70"
+  }
+}

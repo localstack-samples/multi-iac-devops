@@ -33,6 +33,7 @@ iac-shared:
 build:
 	cd src/lambda-hello-name && npm install
 	cd src/lambda-hello-name && npm run build
+	cd src/common_layer && make
 
 # Hot reloading watching to run build
 watch-lambda:

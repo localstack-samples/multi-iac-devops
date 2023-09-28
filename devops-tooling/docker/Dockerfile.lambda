@@ -1,0 +1,38 @@
+FROM public.ecr.aws/lambda/python:3.10
+
+ENV LAMBDA_HOME=/usr/local/lhome
+ARG HANDLER_NAME=handler
+RUN yum install -y zip
+RUN mkdir -p ${LAMBDA_HOME}/dist
+WORKDIR ${LAMBDA_HOME}/dist
+#
+# Only do this if you have requirements.txt
+#
+COPY src/requirements.tx[t] .
+
+RUN  if test -e requirements.txt; \
+     then \
+        pip install --target ${LAMBDA_HOME}/package2 \
+            --implementation cp \
+            --only-binary=:all: \
+            --upgrade \
+            -r requirements.txt; \
+     fi
+
+# Some dependencies bring boto3 in but the Lambda runtimes includes it already, so delete it from the Lambda zipfile
+RUN rm -rf ${LAMBDA_HOME}/package2/boto*
+RUN rm -rf ${LAMBDA_HOME}/package2/simplejson/tests*
+RUN rm -rf ${LAMBDA_HOME}/dist/requirements.txt
+
+
+WORKDIR $LAMBDA_HOME
+COPY src dist
+
+WORKDIR ${LAMBDA_HOME}/dist
+RUN zip  -r ../${HANDLER_NAME}.zip * -x "*.txt"
+
+WORKDIR ${LAMBDA_HOME}
+RUN if test -e package2; \
+    then \
+      cd package2 && zip -ur ../${HANDLER_NAME}.zip .; \
+    fi

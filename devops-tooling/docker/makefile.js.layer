@@ -1,0 +1,44 @@
+.PHONY: nochange save-checksum build prepare assemble package clean
+
+OLD_CKSUM := $(shell cat checksum 2>/dev/null)
+
+ifeq ("$(OLD_CKSUM)","$(NEW_CKSUM)")
+CKSUM_VALID := true
+else
+CKSUM_VALID := false
+endif
+
+ifneq ("$(shell ls *.zip 2>/dev/null | wc -l)","1")
+CKSUM_VALID := false
+endif
+
+ifeq ("$(CKSUM_VALID)", "false")
+build: clean prepare assemble package save-checksum
+else
+build: nochange
+endif
+
+nochange:
+	@echo "zips are already up to date"
+
+save-checksum:
+	@echo "$(NEW_CKSUM)" > checksum
+	rm -f ./Dockerfile
+
+prepare:
+	cp ../../devops-tooling/docker/Dockerfile.js.layer ./Dockerfile
+	mkdir -p build/lib
+
+package:
+	docker build --progress=plain -t $${PWD##*/} .
+	docker create -it --name $${PWD##*/} $${PWD##*/} bash
+	docker cp $${PWD##*/}:/usr/local/layer/layer.zip ./$${PWD##*/}.zip
+	docker rm -f $${PWD##*/}
+	docker image rm -f $${PWD##*/}
+	rm ./Dockerfile
+
+clean:
+	cp ../../devops-tooling/docker/Dockerfile.js.layer ./Dockerfile
+	docker rm -f $${PWD##*/}
+	rm -rf $${PWD##*/}.zip
+	rm -rf build

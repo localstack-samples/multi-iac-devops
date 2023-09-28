@@ -17,6 +17,7 @@ import {LbTargetGroup} from "@cdktf/provider-aws/lib/lb-target-group"
 import {LambdaPermission} from "@cdktf/provider-aws/lib/lambda-permission"
 import {LbTargetGroupAttachment} from "@cdktf/provider-aws/lib/lb-target-group-attachment"
 import {SecurityGroup} from "@cdktf/provider-aws/lib/security-group"
+import {LambdaLayerVersion} from "@cdktf/provider-aws/lib/lambda-layer-version"
 
 export interface MyMultiStackConfig {
     isLocal: boolean;
@@ -190,6 +191,13 @@ export class AppStack extends TerraformStack {
             environment: {variables: {'BUCKET': listBucket.bucket}},
             role: role.arn
         })
+
+        const layer =
+            new LambdaLayerVersion(this, "lambda_layer", {
+                compatibleRuntimes: ["nodejs18.x"],
+                filename: path.resolve("../../../src/common_layer/common_layer.zip"),
+                layerName: "common_layer_name",
+            })
         // Create Lambda function
         const lambdaFuncAlb = new aws.lambdaFunction.LambdaFunction(this, "alb-lambda", {
             functionName: `alb-lambda`,
@@ -199,6 +207,7 @@ export class AppStack extends TerraformStack {
             s3Key: lambdaS3Key,
             handler: config.handler,
             runtime: config.runtime,
+            layers: [layer.arn],
             vpcConfig: {
                 subnetIds: Token.asList(this.config.vpc.privateSubnetsOutput),
                 securityGroupIds: [this.config.vpc.defaultSecurityGroupIdOutput]
