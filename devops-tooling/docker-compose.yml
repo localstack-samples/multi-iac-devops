@@ -11,7 +11,6 @@ services:
       - "4571:4571"            # elasticsearch service
     environment:
       - DEBUG=1 # turn debug output on
-      - EXTENSION_AUTO_INSTALL=localstack-extension-outages
       - ENFORCE_IAM=${ENFORCE_IAM-1} # Enable IAM policy evaluation and enforcement
       - LAMBDA_RUNTIME_ENVIRONMENT_TIMEOUT=90
       - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY-}
