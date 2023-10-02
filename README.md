@@ -26,7 +26,7 @@ Features deploying a VPC, Private Application Load Balancer (ALB), and Lambda.
 Features using private jumphost in private VPC for secure access to protected resources.
 This jumphost does not have a public IP and does not allow any inbound network traffic.
 
-![Private ALB Solution](./docs/img/solution-diags-priv-jumphost.drawio.png "Private ALB Solution")
+![Private Jumphost Solution](./docs/img/solution-diags-priv-jumphost.drawio.png "Private Jumphost Solution")
 
 ## Cloud Infrastructure, Platform, Solution Layers
 

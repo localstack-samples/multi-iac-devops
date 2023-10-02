@@ -10,6 +10,10 @@ PROJECT_MODULE_NAME = ./src/lambda-hello-name/src/
 -include ./devops-tooling/cdktf.makefile
 -include ./devops-tooling/awscdk.makefile
 
+# Some defaults
+export SBX_ACCOUNT_CONFIG?=devops-tooling/accounts/my-sb.json
+export ENFORCE_IAM?=1
+
 .PHONY: clean update-deps delete-zips iac-shared local-top-level
 
 PKG_SUB_DIRS := $(dir $(shell find . -type d -name node_modules -prune -o -type d -name "venv*" -prune -o -type f -name package.json -print))
