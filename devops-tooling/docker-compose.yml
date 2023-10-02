@@ -13,6 +13,7 @@ services:
       - DEBUG=1 # turn debug output on
       - ENFORCE_IAM=${ENFORCE_IAM-1} # Enable IAM policy evaluation and enforcement
       - LAMBDA_RUNTIME_ENVIRONMENT_TIMEOUT=90
+      - PERSIST_ALL=false
       - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY-}
       - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN-}
     volumes:

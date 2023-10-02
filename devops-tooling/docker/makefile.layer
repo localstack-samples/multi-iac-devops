@@ -30,7 +30,10 @@ prepare:
 	mkdir -p build/lib
 
 package:
-	docker build --progress=plain -t $${PWD##*/} .
+	docker build --platform $(DOCKER_PLATFORM) \
+	--build-arg "VERSION=3.11-$(DOCKER_ARCH)" \
+	--build-arg "PIP_PLATFORM=$(PIP_PLATFORM)" \
+	-t $${PWD##*/} .
 	docker create -it --name $${PWD##*/} $${PWD##*/} bash
 	docker cp $${PWD##*/}:/usr/local/layer/layer.zip ./$${PWD##*/}.zip
 	docker rm -f $${PWD##*/}

@@ -3,7 +3,7 @@
 cdktfdeploy: iac-shared
 	cd $(STACK_DIR) && cdktf deploy $(TFSTACK_NAME) --ignore-missing-stack-dependencies
 cdktfdestroy: iac-shared
-	cd $(STACK_DIR) && cdktf destroy $(TFSTACK_NAME)
+	cd $(STACK_DIR) && cdktf destroy $(TFSTACK_NAME) --ignore-missing-stack-dependencies
 cdktfinstall:
 	cd $(STACK_DIR) && npm install
 	cd $(STACK_DIR) && cdktf get
