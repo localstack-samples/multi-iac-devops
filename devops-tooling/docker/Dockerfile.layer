@@ -1,25 +1,37 @@
-FROM public.ecr.aws/lambda/python:3.10
+# Use an official Python runtime as a parent image
+ARG VERSION=3.11-arm64
+FROM public.ecr.aws/lambda/python:${VERSION}
+
+RUN --mount=type=cache,target=/var/cache/yum \
+    yum makecache && \
+    yum update && yum install zip -y
 
 ENV HOME_DIR=/usr/local/layer
-RUN yum install -y zip
-RUN mkdir -p ${HOME_DIR}
+RUN mkdir -p ${HOME_DIR}/requirements
 WORKDIR ${HOME_DIR}
+#
+# We only want to copy src/requirements.txt when it exists.
+# There has to be at least one file in the src dir
+#
+COPY src/* requirements/
 
-COPY src/requirements.tx[t] .
-
-RUN  if test -e requirements.txt; \
+ARG PIP_PLATFORM=manylinux2014_aarch64
+RUN  if test -e requirements/requirements.txt; \
      then \
         pip install --target ${HOME_DIR}/python \
+            --platform ${PIP_PLATFORM} \
             --implementation cp \
             --only-binary=:all: \
             --upgrade \
-            -r requirements.txt; \
+            -r requirements/requirements.txt; \
      fi
 
-# Some dependencies bring boto3 in but the Lambda runtimes includes it already, so delete it from the Lambda zipfile
+# Some dependencies bring boto3 in but the Lambda runtimes includes it already,
+# so delete it from the Lambda zipfile
 RUN rm -rf ${HOME_DIR}/python/boto*
 RUN rm -rf ${HOME_DIR}/python/simplejson/tests*
-RUN rm -rf ${HOME_DIR}/requirements.txt
+# Remove the requirements dir
+RUN rm -rf ${HOME_DIR}/requirements
 
 COPY build/lib ./python/lib
-RUN zip -rq layer.zip ./ -x "*.txt"
+RUN zip -rq layer.zip ./ -x "*.txt" -x "*_pycache_*"
