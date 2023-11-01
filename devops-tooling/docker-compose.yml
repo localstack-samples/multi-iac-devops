@@ -12,9 +12,11 @@ services:
     environment:
       - DEBUG=1 # turn debug output on
       - ENFORCE_IAM=${ENFORCE_IAM-1} # Enable IAM policy evaluation and enforcement
+      - EXTENSION_AUTO_INSTALL=localstack-extension-outages
       - LAMBDA_RUNTIME_ENVIRONMENT_TIMEOUT=90
       - PERSIST_ALL=false
       - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY-}
       - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN-}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock  # Mount the Docker socket into the container
+      - ${LOCALSTACK_VOLUME_DIR:-./ls_volume}:/var/lib/localstack
