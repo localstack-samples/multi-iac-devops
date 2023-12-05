@@ -27,15 +27,15 @@ local-awscdk-destroy: awscdkdestroy
 local-awscdk-output: awscdkoutput
 
 local-awscdk-test:
-	make local-awscdk-output > auto_tests/iac-output.json;
+	@$(MAKE) local-awscdk-output > auto_tests/iac-output.json;
 	make test
 
 local-awscdk-invoke:
-	@APIGW=$$(make local-awscdk-output | jq -r '.apigwUrl') && \
+	@APIGW=$$($(MAKE) --silent local-awscdk-output | jq -r '.apigwUrl') && \
 	curl "http://$${APIGW}";
 
 local-awscdk-invoke-loop:
-	@APIGW=$$(make local-awscdk-output | jq -r '.apigwUrl') && \
+	@APIGW=$$($(MAKE) --silent local-awscdk-output | jq -r '.apigwUrl') && \
 	sh run-lambdas.sh "http://$${APIGW}"
 
 local-awscdk-clean:
