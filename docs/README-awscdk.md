@@ -104,6 +104,12 @@ However you set your credentials in your terminal, do it now.
 
 ### Deploy the AWS CDK IaC App Stack
 
+Run the CDK bootstrap:
+
+```shell
+make sbx-awscdk-bootstrap
+```
+
 This will deploy the resources.
 
 ```shell

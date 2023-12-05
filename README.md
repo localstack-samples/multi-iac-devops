@@ -42,23 +42,37 @@ To deploy your infrastructure, follow the steps below.
 
 ### Prerequisites
 
-1. [Install LATEST AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-2. [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
-3. [Install JQ](https://jqlang.github.io/jq/download/)
-4. Install Node Version Manager (NVM)
-   https://github.com/nvm-sh/nvm#installing-and-updating
-5. Select Node version 18
+
+1. [Install unzip](https://www.tecmint.com/install-zip-and-unzip-in-linux/)
+
+2. [Install LATEST AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+
+3. [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+
+4. [Install JQ](https://jqlang.github.io/jq/download/)
+
+5. [Install Docker](https://docs.docker.com/engine/install/)
+
+6. [Install Node Version Manager (NVM)](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+7. Select Node version 18
 
 ```shell
 nvm install 18
 ```
 
-6. Install Terraform CDK
+8. Install Terraform CDK
    Install cdktf in the node 18 version you just installed in step (4).
 
 ```shell
 npm install --global cdktf-cli@latest
 ```
+
+9. Install `make`, `gcc`, `g++`, etc. For MacOS, run `brew install make gcc openssl readline sqlite3 xz` and for Ubuntu machines run `apt install build-essential libbz2-dev libssl-dev libreadline-dev libffi-dev zlib1g-dev libsqlite3-dev liblzma-dev`.
+
+10. Install `zlib1g-dev`. For MacOS, run `xcode-select --install` and for Ubuntu machines run `apt install zlib1g-dev`.
+
+11. [Install Pyenv](https://github.com/pyenv/pyenv#installation). Make sure the [prerequisites](https://github.com/pyenv/pyenv/wiki/Common-build-problems#prerequisites) are also there.
 
 ### Steps
 
@@ -71,7 +85,7 @@ From the working directory:
       export LOCALSTACK_API_KEY=<your key>
       ```
 
-2. Start LocalStack
+2. Start LocalStack.
 
       ```bash
       make start-localstack
@@ -79,7 +93,7 @@ From the working directory:
 
 ![Start LocalStack](./docs/img/start-localstack.png "Start LocalStack")
 
-3. Setup an AWS_PROFILE for LocalStack
+3. Setup an AWS_PROFILE for LocalStack.
 
 #### Add this to your `~/.aws/config` file
 
@@ -96,6 +110,16 @@ endpoint_url = http://localhost:4566
 [localstack]
 aws_access_key_id=test
 aws_secret_access_key=test
+```
+
+4. Setup the virtual Python environment.
+
+```sh
+pyenv install 3.10.0 && \
+   pyenv local 3.10.0 && \
+   python -m venv .venv && \
+   . .venv/bin/activate && \
+   pip install -r devops-tooling/requirements.txt
 ```
 
 # IaC Pipelines
