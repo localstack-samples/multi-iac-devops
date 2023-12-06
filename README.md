@@ -65,7 +65,7 @@ nvm install 18
    Install cdktf in the node 18 version you just installed in step (4).
 
 ```shell
-npm install --global cdktf-cli@latest
+npm install --global cdktf-cli@^0.18.0
 ```
 
 9. Install `make`, `gcc`, `g++`, etc. For MacOS, run `brew install make gcc openssl readline sqlite3 xz` and for Ubuntu machines run `apt install build-essential libbz2-dev libssl-dev libreadline-dev libffi-dev zlib1g-dev libsqlite3-dev liblzma-dev`.
