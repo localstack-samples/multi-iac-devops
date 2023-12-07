@@ -126,7 +126,7 @@ pyenv install 3.10.0 && \
 
 ## Terraform CDK Instructions
 
-[Solution Guide for Terrform CDK](./docs/README-cdktf.md "Solution Guide for TerraformCDK")
+[Solution Guide for Terraform CDK](./docs/README-cdktf.md "Solution Guide for TerraformCDK")
 
 ## AWS CDK
 
