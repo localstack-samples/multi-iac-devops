@@ -20,16 +20,18 @@ PKG_SUB_DIRS := $(dir $(shell find . -type d -name node_modules -prune -o -type 
 
 PULUMI_CONFIG = $(PULUMI_EXE) config --stack $(STACK_PREFIX).$(STACK_SUFFIX) --cwd $(STACK_DIR)
 
+DOCKER_COMPOSE_FLAGS ?=
+
 update-deps: $(PKG_SUB_DIRS)
 	for i in $(PKG_SUB_DIRS); do \
         pushd $$i && ncu -u && npm install && popd; \
     done
 
 start-localstack:
-	cd devops-tooling && docker compose -p $(APP_NAME) up
+	cd devops-tooling && docker compose -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS)
 
 stop-localstack:
-	cd devops-tooling && docker compose down
+	cd devops-tooling && docker compose down $(DOCKER_COMPOSE_FLAGS)
 
 iac-shared:
 	pushd iac/iac-shared && npm install && npm run build && popd

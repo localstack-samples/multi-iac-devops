@@ -78,7 +78,7 @@ Then run the test(s)
 ## Run Integration Tests against LocalStack
 
 ```shell
-make test-awscdk
+make local-awscdk-test
 ```
 
 ## Invoke API Gateway on LocalStack

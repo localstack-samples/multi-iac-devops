@@ -1,0 +1,124 @@
+name: Weekly CDK and Terraform Test
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Run every Monday at 9:00 UTC
+  push:
+    branches:
+      - fix/typos-and-missing-instructions  # Temporary branch to test workflow
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+    # Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Install prerequisites
+    - name: setup awscli
+      uses: hsupu/setup-awscli@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+    - name: Setup NVM
+      uses: irby/setup-node-nvm@master
+      with:
+        node-version: 18
+    - name: APT dependencies
+      uses: daaku/gh-action-apt-install@v4
+      with:
+        packages: >
+          build-essential
+          libbz2-dev
+          libssl-dev
+          libreadline-dev
+          libffi-dev
+          zlib1g-dev
+          libsqlite3-dev
+          liblzma-dev
+    - name: Setup Pyenv
+      uses: "gabrielfalcao/pyenv-action@v11"
+      with:
+        default: 3.11
+    - name: Install Terraform CDK
+      run: |
+        npm install --global cdktf-cli@^0.18.0
+    
+    # Setup Localstack
+    - name: Export Localstack API key
+      run: echo "LOCALSTACK_API_KEY=${{ secrets.LOCALSTACK_API_KEY }}" >> $GITHUB_ENV
+    - name: Setup AWS config
+      run: |
+        mkdir -p ~/.aws
+        echo "[profile localstack]" >> ~/.aws/config
+        echo "region=us-east-1" >> ~/.aws/config
+        echo "output=json" >> ~/.aws/config
+        echo "endpoint_url = http://localhost:4566" >> ~/.aws/config
+    - name: Setup AWS credentials
+      run: |
+        echo "[localstack]" >> ~/.aws/credentials
+        echo "aws_access_key_id=test" >> ~/.aws/credentials
+        echo "aws_secret_access_key=test" >> ~/.aws/credentials
+  
+    # Install Python dependencies
+    - name: Create virtualenv for Python
+      run: |
+        pyenv local 3.11 && \
+          python3 -m venv .venv && \
+          . .venv/bin/activate && \
+          pip3 install -r devops-tooling/requirements.txt
+
+    # Start Localstack
+    - name: Start Localstack
+      run: |
+        make start-localstack DOCKER_COMPOSE_FLAGS="-d --wait --wait-timeout=30s"
+
+  # Test CDK implementation
+  test-cdk:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Test AWS CDK implementation
+      run: |
+        # Setup AWS CDK stacks
+        make local-awscdk-bootstrap
+        make local-awscdk-deploy
+
+        # Test AWS CDK stacks
+        make test-awscdk
+        make local-awscdk-invoke
+
+        # Cleanup
+        make local-awscdk-clean
+
+  # Test Terraform implementation
+  test-terraform:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Test Terraform implementation
+      run: |
+        # Setup Terraform stacks
+        make local-cdktf-install
+        make local-cdktf-vpc-deploy
+        make local-cdktf-deploy
+
+        # Test Terraform stacks
+        make local-cdktf-test
+        make local-cdktf-invoke
+
+        # Cleanup
+        make local-cdktf-clean
+
+  # Regardless of success or failure, stop Localstack
+  cleanup-always:
+    needs: [test-cdk, test-terraform]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Cleanup always
+      if: always()
+      run: make stop-localstack
