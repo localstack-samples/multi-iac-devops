@@ -38,10 +38,9 @@ jobs:
           libsqlite3-dev \
           liblzma-dev
     - name: Setup Pyenv
-      uses: "gabrielfalcao/pyenv-action@v11"
+      uses: "gabrielfalcao/pyenv-action@v17"
       with:
-        default: 3.11.0
-        versions: 3.11.0
+        default: 3.11
     - name: Install Terraform CDK
       run: |
         npm install --global cdktf-cli@^0.18.0
@@ -65,7 +64,8 @@ jobs:
     # Install Python dependencies
     - name: Create virtualenv for Python
       run: |
-        pyenv local 3.11.0 && \
+        pyenv install 3.11 && \
+        pyenv local 3.11 && \
           python3 -m venv .venv && \
           . .venv/bin/activate && \
           pip3 install -r devops-tooling/requirements.txt
@@ -73,7 +73,7 @@ jobs:
     # Start Localstack
     - name: Start Localstack
       run: |
-        make start-localstack DOCKER_COMPOSE_FLAGS="-d --wait --wait-timeout=30s"
+        make start-localstack DOCKER_COMPOSE_FLAGS="-d --wait --wait-timeout=30"
 
   # Test CDK implementation
   test-cdk:
