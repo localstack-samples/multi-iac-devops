@@ -4,7 +4,7 @@ awscdkinstall:
 awscdkbootstrap: iac-shared awscdkinstall build
 	cd $(STACK_DIR) && $(CDK_CMD) bootstrap
 awscdkdeploy: iac-shared
-	cd $(STACK_DIR) && $(CDK_CMD) deploy $(TFSTACK_NAME)
+	cd $(STACK_DIR) && $(CDK_CMD) deploy $(TFSTACK_NAME) --require-approval=never
 awscdkdestroy: iac-shared
 	cd $(STACK_DIR) && $(CDK_CMD) destroy $(TFSTACK_NAME)
 awscdkoutput:

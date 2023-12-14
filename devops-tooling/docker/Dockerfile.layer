@@ -1,6 +1,7 @@
 # Use an official Python runtime as a parent image
-ARG VERSION=3.11-arm64
-FROM public.ecr.aws/lambda/python:${VERSION}
+ARG VERSION
+ARG ARCH
+FROM public.ecr.aws/lambda/python:${VERSION}-${ARCH}
 
 RUN --mount=type=cache,target=/var/cache/yum \
     yum makecache && \

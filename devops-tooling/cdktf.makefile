@@ -1,9 +1,9 @@
 # Add --ignore-missing-stack-dependencies. Waiting for issue below to be fixed.
 # https://github.com/hashicorp/terraform-cdk/issues/2976
 cdktfdeploy: iac-shared
-	cd $(STACK_DIR) && cdktf deploy $(TFSTACK_NAME) --ignore-missing-stack-dependencies
+	cd $(STACK_DIR) && cdktf deploy $(TFSTACK_NAME) --ignore-missing-stack-dependencies --auto-approve
 cdktfdestroy: iac-shared
-	cd $(STACK_DIR) && cdktf destroy $(TFSTACK_NAME) --ignore-missing-stack-dependencies
+	cd $(STACK_DIR) && cdktf destroy $(TFSTACK_NAME) --ignore-missing-stack-dependencies --auto-approve
 cdktfinstall:
 	cd $(STACK_DIR) && npm install
 	cd $(STACK_DIR) && cdktf get

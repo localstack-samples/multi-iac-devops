@@ -3,6 +3,7 @@ services:
   localstack:
     container_name: "${APP_NAME}-localstack"
     image: localstack/localstack-pro:latest
+    platform: linux/arm64
     ports:
       - "4566:4566"            # LocalStack Gateway
       - "4510-4560:4510-4560"  # external services port range

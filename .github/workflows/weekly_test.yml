@@ -79,7 +79,7 @@ jobs:
         make local-awscdk-deploy
 
         # Test AWS CDK stacks
-        make test-awscdk
+        make local-awscdk-test
         make local-awscdk-invoke
 
         # Cleanup
