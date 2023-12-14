@@ -8,7 +8,7 @@ on:
       - fix/typos-and-missing-instructions  # Temporary branch to test workflow
 
 jobs:
-  setup:
+  test-cdk-and-terraform:
     runs-on: ubuntu-latest
     steps:
     # Checkout code
@@ -63,7 +63,7 @@ jobs:
         # Unset stale org secret
         unset LOCALSTACK_API_KEY
         printenv
-        LOCALSTACK_AUTH_TOKEN="${{ secrets.LOCALSTACK_AUTH_TOKEN }}" make start-localstack DOCKER_COMPOSE_FLAGS="-d --wait --wait-timeout=30"
+        LOCALSTACK_AUTH_TOKEN="${{ secrets.LOCALSTACK_AUTH_TOKEN }}" make start-localstack
 
     # Test AWS CDK implementation
     - name: Test AWS CDK implementation
