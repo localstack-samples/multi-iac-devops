@@ -10,6 +10,7 @@ on:
 jobs:
   test-cdk-and-terraform:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
     # Checkout code
     - name: Checkout code
@@ -79,6 +80,8 @@ jobs:
 
         # Cleanup
         make local-awscdk-clean
+        
+        touch success_awscdk
 
     # Test Terraform implementation
     - name: Test Terraform implementation
@@ -96,6 +99,12 @@ jobs:
         # Cleanup
         make local-cdktf-clean
 
+        touch success_terraform
+
     - name: Stop Localstack
       run: |
+        if [ ! -f success_awscdk ] || [ ! -f success_terraform ]; then
+          echo "Either success_awscdk or success_terraform file is missing."
+          exit 1
+        fi
         make stop-localstack
