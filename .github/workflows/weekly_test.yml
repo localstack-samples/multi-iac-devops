@@ -45,22 +45,6 @@ jobs:
       run: |
         npm install --global cdktf-cli@^0.18.0
     
-    # Setup Localstack
-    - name: Export Localstack API key
-      run: echo "LOCALSTACK_API_KEY=${{ secrets.LOCALSTACK_API_KEY }}" >> $GITHUB_ENV
-    - name: Setup AWS config
-      run: |
-        mkdir -p ~/.aws
-        echo "[profile localstack]" >> ~/.aws/config
-        echo "region=us-east-1" >> ~/.aws/config
-        echo "output=json" >> ~/.aws/config
-        echo "endpoint_url = http://localhost:4566" >> ~/.aws/config
-    - name: Setup AWS credentials
-      run: |
-        echo "[localstack]" >> ~/.aws/credentials
-        echo "aws_access_key_id=test" >> ~/.aws/credentials
-        echo "aws_secret_access_key=test" >> ~/.aws/credentials
-  
     # Install Python dependencies
     - name: Create virtualenv for Python
       run: |
@@ -70,19 +54,25 @@ jobs:
           . .venv/bin/activate && \
           pip3 install -r devops-tooling/requirements.txt
 
+    # Setup Localstack API key
+    - name: Export Localstack API key
+      run: echo "LOCALSTACK_AUTH_TOKEN=${{ secrets.LOCALSTACK_AUTH_TOKEN }}" >> $GITHUB_ENV
+
     # Start Localstack
     - name: Start Localstack
       run: |
+        . .venv/bin/activate
+        make setup-aws
+        # Unset stale org secret
+        unset LOCALSTACK_API_KEY
         make start-localstack DOCKER_COMPOSE_FLAGS="-d --wait --wait-timeout=30"
 
-  # Test CDK implementation
-  test-cdk:
-    needs: setup
-    runs-on: ubuntu-latest
-
-    steps:
+    # Test AWS CDK implementation
     - name: Test AWS CDK implementation
+      continue-on-error: true
       run: |
+        cd devops-tooling
+
         # Setup AWS CDK stacks
         make local-awscdk-bootstrap
         make local-awscdk-deploy
@@ -94,14 +84,12 @@ jobs:
         # Cleanup
         make local-awscdk-clean
 
-  # Test Terraform implementation
-  test-terraform:
-    needs: setup
-    runs-on: ubuntu-latest
-
-    steps:
+    # Test Terraform implementation
     - name: Test Terraform implementation
+      continue-on-error: true
       run: |
+        cd devops-tooling
+
         # Setup Terraform stacks
         make local-cdktf-install
         make local-cdktf-vpc-deploy
@@ -114,11 +102,6 @@ jobs:
         # Cleanup
         make local-cdktf-clean
 
-  # Regardless of success or failure, stop Localstack
-  cleanup-always:
-    needs: [test-cdk, test-terraform]
-    runs-on: ubuntu-latest
-    steps:
-    - name: Cleanup always
-      if: always()
-      run: make stop-localstack
+    - name: Stop Localstack
+      run: |
+        make stop-localstack

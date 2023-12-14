@@ -27,6 +27,21 @@ update-deps: $(PKG_SUB_DIRS)
         pushd $$i && ncu -u && npm install && popd; \
     done
 
+setup-aws:
+	mkdir -p ~/.aws
+	touch ~/.aws/config ~/.aws/credentials
+	@if ! grep -q '\[profile localstack\]' ~/.aws/config ; then \
+		echo "[profile localstack]" >> ~/.aws/config; \
+		echo "region=us-east-1" >> ~/.aws/config; \
+		echo "output=json" >> ~/.aws/config; \
+		echo "endpoint_url = http://localhost:4566" >> ~/.aws/config; \
+	fi
+	@if ! grep -q '\[localstack\]' ~/.aws/credentials ; then \
+		echo "[localstack]" >> ~/.aws/credentials; \
+		echo "aws_access_key_id=test" >> ~/.aws/credentials; \
+		echo "aws_secret_access_key=test" >> ~/.aws/credentials; \
+	fi
+
 start-localstack:
 	cd devops-tooling && docker compose -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS)
 
