@@ -67,7 +67,8 @@ jobs:
 
         # Use repo secret and start Localstack in background
         echo "Starting Localstack"
-        LOCALSTACK_AUTH_TOKEN="${{ secrets.LOCALSTACK_AUTH_TOKEN }}" DOCKER_DEFAULT_PLATFORM="linux/amd64" DOCKER_COMPOSE_FLAGS="-d --timeout=30" make start-localstack
+        LOCALSTACK_AUTH_TOKEN="${{ secrets.LOCALSTACK_AUTH_TOKEN }}" DOCKER_COMPOSE_FLAGS="-d --timeout=30" make start-localstack
+        docker ps
 
     # Test AWS CDK implementation
     - name: Test AWS CDK implementation
