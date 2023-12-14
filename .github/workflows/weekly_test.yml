@@ -65,6 +65,7 @@ jobs:
         make setup-aws
         # Unset stale org secret
         unset LOCALSTACK_API_KEY
+        printenv
         make start-localstack DOCKER_COMPOSE_FLAGS="-d --wait --wait-timeout=30"
 
     # Test AWS CDK implementation
