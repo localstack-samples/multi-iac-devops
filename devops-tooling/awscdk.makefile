@@ -27,7 +27,7 @@ local-awscdk-destroy: awscdkdestroy
 local-awscdk-output: awscdkoutput
 
 local-awscdk-test:
-	@$(MAKE) local-awscdk-output > auto_tests/iac-output.json;
+	@$(MAKE)  --silent local-awscdk-output > auto_tests/iac-output.json;
 	make test
 
 local-awscdk-invoke:

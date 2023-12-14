@@ -83,6 +83,7 @@ jobs:
         make local-awscdk-invoke
 
         # Cleanup
+        make local-awscdk-destroy
         make local-awscdk-clean
         
         touch success_awscdk
@@ -101,6 +102,7 @@ jobs:
         make local-cdktf-invoke
 
         # Cleanup
+        make local-cdktf-destroy
         make local-cdktf-clean
 
         touch success_terraform
