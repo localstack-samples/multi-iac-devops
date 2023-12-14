@@ -72,8 +72,6 @@ jobs:
     - name: Test AWS CDK implementation
       continue-on-error: true
       run: |
-        cd devops-tooling
-
         # Setup AWS CDK stacks
         make local-awscdk-bootstrap
         make local-awscdk-deploy
@@ -89,8 +87,6 @@ jobs:
     - name: Test Terraform implementation
       continue-on-error: true
       run: |
-        cd devops-tooling
-
         # Setup Terraform stacks
         make local-cdktf-install
         make local-cdktf-vpc-deploy
