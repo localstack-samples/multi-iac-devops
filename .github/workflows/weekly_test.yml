@@ -55,6 +55,9 @@ jobs:
           . .venv/bin/activate && \
           pip3 install -r devops-tooling/requirements.txt
 
+    - name: Add localhost.localstack.cloud to /etc/hosts
+      run: echo "127.0.0.1 localhost.localstack.cloud" | sudo tee -a /etc/hosts
+
     # Start Localstack
     - name: Start Localstack
       run: |
