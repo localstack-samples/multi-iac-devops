@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Update system packages
-sudo apt-get update && sudo apt-get install -y \
+apt-get update && apt-get install -y \
   build-essential \
   libbz2-dev \
   libssl-dev \
@@ -14,12 +14,12 @@ sudo apt-get update && sudo apt-get install -y \
 # Setup AWS CLI
 curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
-sudo ./aws/install
+./aws/install
 
 # Setup Terraform
-curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-sudo apt-get update && sudo apt-get install terraform
+curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
+apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+apt-get update && apt-get install terraform
 
 # Setup NVM and Node.js
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
