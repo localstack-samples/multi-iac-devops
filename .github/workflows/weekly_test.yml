@@ -8,112 +8,30 @@ on:
       - fix/typos-and-missing-instructions  # Temporary branch to test workflow
 
 jobs:
-  test-cdk-and-terraform:
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      matrix:
+        test_name: [awscdk, cdktf]
     steps:
     # Checkout code
     - name: Checkout code
       uses: actions/checkout@v2
 
     # Install prerequisites
-    - name: setup awscli
-      uses: hsupu/setup-awscli@v1
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-    - name: Setup NVM
-      uses: irby/setup-node-nvm@master
-      with:
-        node-version: 18
-    - name: APT dependencies
-      run: |
-        sudo apt-get update && sudo apt-get install -y \
-          build-essential \
-          libbz2-dev \
-          libssl-dev \
-          libreadline-dev \
-          libffi-dev \
-          zlib1g-dev \
-          libsqlite3-dev \
-          liblzma-dev
-    - name: Setup Pyenv
-      uses: "gabrielfalcao/pyenv-action@v17"
-      with:
-        default: 3.11
-    - name: Install Terraform CDK
-      run: |
-        npm install --global cdktf-cli@^0.18.0 aws-cdk-local aws-cdk
-    
-    # Install Python dependencies
-    - name: Create virtualenv for Python
-      run: |
-        pyenv install 3.11 && \
-        pyenv local 3.11 && \
-          python3 -m venv .venv && \
-          . .venv/bin/activate && \
-          pip3 install -r devops-tooling/requirements.txt
-
-    - name: Add localhost.localstack.cloud to /etc/hosts
-      run: echo "127.0.0.1 localhost.localstack.cloud" | sudo tee -a /etc/hosts
 
     # Start Localstack
-    - name: Start Localstack
+    - name: Test
+      env:
+        LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+        CI_TEST_NAME: ${{ matrix.test_name }}
       run: |
-        . .venv/bin/activate
-        make setup-aws
-
         # Unset stale org secret
         printenv
         unset LOCALSTACK_API_KEY
 
-        # Use repo secret and start Localstack in background
-        echo "Starting Localstack"
-        LOCALSTACK_AUTH_TOKEN="${{ secrets.LOCALSTACK_AUTH_TOKEN }}" DOCKER_COMPOSE_FLAGS="-d --timeout=30" make start-localstack
-        docker ps
-
-    # Test AWS CDK implementation
-    - name: Test AWS CDK implementation
-      continue-on-error: true
-      run: |
-        # Setup AWS CDK stacks
-        make local-awscdk-bootstrap
-        make local-awscdk-deploy
-
-        # Test AWS CDK stacks
-        make local-awscdk-test
-        make local-awscdk-invoke
-
-        # Cleanup
-        make local-awscdk-destroy
-        make local-awscdk-clean
-        
-        touch success_awscdk
-
-    # Test Terraform implementation
-    - name: Test Terraform implementation
-      continue-on-error: true
-      run: |
-        # Setup Terraform stacks
-        make local-cdktf-install
-        make local-cdktf-vpc-deploy
-        make local-cdktf-deploy
-
-        # Test Terraform stacks
-        make local-cdktf-test
-        make local-cdktf-invoke
-
-        # Cleanup
-        make local-cdktf-destroy
-        make local-cdktf-clean
-
-        touch success_terraform
-
-    - name: Stop Localstack
-      run: |
-        if [ ! -f success_awscdk ] || [ ! -f success_terraform ]; then
-          echo "Either success_awscdk or success_terraform file is missing."
-          exit 1
-        fi
-        make stop-localstack
+        echo "Starting Localstack and running tests"
+        make run-ci-test

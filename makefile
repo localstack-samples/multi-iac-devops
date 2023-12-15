@@ -20,7 +20,12 @@ PKG_SUB_DIRS := $(dir $(shell find . -type d -name node_modules -prune -o -type 
 
 PULUMI_CONFIG = $(PULUMI_EXE) config --stack $(STACK_PREFIX).$(STACK_SUFFIX) --cwd $(STACK_DIR)
 
+ENDPOINT_HOST ?= localhost
+
 DOCKER_COMPOSE_FLAGS ?=
+
+##################################################
+# Targets that can be run from the command line.
 
 update-deps: $(PKG_SUB_DIRS)
 	for i in $(PKG_SUB_DIRS); do \
@@ -34,7 +39,7 @@ setup-aws:
 		echo "[profile localstack]" >> ~/.aws/config; \
 		echo "region=us-east-1" >> ~/.aws/config; \
 		echo "output=json" >> ~/.aws/config; \
-		echo "endpoint_url = http://localhost:4566" >> ~/.aws/config; \
+		echo "endpoint_url = http://$(ENDPOINT_HOST):4566" >> ~/.aws/config; \
 	fi
 	@if ! grep -q '\[localstack\]' ~/.aws/credentials ; then \
 		echo "[localstack]" >> ~/.aws/credentials; \
@@ -45,9 +50,9 @@ setup-aws:
 start-localstack:
 	@ARCHITECTURE=$(shell uname -m); \
     if [ "$$ARCHITECTURE" = "x86_64" ]; then \
-        cd devops-tooling && docker-compose -f docker-compose.localstack.yml -f docker-compose.amd64_override.yml -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
+        cd devops-tooling && docker-compose -f docker-compose.localstack.yml -f docker-compose.amd64_localstack.yml -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
     else \
-        cd devops-tooling && docker-compose -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
+        cd devops-tooling && docker-compose -f docker-compose.localstack.yml -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
     fi
 
 stop-localstack:
@@ -68,3 +73,23 @@ watch-lambda:
 # Run the tests
 test:
 	$(VENV_RUN) && cd auto_tests && AWS_PROFILE=localstack pytest $(ARGS);
+
+
+##################################################
+# Targets that can be run from the CI/CD pipeline.
+
+run-ci-test:
+	@ARCHITECTURE=$(shell uname -m); \
+	if [ "$$ARCHITECTURE" = "x86_64" ]; then \
+		cd devops-tooling && \
+		docker-compose -f docker-compose.localstack.yml \
+					   -f docker-compose.ci_test.yml \
+					   -f docker-compose.amd64_localstack.yml \
+					   -f docker-compose.amd64_test.yml \
+					   -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
+	else \
+		cd devops-tooling && \
+		docker-compose -f docker-compose.localstack.yml \
+					   -f docker-compose.ci_test.yml \
+					   -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
+	fi

@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  test:
+    platform: linux/amd64
+    build:
+      context: devops-tooling/ci
+      dockerfile: Dockerfile
+      args:
+        ENDPOINT_HOST: localstack
+    command: ["${CI_TEST_NAME}.sh"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .:/multi-iac-devops
+    depends_on:
+      - localstack
+    networks:
+      - localstack_network
+networks:
+  localstack_network:
+    external: true
