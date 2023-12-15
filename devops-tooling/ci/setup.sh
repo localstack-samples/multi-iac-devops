@@ -3,6 +3,8 @@
 # Update system packages
 apt-get update && apt-get install -y \
   curl \
+  unzip \
+  software-properties-common \
   build-essential \
   libbz2-dev \
   libssl-dev \
