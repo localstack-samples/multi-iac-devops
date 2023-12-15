@@ -21,8 +21,8 @@ unzip awscliv2.zip
 
 # Setup Terraform
 curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
-apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-apt-get update && apt-get install terraform
+apt-add-repository "deb [arch=$(uname -m)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+apt-get update && apt-get install terraform -y
 
 # Setup NVM and Node.js
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
