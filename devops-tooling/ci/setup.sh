@@ -2,6 +2,7 @@
 
 # Update system packages
 apt-get update && apt-get install -y \
+  curl \
   build-essential \
   libbz2-dev \
   libssl-dev \
