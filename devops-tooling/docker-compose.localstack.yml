@@ -23,3 +23,8 @@ services:
       - ${LOCALSTACK_VOLUME_DIR:-./ls_volume}:/var/lib/localstack
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - localstack_network
+networks:
+  localstack_network:
+    driver: bridge
