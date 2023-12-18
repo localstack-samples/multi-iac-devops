@@ -4,7 +4,9 @@
 apt-get update && apt-get install -y \
   curl \
   unzip \
+  lsb-release \
   software-properties-common \
+  git \
   build-essential \
   libbz2-dev \
   libssl-dev \
@@ -12,7 +14,10 @@ apt-get update && apt-get install -y \
   libffi-dev \
   zlib1g-dev \
   libsqlite3-dev \
-  liblzma-dev
+  liblzma-dev \
+  gnupg \
+  gnupg1 \
+  gnupg2
 
 # Setup AWS CLI
 curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -20,19 +25,26 @@ unzip awscliv2.zip
 ./aws/install
 
 # Setup Terraform
+arch=$(uname -m)
+if [ "$arch" = "aarch64" ]; then
+    arch="arm64"
+fi
 curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
-apt-add-repository "deb [arch=$(uname -m)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+apt-add-repository "deb [arch=$arch] https://apt.releases.hashicorp.com $(lsb_release -cs) main" -y
 apt-get update && apt-get install terraform -y
 
 # Setup NVM and Node.js
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-source ~/.bashrc
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 nvm install 18
 nvm use 18
 
 # Setup Pyenv and Python
 curl https://pyenv.run | bash
-source ~/.bashrc
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
 pyenv install 3.11
 pyenv global 3.11
 
