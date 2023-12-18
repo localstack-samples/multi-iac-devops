@@ -32,6 +32,8 @@ unzip awscliv2.zip
 arch=$(uname -m)
 if [ "$arch" = "aarch64" ]; then
     arch="arm64"
+elif [ "$arch" = "x86_64" ]; then
+    arch="amd64"
 fi
 curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
 apt-add-repository "deb [arch=$arch] https://apt.releases.hashicorp.com $(lsb_release -cs) main" -y
@@ -57,10 +59,7 @@ pyenv global 3.11
 # Create Python virtual environment and install dependencies
 python3 -m venv .venv
 source .venv/bin/activate
-pip3 install -r devops-tooling/requirements.txt
+pip3 install --no-cache-dir -r /tmp/requirements.txt
 
 # Install Terraform CDK
 npm install --global cdktf-cli@^0.18.0 aws-cdk-local aws-cdk
-
-# Setup AWS credentials
-make setup-aws
