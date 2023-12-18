@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+
 # Update system packages
 apt-get update && apt-get install -y \
   curl \
@@ -17,7 +20,8 @@ apt-get update && apt-get install -y \
   liblzma-dev \
   gnupg \
   gnupg1 \
-  gnupg2
+  gnupg2 \
+  jq
 
 # Setup AWS CLI
 curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -35,15 +39,17 @@ apt-get update && apt-get install terraform -y
 
 # Setup NVM and Node.js
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+echo 'export NVM_DIR=$HOME/.nvm' >> ~/.profile
+echo '[ -s "$NVM_DIR/nvm.sh" ] && \. $NVM_DIR/nvm.sh' >> ~/.profile
+source ~/.profile
 nvm install 18
 nvm use 18
 
 # Setup Pyenv and Python
 curl https://pyenv.run | bash
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
+echo 'export PYENV_ROOT=$HOME/.pyenv' >> ~/.profile
+echo 'export PATH=$PYENV_ROOT/bin:$PATH' >> ~/.profile
+source ~/.profile
 eval "$(pyenv init --path)"
 pyenv install 3.11
 pyenv global 3.11

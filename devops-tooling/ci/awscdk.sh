@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+
 # Setup AWS CDK stacks
 make local-awscdk-bootstrap
 make local-awscdk-deploy

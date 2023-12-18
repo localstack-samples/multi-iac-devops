@@ -3,6 +3,8 @@ FROM ubuntu:latest
 ARG ENDPOINT_HOST
 ENV ENDPOINT_HOST=$ENDPOINT_HOST
 
+ENV BASH_ENV=~/.profile
+
 COPY . /multi-iac-devops
 WORKDIR /multi-iac-devops
 

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+
 # Setup Terraform stacks
 make local-cdktf-install
 make local-cdktf-vpc-deploy
