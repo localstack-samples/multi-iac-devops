@@ -24,12 +24,12 @@ apt-get update && apt-get install -y \
   jq
 
 # Setup AWS CLI
-curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+arch=$(uname -m)
+curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-$arch.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 ./aws/install
 
 # Setup Terraform
-arch=$(uname -m)
 if [ "$arch" = "aarch64" ]; then
     arch="arm64"
 elif [ "$arch" = "x86_64" ]; then

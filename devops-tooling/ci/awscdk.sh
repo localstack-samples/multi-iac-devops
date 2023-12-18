@@ -6,6 +6,13 @@ set -e
 # Create AWS config/credentials
 make setup-aws
 
+export AWS_PROFILE=localstack
+export AWS_CONFIG_FILE=/root/.aws/config
+export AWS_SHARED_CREDENTIALS_FILE=/root/.aws/credentials
+
+# The endpoint is not getting picked up from the profile in the config file.
+export AWS_ENDPOINT_URL="http://${ENDPOINT_HOST}:4566"
+
 # Setup AWS CDK stacks
 make local-awscdk-bootstrap
 make local-awscdk-deploy

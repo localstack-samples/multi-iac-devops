@@ -10,8 +10,12 @@ services:
     command: ["${CI_TEST_NAME}.sh"]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ../:/multi-iac-devops
+      - ../auto_tests:/multi-iac-devops/auto_tests
+      - ../devops-tooling:/multi-iac-devops/devops-tooling
+      - ../iac:/multi-iac-devops/iac
+      - ../makefile:/multi-iac-devops/makefile
+      - ../run-lambdas.sh:/multi-iac-devops/run-lambdas.sh
+      - ../src:/multi-iac-devops/src
     depends_on:
       - localstack
-    networks:
-      - localstack_network
+    network_mode: "service:localstack"
