@@ -63,10 +63,5 @@ eval "$(pyenv init --path)"
 pyenv install 3.11
 pyenv global 3.11
 
-# Create Python virtual environment and install dependencies
-python3 -m venv .venv
-source .venv/bin/activate
-pip3 install --no-cache-dir -r /tmp/requirements.txt
-
 # Install Terraform CDK
 npm install --global cdktf-cli@^0.18.0 aws-cdk-local aws-cdk

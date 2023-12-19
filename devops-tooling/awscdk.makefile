@@ -6,7 +6,7 @@ awscdkbootstrap: iac-shared awscdkinstall build
 awscdkdeploy: iac-shared
 	cd $(STACK_DIR) && $(CDK_CMD) deploy $(TFSTACK_NAME) --require-approval=never
 awscdkdestroy: iac-shared
-	cd $(STACK_DIR) && $(CDK_CMD) destroy $(TFSTACK_NAME)
+	cd $(STACK_DIR) && $(CDK_CMD) destroy $(TFSTACK_NAME) --require-approval=never
 awscdkoutput:
 	@aws cloudformation describe-stacks \
   --stack-name $(TFSTACK_NAME) \

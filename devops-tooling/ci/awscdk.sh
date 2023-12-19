@@ -24,3 +24,8 @@ make local-awscdk-invoke
 # Cleanup
 make local-awscdk-destroy
 make local-awscdk-clean
+
+curl -X POST \
+     -H "Content-Type: application/json" \
+     -d '{"action": "kill"}' \
+     http://${ENDPOINT_HOST}:4566/_localstack/health

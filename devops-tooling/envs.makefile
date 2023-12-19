@@ -89,3 +89,4 @@ uname_m := $(shell uname -m) # store the output of the command in a variable
 export LOCAL_ARCH=$(uname_m)
 export ARCH=$(uname_m)
 
+export MAPPING_DIR_NAME=$(PWD)

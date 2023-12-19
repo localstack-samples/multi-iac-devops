@@ -25,3 +25,8 @@ make local-cdktf-invoke
 # Cleanup
 make local-cdktf-destroy
 make local-cdktf-clean
+
+curl -X POST \
+     -H "Content-Type: application/json" \
+     -d '{"action": "kill"}' \
+     http://${ENDPOINT_HOST}:4566/_localstack/health
