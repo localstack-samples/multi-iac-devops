@@ -69,7 +69,7 @@ export class AwscdkStack extends cdk.Stack {
         // Create the Lambda
         this.lambdaFunction = new Function(this, 'name-lambda', {
             functionName: 'name-lambda',
-            architecture: arch,
+            // architecture: arch,
             handler: props.handler,
             runtime: props.runtime,
             code: this.lambdaCode,
