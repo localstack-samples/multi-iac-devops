@@ -18,6 +18,7 @@ make local-awscdk-bootstrap
 make local-awscdk-deploy
 
 # Test AWS CDK stacks
+echo "uname -m = $(uname -m)"
 make local-awscdk-test
 make local-awscdk-invoke
 
