@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        test_name: [awscdk, cdktf]
+        test_name: [awscdk, awscdktf]
     steps:
     # Checkout code
     - name: Checkout code
