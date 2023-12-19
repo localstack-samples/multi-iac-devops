@@ -38,7 +38,7 @@ export class AwscdkStack extends cdk.Stack {
         // Run Lambda on ARM_64 in AWS and locally when local arch is ARM_64.
         let arch = Architecture.ARM_64
         const localArch = process.env.LOCAL_ARCH
-        if (props.isLocal && localArch == 'x86_64') {
+        if (props.isLocal && (localArch == 'x86_64' || localArch == 'amd64')) {
             arch = Architecture.X86_64
         }
         // Lambda Source Code
@@ -69,7 +69,7 @@ export class AwscdkStack extends cdk.Stack {
         // Create the Lambda
         this.lambdaFunction = new Function(this, 'name-lambda', {
             functionName: 'name-lambda',
-            // architecture: arch,
+            architecture: arch,
             handler: props.handler,
             runtime: props.runtime,
             code: this.lambdaCode,
