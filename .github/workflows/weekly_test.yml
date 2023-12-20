@@ -5,7 +5,10 @@ on:
     - cron: '0 9 * * 1'  # Run every Monday at 9:00 UTC
   push:
     branches:
-      - fix/typos-and-missing-instructions  # Temporary branch to test workflow
+      - main
+  pull_request:
+    branches:
+      - '*'
 
 jobs:
   test:
