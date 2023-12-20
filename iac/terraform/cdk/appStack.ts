@@ -40,13 +40,12 @@ export class AppStack extends TerraformStack {
         super(scope, id)
         this.config = config
         console.log('config', config)
-
-        let arch = 'arm64'
-        const localArch = process.env.LOCAL_ARCH
-
-        if (config.isLocal && localArch == 'x86_64') {
-            arch = 'x86_64'
+        
+        let archList = undefined
+        if (!config.isLocal) {
+            archList = ["arm64"]
         }
+
         const lambdaDeployDir: string = path.resolve('../../../app')
         // const dockerAppHash: string = await hashFolder(dockerAppDir);
         console.log(lambdaDeployDir)
@@ -182,7 +181,7 @@ export class AppStack extends TerraformStack {
         // Create Lambda function
         const lambdaFunc = new aws.lambdaFunction.LambdaFunction(this, "livedebug-lambda", {
             functionName: `name-lambda`,
-            // architectures: [arch],
+            architectures: archList,
             s3Bucket: lambdaBucketName,
             timeout: 15,
             s3Key: lambdaS3Key,
@@ -201,7 +200,7 @@ export class AppStack extends TerraformStack {
         // Create Lambda function
         const lambdaFuncAlb = new aws.lambdaFunction.LambdaFunction(this, "alb-lambda", {
             functionName: `alb-lambda`,
-            // architectures: [arch],
+            architectures: archList,
             s3Bucket: lambdaBucketName,
             timeout: 15,
             s3Key: lambdaS3Key,

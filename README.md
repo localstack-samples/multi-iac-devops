@@ -136,6 +136,39 @@ pyenv install 3.11 && \
 
 [Solution Guide for Pulumi](./docs/README-pulumi.md "Solution Guide for Pulumi")
 
+# Tests
+
+## Makefile
+
+First export the following env vars:
+
+```bash
+export LOCALSTACK_AUTH_TOKEN=<auth-token>
+export DOCKER_COMPOSE_FLAGS="--build"
+export BUILDKIT_PROGRESS=plain
+```
+
+And then run the AWS CDK and the Terraform-based AWS CDK deployments:
+
+```
+export CI_TEST_NAME=awscdk make run-ci-test
+export CI_TEST_NAME=awscdktf make run-ci-test
+```
+
+## Act
+
+You can also test this using https://github.com/nektos/act.
+
+First export the following env:
+
+```bash
+export LOCALSTACK_AUTH_TOKEN=<auth-token>
+```
+
+```bash
+act -s LOCALSTACK_AUTH_TOKEN=$LOCALSTACK_AUTH_TOKEN
+```
+
 # Hot Reloading!
 
 The Lambda is setup for hot reloading in this project on LocalStack by default. After everything is deployed by

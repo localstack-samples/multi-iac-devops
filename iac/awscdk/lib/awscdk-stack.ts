@@ -34,6 +34,11 @@ export class AwscdkStack extends cdk.Stack {
 
     constructor(scope: Construct, id: string, props: LsMultiEnvAppProps) {
         super(scope, id, props)
+
+        let architecture = undefined
+        if (!props.isLocal) {
+            architecture = Architecture.ARM_64
+        }
         
         // Lambda Source Code
         // If running on LocalStack, setup Hot Reloading with a fake bucked named hot-reload
@@ -63,6 +68,7 @@ export class AwscdkStack extends cdk.Stack {
         // Create the Lambda
         this.lambdaFunction = new Function(this, 'name-lambda', {
             functionName: 'name-lambda',
+            architecture: architecture,
             handler: props.handler,
             runtime: props.runtime,
             code: this.lambdaCode,

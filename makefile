@@ -82,14 +82,14 @@ run-ci-test:
 	@ARCHITECTURE=$(shell uname -m); \
 	if [ "$$ARCHITECTURE" = "x86_64" ]; then \
 		cd devops-tooling && \
-		docker-compose -f docker-compose.localstack.yml \
+		docker compose -f docker-compose.localstack.yml \
 					   -f docker-compose.ci_test.yml \
 					   -f docker-compose.amd64_localstack.yml \
 					   -f docker-compose.amd64_test.yml \
 					   -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
 	else \
 		cd devops-tooling && \
-		docker-compose -f docker-compose.localstack.yml \
+		docker compose -f docker-compose.localstack.yml \
 					   -f docker-compose.ci_test.yml \
 					   -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
 	fi
