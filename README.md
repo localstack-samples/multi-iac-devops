@@ -138,8 +138,6 @@ pyenv install 3.11 && \
 
 # Tests
 
-## Makefile
-
 First export the following env vars:
 
 ```bash
@@ -153,20 +151,6 @@ And then run the AWS CDK and the Terraform-based AWS CDK deployments:
 ```
 export CI_TEST_NAME=awscdk make run-ci-test
 export CI_TEST_NAME=awscdktf make run-ci-test
-```
-
-## Act
-
-You can also test this using https://github.com/nektos/act.
-
-First export the following env:
-
-```bash
-export LOCALSTACK_AUTH_TOKEN=<auth-token>
-```
-
-```bash
-act -s LOCALSTACK_AUTH_TOKEN=$LOCALSTACK_AUTH_TOKEN
 ```
 
 # Hot Reloading!

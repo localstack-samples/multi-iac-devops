@@ -34,7 +34,8 @@ export class AwscdkStack extends cdk.Stack {
 
     constructor(scope: Construct, id: string, props: LsMultiEnvAppProps) {
         super(scope, id, props)
-
+        
+        // props.isLocal is true when stacks are deployed using localstack
         let architecture = undefined
         if (!props.isLocal) {
             architecture = Architecture.ARM_64

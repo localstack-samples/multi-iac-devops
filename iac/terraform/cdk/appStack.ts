@@ -41,6 +41,7 @@ export class AppStack extends TerraformStack {
         this.config = config
         console.log('config', config)
         
+        // props.isLocal is true when stacks are deployed using localstack
         let archList = undefined
         if (!config.isLocal) {
             archList = ["arm64"]

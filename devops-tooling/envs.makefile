@@ -34,6 +34,7 @@ export APP_NAME = lsmulti
 export APP_VERSION = 0.0.1
 export API_VERSION = v1
 export AWS_REGION=us-east-1
+# Local when deployed using localstack
 export IS_LOCAL=true
 export LOGGING_LEVEL=DEBUG
 export AWS_ACCOUNT=000000000000
