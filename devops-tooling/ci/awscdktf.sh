@@ -15,7 +15,7 @@ export AWS_ENDPOINT_URL="http://${ENDPOINT_HOST}:4566"
 
 # Setup Terraform stacks
 make local-cdktf-install
-make local-cdktf-clean
+make local-cdktf-clean # Prevents flakiness.
 make local-cdktf-vpc-deploy
 make local-cdktf-deploy
 

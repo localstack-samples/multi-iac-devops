@@ -182,7 +182,7 @@ export class AppStack extends TerraformStack {
         // Create Lambda function
         const lambdaFunc = new aws.lambdaFunction.LambdaFunction(this, "livedebug-lambda", {
             functionName: `name-lambda`,
-            architectures: [arch],
+            // architectures: [arch],
             s3Bucket: lambdaBucketName,
             timeout: 15,
             s3Key: lambdaS3Key,
@@ -201,7 +201,7 @@ export class AppStack extends TerraformStack {
         // Create Lambda function
         const lambdaFuncAlb = new aws.lambdaFunction.LambdaFunction(this, "alb-lambda", {
             functionName: `alb-lambda`,
-            architectures: [arch],
+            // architectures: [arch],
             s3Bucket: lambdaBucketName,
             timeout: 15,
             s3Key: lambdaS3Key,
