@@ -35,10 +35,20 @@ export class AwscdkStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props: LsMultiEnvAppProps) {
         super(scope, id, props)
         
+        const architecture = process.env.ARCH
+        const overridingLocalArch = process.env.OVERRIDE_LOCAL_ARCH
+        
+        let targetArchitecture = undefined
+        if (architecture != overridingLocalArch) {
+            if (overridingLocalArch == "x86_64" || overridingLocalArch == "amd64") {
+                targetArchitecture = Architecture.X86_64
+            } else {
+                targetArchitecture = Architecture.ARM_64
+            }
+        }
         // props.isLocal is true when stacks are deployed using localstack
-        let architecture = undefined
         if (!props.isLocal) {
-            architecture = Architecture.ARM_64
+            targetArchitecture = Architecture.ARM_64
         }
         
         // Lambda Source Code
@@ -69,7 +79,7 @@ export class AwscdkStack extends cdk.Stack {
         // Create the Lambda
         this.lambdaFunction = new Function(this, 'name-lambda', {
             functionName: 'name-lambda',
-            architecture: architecture,
+            architecture: targetArchitecture,
             handler: props.handler,
             runtime: props.runtime,
             code: this.lambdaCode,

@@ -153,6 +153,8 @@ export CI_TEST_NAME=awscdk make run-ci-test
 export CI_TEST_NAME=awscdktf make run-ci-test
 ```
 
+***Note: If you run the above tests with Rosetta turned on, and still want to go with `arm64`, you need to export `export OVERRIDE_LOCAL_ARCH=arm64`.***
+
 # Hot Reloading!
 
 The Lambda is setup for hot reloading in this project on LocalStack by default. After everything is deployed by

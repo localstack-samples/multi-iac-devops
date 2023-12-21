@@ -79,8 +79,12 @@ test:
 # Targets that can be run from the CI/CD pipeline.
 
 run-ci-test:
-	@ARCHITECTURE=$(shell uname -m); \
-	if [ "$$ARCHITECTURE" = "x86_64" ]; then \
+	if [ "$(OVERRIDE_LOCAL_ARCH)" != "$(ARCH)" ]; then \
+		ARCH=$(OVERRIDE_LOCAL_ARCH); \
+		echo "Override local architecture with $(OVERRIDE_LOCAL_ARCH)"; \
+	fi; \
+	echo "Running CI test for architecture $$ARCH"; \
+	if [ "$$ARCH" = "x86_64" ]; then \
 		cd devops-tooling && \
 		docker compose -f docker-compose.localstack.yml \
 					   -f docker-compose.ci_test.yml \
