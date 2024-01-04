@@ -26,6 +26,20 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
 
+    # Load cached Docker images
+    - name: Load cached Docker images
+      id: load_cache
+      uses: actions/cache@v2
+      with:
+        path: /tmp/docker-images
+        key: docker-images-${{ hashFiles('**/Dockerfile') }}
+
+    - name: Load Docker images from cache
+      run: |
+        if [ -d "/tmp/docker-images" ]; then
+          docker load < /tmp/docker-images/images.tar
+        fi
+
     # Start Localstack
     - name: Test
       env:
@@ -38,3 +52,10 @@ jobs:
 
         echo "Starting Localstack and running tests"
         make run-ci-test
+
+    # Save Docker images to cache
+    - name: Save Docker images to cache
+      if: steps.load_cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p /tmp/docker-images
+        docker save $(docker images -q) > /tmp/docker-images/images.tar
