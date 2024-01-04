@@ -84,7 +84,7 @@ run-ci-test:
 		echo "Override local architecture with $(OVERRIDE_LOCAL_ARCH)"; \
 	fi; \
 	echo "Running CI test for architecture $$ARCH"; \
-	if [ "$$ARCH" = "x86_64" ]; then \
+	if echo "$$ARCH" | grep -q "x86_64"; then \
 		cd devops-tooling && \
 		docker compose -f docker-compose.localstack.yml \
 					   -f docker-compose.ci_test.yml \
