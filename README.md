@@ -115,8 +115,8 @@ aws_secret_access_key=test
 4. Setup the virtual Python environment.
 
 ```sh
-pyenv install 3.10 && \
-   pyenv local 3.10 && \
+pyenv install 3.11 && \
+   pyenv local 3.11 && \
    python -m venv .venv && \
    . .venv/bin/activate && \
    pip install -r devops-tooling/requirements.txt
