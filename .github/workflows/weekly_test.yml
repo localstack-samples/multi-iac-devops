@@ -14,6 +14,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    # Only run one test at a time because it seems to be much faster.
+    # Possible reason: lots of memory swapping.
+    concurrency: 1
     strategy:
       matrix:
         test_name: [awscdk, awscdktf]
