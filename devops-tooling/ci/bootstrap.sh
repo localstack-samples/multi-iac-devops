@@ -14,7 +14,7 @@ cd ${MAPPING_DIR_NAME}
 
 # Initialize Python env
 eval "$(pyenv init --path)"
-pyenv global 3.11
+pyenv global 3.10
 
 # Create Python virtual environment and install dependencies
 python3 -m venv .venv

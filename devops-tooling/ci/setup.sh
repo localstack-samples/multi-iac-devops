@@ -60,8 +60,8 @@ echo 'export PYENV_ROOT=$HOME/.pyenv' >> ~/.profile
 echo 'export PATH=$PYENV_ROOT/bin:$PATH' >> ~/.profile
 source ~/.profile
 eval "$(pyenv init --path)"
-pyenv install 3.11
-pyenv global 3.11
+pyenv install 3.10
+pyenv global 3.10
 
 # Install Terraform CDK
 npm install --global cdktf-cli@^0.18.0 aws-cdk-local aws-cdk
