@@ -60,7 +60,7 @@ echo 'export PYENV_ROOT=$HOME/.pyenv' >> ~/.profile
 echo 'export PATH=$PYENV_ROOT/bin:$PATH' >> ~/.profile
 source ~/.profile
 eval "$(pyenv init --path)"
-pyenv install 3.10
+pyenv install 3.10 -vvv
 pyenv global 3.10
 
 # Install Terraform CDK
