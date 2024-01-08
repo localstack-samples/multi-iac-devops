@@ -40,13 +40,19 @@ export class AppStack extends TerraformStack {
         super(scope, id)
         this.config = config
         console.log('config', config)
-
-        let arch = 'arm64'
-        const localArch = process.env.LOCAL_ARCH
-
-        if (config.isLocal && localArch == 'x86_64') {
-            arch = 'x86_64'
+        
+        const architecture = process.env.ARCH
+        const overridingLocalArch = process.env.OVERRIDE_LOCAL_ARCH || architecture
+        
+        let archList: string[] = []
+        if (architecture != overridingLocalArch && overridingLocalArch != undefined) {
+            archList.push(overridingLocalArch)
         }
+        // props.isLocal is true when stacks are deployed using localstack
+        if (!config.isLocal) {
+            archList.push("arm64")
+        }
+
         const lambdaDeployDir: string = path.resolve('../../../app')
         // const dockerAppHash: string = await hashFolder(dockerAppDir);
         console.log(lambdaDeployDir)
@@ -182,7 +188,7 @@ export class AppStack extends TerraformStack {
         // Create Lambda function
         const lambdaFunc = new aws.lambdaFunction.LambdaFunction(this, "livedebug-lambda", {
             functionName: `name-lambda`,
-            architectures: [arch],
+            architectures: archList,
             s3Bucket: lambdaBucketName,
             timeout: 15,
             s3Key: lambdaS3Key,
@@ -201,7 +207,7 @@ export class AppStack extends TerraformStack {
         // Create Lambda function
         const lambdaFuncAlb = new aws.lambdaFunction.LambdaFunction(this, "alb-lambda", {
             functionName: `alb-lambda`,
-            architectures: [arch],
+            architectures: archList,
             s3Bucket: lambdaBucketName,
             timeout: 15,
             s3Key: lambdaS3Key,

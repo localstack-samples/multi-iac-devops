@@ -1,0 +1,43 @@
+name: Weekly CDK and Terraform Test
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Run every Monday at 9:00 UTC
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    # Only run one test at a time because it seems to be much faster.
+    # Possible reason: lots of memory swapping.
+    concurrency: 1
+    strategy:
+      matrix:
+        test_name: [awscdk, awscdktf]
+    steps:
+    # Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Install prerequisites
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    # Start Localstack
+    - name: Test
+      env:
+        LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+        CI_TEST_NAME: ${{ matrix.test_name }}
+      run: |
+        # Unset stale org secret
+        printenv
+        unset LOCALSTACK_API_KEY
+
+        echo "Starting Localstack and running tests"
+        make run-ci-test

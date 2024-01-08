@@ -42,23 +42,37 @@ To deploy your infrastructure, follow the steps below.
 
 ### Prerequisites
 
-1. [Install LATEST AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-2. [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
-3. [Install JQ](https://jqlang.github.io/jq/download/)
-4. Install Node Version Manager (NVM)
-   https://github.com/nvm-sh/nvm#installing-and-updating
-5. Select Node version 18
+
+1. [Install unzip](https://www.tecmint.com/install-zip-and-unzip-in-linux/)
+
+2. [Install LATEST AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+
+3. [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+
+4. [Install JQ](https://jqlang.github.io/jq/download/)
+
+5. [Install Docker](https://docs.docker.com/engine/install/)
+
+6. [Install Node Version Manager (NVM)](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+7. Select Node version 18
 
 ```shell
 nvm install 18
 ```
 
-6. Install Terraform CDK
+8. Install Terraform CDK
    Install cdktf in the node 18 version you just installed in step (4).
 
 ```shell
-npm install --global cdktf-cli@latest
+npm install --global cdktf-cli@^0.18.0
 ```
+
+9. Install `make`, `gcc`, `g++`, etc. For MacOS, run `brew install make gcc openssl readline sqlite3 xz` and for Ubuntu machines run `apt install build-essential libbz2-dev libssl-dev libreadline-dev libffi-dev zlib1g-dev libsqlite3-dev liblzma-dev`.
+
+10. Install `zlib1g-dev`. For MacOS, run `xcode-select --install` and for Ubuntu machines run `apt install zlib1g-dev`.
+
+11. [Install Pyenv](https://github.com/pyenv/pyenv#installation). Make sure the [prerequisites](https://github.com/pyenv/pyenv/wiki/Common-build-problems#prerequisites) are also there.
 
 ### Steps
 
@@ -68,10 +82,10 @@ From the working directory:
    your actual LocalStack key.
 
       ```bash
-      export LOCALSTACK_API_KEY=<your key>
+      export LOCALSTACK_AUTH_TOKEN=<your key>
       ```
 
-2. Start LocalStack
+2. Start LocalStack.
 
       ```bash
       make start-localstack
@@ -79,7 +93,7 @@ From the working directory:
 
 ![Start LocalStack](./docs/img/start-localstack.png "Start LocalStack")
 
-3. Setup an AWS_PROFILE for LocalStack
+3. Setup an AWS_PROFILE for LocalStack.
 
 #### Add this to your `~/.aws/config` file
 
@@ -98,11 +112,21 @@ aws_access_key_id=test
 aws_secret_access_key=test
 ```
 
+4. Setup the virtual Python environment.
+
+```sh
+pyenv install 3.11 && \
+   pyenv local 3.11 && \
+   python -m venv .venv && \
+   . .venv/bin/activate && \
+   pip install -r devops-tooling/requirements.txt
+```
+
 # IaC Pipelines
 
 ## Terraform CDK Instructions
 
-[Solution Guide for Terrform CDK](./docs/README-cdktf.md "Solution Guide for TerraformCDK")
+[Solution Guide for Terraform CDK](./docs/README-cdktf.md "Solution Guide for TerraformCDK")
 
 ## AWS CDK
 
@@ -111,6 +135,25 @@ aws_secret_access_key=test
 ## Pulumi Instructions (Work in Progress)
 
 [Solution Guide for Pulumi](./docs/README-pulumi.md "Solution Guide for Pulumi")
+
+# Tests
+
+First export the following env vars:
+
+```bash
+export LOCALSTACK_AUTH_TOKEN=<auth-token>
+export DOCKER_COMPOSE_FLAGS="--build"
+export BUILDKIT_PROGRESS=plain
+```
+
+And then run the AWS CDK and the Terraform-based AWS CDK deployments:
+
+```
+export CI_TEST_NAME=awscdk make run-ci-test
+export CI_TEST_NAME=awscdktf make run-ci-test
+```
+
+***Note: If you run the above tests with Rosetta turned on, and still want to go with `arm64`, you need to export `export OVERRIDE_LOCAL_ARCH=arm64`.***
 
 # Hot Reloading!
 

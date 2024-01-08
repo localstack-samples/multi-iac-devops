@@ -30,7 +30,7 @@ prepare:
 	mkdir -p build/lib
 
 package:
-	docker build --progress=plain -t $${PWD##*/} .
+	docker build --progress=plain -t $${PWD##*/} --build-arg VERSION=18 --build-arg ARCH=$(shell uname -m) .
 	docker create -it --name $${PWD##*/} $${PWD##*/} bash
 	docker cp $${PWD##*/}:/usr/local/layer/layer.zip ./$${PWD##*/}.zip
 	docker rm -f $${PWD##*/}

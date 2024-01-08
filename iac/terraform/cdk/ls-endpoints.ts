@@ -1,4 +1,8 @@
-const localstackEndpoint = "http://host.docker.internal:4566";
+import fs from "fs";
+
+// If running in docker, use the host.docker.internal address, otherwise use localhost.
+const localstackEndpoint = fs.existsSync('/.dockerenv') ? "http://host.docker.internal:4566": "http://localhost:4566";
+
 export const endpoints = [
     {
         accessanalyzer: localstackEndpoint,

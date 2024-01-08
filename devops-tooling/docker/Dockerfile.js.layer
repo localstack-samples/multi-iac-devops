@@ -1,4 +1,6 @@
-FROM public.ecr.aws/lambda/nodejs:18
+ARG VERSION
+ARG ARCH
+FROM public.ecr.aws/lambda/nodejs:${VERSION}-${ARCH}
 
 ENV HOME_DIR=/usr/local/layer
 RUN yum install -y zip
@@ -7,8 +9,8 @@ WORKDIR ${HOME_DIR}
 
 COPY package.json .
 
-RUN mkdir -p ./nodejs/node18/
+RUN mkdir -p ./nodejs/node${VERSION}/
 RUN npm install
-RUN mv node_modules ./nodejs/node18
+RUN mv node_modules ./nodejs/node${VERSION}
 
 RUN zip -rq layer.zip ./nodejs

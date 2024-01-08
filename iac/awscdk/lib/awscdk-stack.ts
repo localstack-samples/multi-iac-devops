@@ -34,13 +34,23 @@ export class AwscdkStack extends cdk.Stack {
 
     constructor(scope: Construct, id: string, props: LsMultiEnvAppProps) {
         super(scope, id, props)
-
-        // Run Lambda on ARM_64 in AWS and locally when local arch is ARM_64.
-        let arch = Architecture.ARM_64
-        const localArch = process.env.LOCAL_ARCH
-        if (props.isLocal && localArch == 'x86_64') {
-            arch = Architecture.X86_64
+        
+        const architecture = process.env.ARCH
+        const overridingLocalArch = process.env.OVERRIDE_LOCAL_ARCH
+        
+        let targetArchitecture = undefined
+        if (architecture != overridingLocalArch) {
+            if (overridingLocalArch == "x86_64" || overridingLocalArch == "amd64") {
+                targetArchitecture = Architecture.X86_64
+            } else {
+                targetArchitecture = Architecture.ARM_64
+            }
         }
+        // props.isLocal is true when stacks are deployed using localstack
+        if (!props.isLocal) {
+            targetArchitecture = Architecture.ARM_64
+        }
+        
         // Lambda Source Code
         // If running on LocalStack, setup Hot Reloading with a fake bucked named hot-reload
         if (props.isLocal) {
@@ -69,7 +79,7 @@ export class AwscdkStack extends cdk.Stack {
         // Create the Lambda
         this.lambdaFunction = new Function(this, 'name-lambda', {
             functionName: 'name-lambda',
-            architecture: arch,
+            architecture: targetArchitecture,
             handler: props.handler,
             runtime: props.runtime,
             code: this.lambdaCode,

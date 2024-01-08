@@ -37,6 +37,8 @@ This will deploy a VPC using the configuration in `devops-tooling/accounts`.
 make local-cdktf-vpc-deploy
 ```
 
+*Note: the above command will fail if it has been applied on a previous instance of Localstack unless `make local-cdktf-clean` is run before.*
+
 ### Deploy App Stack on LocalStack
 
 This will deploy the resources.

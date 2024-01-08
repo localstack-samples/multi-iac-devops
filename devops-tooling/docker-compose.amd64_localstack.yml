@@ -1,0 +1,4 @@
+version: "3.9"
+services:
+  localstack:
+    platform: linux/amd64

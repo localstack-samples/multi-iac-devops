@@ -78,7 +78,7 @@ Then run the test(s)
 ## Run Integration Tests against LocalStack
 
 ```shell
-make test-awscdk
+make local-awscdk-test
 ```
 
 ## Invoke API Gateway on LocalStack
@@ -103,6 +103,12 @@ to test their IaC pipelines locally before ever deploying them to a live AWS env
 However you set your credentials in your terminal, do it now.
 
 ### Deploy the AWS CDK IaC App Stack
+
+Run the CDK bootstrap:
+
+```shell
+make sbx-awscdk-bootstrap
+```
 
 This will deploy the resources.
 
