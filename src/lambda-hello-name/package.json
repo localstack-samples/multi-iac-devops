@@ -8,9 +8,12 @@
   "author": "LocalStack",
   "license": "LocalStack",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.130"
+    "@types/aws-lambda": "^8.10.122",
+    "@types/node": "^20.11.5",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
-    "typescript": "^5.3.2"
+    "@aws-sdk/client-dynamodb": "^3.438.0",
+    "@aws-sdk/lib-dynamodb": "^3.438.0"
   }
 }

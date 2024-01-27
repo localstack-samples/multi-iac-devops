@@ -98,6 +98,45 @@ export class AppStack extends TerraformStack {
                 region: config.region
             })
         }
+        // Create a DynamoDB table with a primary key named 'id'
+        // const table = new aws.dynamodbTable.DynamodbTable(this, "table", {
+        //     name: "livedebug-table",
+        //     attributes: [
+        //         {
+        //             name: "id",
+        //             type: "S",
+        //         },
+        //     ],
+        //     hashKey: "id",
+        //     readCapacity: 5,
+        //     writeCapacity: 5,
+        //     tags: {
+        //         Environment: "dev",
+        //     },
+        // })
+        // Create a DynamoDB table with a primary key named 'id'
+        const ddbTable = new aws.dynamodbTable.DynamodbTable(this, "table", {
+            name: "livedebug-table",
+            attribute: [
+                {
+                    name: "id",
+                    type: "S",
+                },
+            ],
+            hashKey: "id",
+            readCapacity: 5,
+            writeCapacity: 5,
+            tags: {
+                Environment: "dev",
+            },
+        })
+
+        // Create CloudWatch Log Group
+        const logGroup = new CloudwatchLogGroup(this, "cloudwatch-log-group", {
+            name: "livedebug-log-group",
+            retentionInDays: 14,
+        })
+
         // Bucket the lambda is going to get a list of objects from
         const listBucket = new S3Bucket(this, "list-bucket", {
             bucket: `${config.listBucketName}-${randomId.id}`,
@@ -198,83 +237,27 @@ export class AppStack extends TerraformStack {
             s3Key: lambdaS3Key,
             handler: config.handler,
             runtime: config.runtime,
-            environment: {variables: {'BUCKET': listBucket.bucket}},
+            environment: {
+                variables: {
+                    'BUCKET': listBucket.bucket,
+                    DDB_TABLE_NAME: ddbTable.name,
+                }
+            },
             role: role.arn
         })
 
         // --------------- Start CloudWatch Splunk HEC forwarder config
         // Create Splunk HEC CloudWatch Lambda function
-        // const lambdaSplunkSrcKey = path.resolve("../../../src/lambda-splunk-hec-logger/src")
-        //
-        //
-        // const logsAssumeRolePolicy = {
-        //     "Version": "2012-10-17",
-        //     "Statement": [
-        //         {
-        //             "Action": "sts:AssumeRole",
-        //             "Principal": {
-        //                 "Service": "logs.amazonaws.com"
-        //             },
-        //             "Effect": "Allow",
-        //             "Sid": ""
-        //         },
-        //     ]
-        // }
-        // // Create Lambda role
-        // const cwRole = new aws.iamRole.IamRole(this, "cw-log-exec", {
-        //     name: `cw-log-role`,
-        //     assumeRolePolicy: JSON.stringify(logsAssumeRolePolicy)
-        // })
-        //
-        // // Add execution role for lambda to write to CloudWatch logs
-        // new aws.iamRolePolicyAttachment.IamRolePolicyAttachment(this, "cw-log-policy", {
-        //     policyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
-        //     role: cwRole.name
-        // })
-        //
-        //
-        // const splunkFunc = new aws.lambdaFunction.LambdaFunction(this, "cw-splunk-lambda", {
-        //     functionName: `cw-splunk-lambda`,
-        //     architectures: archList,
-        //     // s3Bucket: bucket.bucket,
-        //     s3Bucket: lambdaBucketName,
-        //     timeout: 15,
-        //     // s3Key: cwLambdaArchive.key,
-        //     s3Key: lambdaSplunkSrcKey,
-        //     handler: config.handler,
-        //     runtime: config.runtime,
-        //     // sourceCodeHash: cwLambdaArchive.checksumSha256,
-        //     environment: {
-        //         variables: {
-        //             'SPLUNK_HEC_URL': 'http://host.docker.internal:8088',
-        //             'SPLUNK_HEC_TOKEN': 'c0922437-b962-4c51-ad0d-4d2c2a56fd5d'
-        //         }
-        //     },
-        //     role: role.arn
-        // })
-        // const logGroup = new CloudwatchLogGroup(this, "name-lg", {
-        //     name: "/aws/lambda/name-lambda",
-        //     tags: {
-        //         Application: "serviceA",
-        //         Environment: "production",
-        //     },
-        // })
-        // new CloudwatchLogSubscriptionFilter(this, "test_lambdafunction_logfilter", {
-        //     destinationArn: splunkFunc.arn,
-        //     filterPattern: "",
+
+
+        // Create CloudWatch Log Subscription Filter
+        // new CloudwatchLogSubscriptionFilter(this, "cloudwatch-log-subscription-filter", {
+        //     name: "livedebug-log-subscription-filter",
+        //     destinationArn: "arn:aws:lambda:us-east-1:123456789012:function:cloudwatch-splunk-hec-forwarder",
         //     logGroupName: logGroup.name,
-        //     name: "test_lambdafunction_logfilter",
-        //     // roleArn: cwRole.arn,
+        //     filterPattern: "",
         // })
-        //
-        // const currentAccountId = new DataAwsCallerIdentity(this, "currentAccount0", {})
-        //
-        // new aws.lambdaPermission.LambdaPermission(this, "logs-lambda", {
-        //     functionName: splunkFunc.functionName,
-        //     action: "lambda:InvokeFunction",
-        //     principal: "logs.amazonaws.com",
-        //     sourceArn: `arn:aws:logs:${config.region}:${currentAccountId.accountId}:log-group:/aws/lambda/name-lambda:*`,
-        // })
+
 
         // --------------- End CloudWatch Splunk HEC forwarder config
 
@@ -319,7 +302,11 @@ export class AppStack extends TerraformStack {
         })
 
         new TerraformOutput(this, 'apigwUrl', {
-            value: api.apiEndpoint
+            value: 'https://' + api.apiEndpoint
+        })
+
+        new TerraformOutput(this, 'ddbTableName', {
+            value: ddbTable.name
         })
 
         // Output the ECR Repository URL

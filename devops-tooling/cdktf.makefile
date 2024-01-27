@@ -17,19 +17,20 @@ local-cdktf-install: cdktfinstall
 local-cdktf-vpc-deploy: build cdktfdeploy
 local-cdktf-vpc-destroy: cdktfdestroy
 # Lambda - APIGW - S3
-local-cdktf-deploy: build cdktfdeploy
 local-cdktf-destroy: cdktfdestroy
 local-cdktf-output: cdktfoutput
+local-cdktf-deploy: build cdktfdeploy
+	@make -s local-cdktf-output ARGS="--outputs-file ../../../auto_tests/local-cdktf-output.json"
+
+
 local-cdktf-invoke:
-	@make local-cdktf-output ARGS="--outputs-file ../../../local-cdktf-output.json" && \
-	APIGW=$$(jq -r '."$(TFSTACK_NAME)".apigwUrl' local-cdktf-output.json) && \
+	APIGW=$$(jq -r '."$(TFSTACK_NAME)".apigwUrl' auto_tests/local-cdktf-output.json) && \
 	curl "http://$${APIGW}";
 	@rm -f local-cdktf-output.json
 
 
 local-cdktf-test:
-	make -s local-cdktf-output ARGS="--outputs-file ../../../auto_tests/cdktf-output.json"
-	cd auto_tests && jq '."$(TFSTACK_NAME)"' cdktf-output.json > iac-output.json;
+	cd auto_tests && jq '."$(TFSTACK_NAME)"' local-cdktf-output.json > iac-output.json;
 	make -s test
 
 local-cdktf-clean:
@@ -41,10 +42,12 @@ local-cdktf-clean:
 # VPC
 sbx-cdktf-vpc-deploy: build cdktfdeploy
 sbx-cdktf-vpc-destroy: cdktfdestroy
-# Lambda - APIGW - S3
-sbx-cdktf-deploy: build cdktfdeploy
+
 sbx-cdktf-destroy: cdktfdestroy
 sbx-cdktf-output: cdktfoutput
+# Lambda - APIGW - S3
+sbx-cdktf-deploy: build cdktfdeploy
+		@make -s sbx-cdktf-output ARGS="--outputs-file ../../../auto_tests/local-cdktf-output.json"
 
 # Private Jumphost
 sbx-cdktf-jump-deploy: build cdktfdeploy
@@ -52,7 +55,6 @@ sbx-cdktf-jump-destroy: cdktfdestroy
 sbx-cdktf-jump-output: cdktfoutput
 
 sbx-cdktf-invoke:
-	make sbx-cdktf-output ARGS="--outputs-file ../../../cdktf-output.json" && \
-	APIGW=$$(jq -r '."$(TFSTACK_NAME)".apigwUrl' cdktf-output.json) && \
-	curl "$${APIGW}";
+	APIGW=$$(jq -r '."$(TFSTACK_NAME)".apigwUrl' ./auto_tests/local-cdktf-output.json) && \
+	curl "https://$${APIGW}";
 	@rm -f cdktf-output.json

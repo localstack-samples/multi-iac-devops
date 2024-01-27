@@ -69,13 +69,19 @@ iac-shared:
 	pushd iac/iac-shared && npm install && npm run build && popd
 
 build:
+	cd src/lambda-hello-name && rm -f lambda.zip
 	cd src/lambda-hello-name && npm install
 	cd src/lambda-hello-name && npm run build
+	cd src/lambda-hello-name && npm prune --omit=dev
+	mkdir -p src/lambda-hello-name/bundle
+	cp -r src/lambda-hello-name/dist/* src/lambda-hello-name/bundle
+	cp -r src/lambda-hello-name/node_modules src/lambda-hello-name/bundle
+	cd src/lambda-hello-name/bundle &&  zip -r ../lambda.zip *
 	cd src/common_layer && make
 
 # Hot reloading watching to run build
 watch-lambda:
-	cd src/lambda-hello-name && npm run watch
+	cd src/lambda-hello-name && npm install && npm run watch
 
 # Run the tests
 test:
