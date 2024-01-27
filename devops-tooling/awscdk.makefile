@@ -4,9 +4,9 @@ awscdkinstall:
 awscdkbootstrap: iac-shared awscdkinstall build
 	cd $(STACK_DIR) && $(CDK_CMD) bootstrap
 awscdkdeploy: iac-shared
-	cd $(STACK_DIR) && $(CDK_CMD) deploy $(TFSTACK_NAME)
+	cd $(STACK_DIR) && $(CDK_CMD) deploy $(TFSTACK_NAME) --require-approval=never
 awscdkdestroy: iac-shared
-	cd $(STACK_DIR) && $(CDK_CMD) destroy $(TFSTACK_NAME)
+	cd $(STACK_DIR) && $(CDK_CMD) destroy $(TFSTACK_NAME) --require-approval=never
 awscdkoutput:
 	@aws cloudformation describe-stacks \
   --stack-name $(TFSTACK_NAME) \
@@ -27,15 +27,15 @@ local-awscdk-destroy: awscdkdestroy
 local-awscdk-output: awscdkoutput
 
 local-awscdk-test:
-	make -s local-awscdk-output > auto_tests/iac-output.json;
-	make -s test
+	@$(MAKE)  --silent local-awscdk-output > auto_tests/iac-output.json;
+	make test
 
 local-awscdk-invoke:
-	@APIGW=$$(make local-awscdk-output | jq -r '.apigwUrl') && \
+	@APIGW=$$($(MAKE) --silent local-awscdk-output | jq -r '.apigwUrl') && \
 	curl "http://$${APIGW}";
 
 local-awscdk-invoke-loop:
-	@APIGW=$$(make local-awscdk-output | jq -r '.apigwUrl') && \
+	@APIGW=$$($(MAKE) --silent local-awscdk-output | jq -r '.apigwUrl') && \
 	sh run-lambdas.sh "http://$${APIGW}"
 
 local-awscdk-clean:

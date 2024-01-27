@@ -34,6 +34,7 @@ export APP_NAME = lsmulti
 export APP_VERSION = 0.0.1
 export API_VERSION = v1
 export AWS_REGION=us-east-1
+# Local when deployed using localstack
 export IS_LOCAL=true
 export LOGGING_LEVEL=DEBUG
 export AWS_ACCOUNT=000000000000
@@ -86,6 +87,13 @@ sbx-awscdk-vpc%: export TFSTACK_NAME=LsMultiEnvVpc-$(STACK_SUFFIX)
 
 
 uname_m := $(shell uname -m) # store the output of the command in a variable
-export LOCAL_ARCH=$(uname_m)
-export ARCH=$(uname_m)
 
+# Architecture of the local deploying machine
+export ARCH=$(uname_m)
+# Override the architecture of the locally-deploying machine
+# Does affect Lambdas, Fargate, EC2, etc.
+# Necessary for deploying ARM64 on x86_64 with Rosetta.
+export OVERRIDE_LOCAL_ARCH?=$(ARCH)
+
+# Internal mapping directory for run-ci-test
+export MAPPING_DIR_NAME=$(PWD)

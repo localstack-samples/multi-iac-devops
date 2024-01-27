@@ -3,12 +3,11 @@ services:
   localstack:
     container_name: "${APP_NAME}-localstack"
     image: localstack/localstack-pro:latest
+    platform: linux/arm64
     ports:
       - "4566:4566"            # LocalStack Gateway
       - "4510-4560:4510-4560"  # external services port range
       - "443:443"              # LocalStack HTTPS Gateway (required for Pro)
-      #- "8001:8080"            # only required for Pro
-      #- "4571:4571"            # elasticsearch service
     environment:
       - DEBUG=1 # turn debug output on
       - ENFORCE_IAM=${ENFORCE_IAM-1} # Enable IAM policy evaluation and enforcement
@@ -23,5 +22,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock  # Mount the Docker socket into the container
       - ${LOCALSTACK_VOLUME_DIR:-./ls_volume}:/var/lib/localstack
-      # - /Users/chadbeaulac/localdev/lstack/lambda-appconfig/localstack-extension-lambda-appconfig/build/dist/localstack-extension-lambda-appconfig-0.1.0.tar.gz:/tmp/localstack-extension-lambda-appconfig-0.1.0.tar.gz
-      #      - /Users/chadbeaulac/Library/Caches/localstack/volume:/var/lib/localstack
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - localstack_network
+networks:
+  localstack_network:
+    driver: bridge

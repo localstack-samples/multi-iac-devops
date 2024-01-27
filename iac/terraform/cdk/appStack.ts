@@ -44,16 +44,18 @@ export class AppStack extends TerraformStack {
 
         console.log('config', config)
 
-        let archList = ['arm64']
-        const localArch = process.env.LOCAL_ARCH
+        const architecture = process.env.ARCH
+        const overridingLocalArch = process.env.OVERRIDE_LOCAL_ARCH || architecture
 
-        if (config.isLocal && localArch == 'x86_64') {
-            archList = ['x86_64']
+        let archList: string[] = []
+        if (architecture != overridingLocalArch && overridingLocalArch != undefined) {
+            archList.push(overridingLocalArch)
         }
-        // let archList = undefined
-        // if (!config.isLocal) {
-        //     archList = ["arm64"]
-        // }
+        // props.isLocal is true when stacks are deployed using localstack
+        if (!config.isLocal) {
+            archList.push("arm64")
+        }
+
         const lambdaDeployDir: string = path.resolve('../../../app')
         // const dockerAppHash: string = await hashFolder(dockerAppDir);
         console.log(lambdaDeployDir)
@@ -149,7 +151,7 @@ export class AppStack extends TerraformStack {
 
         // Create Lambda archive
         const asset = new TerraformAsset(this, "lambda-asset", {
-            path: path.resolve(config.lambdaDistPath),
+            path: path.resolve("../../.." + config.lambdaDistPath),
             type: AssetType.ARCHIVE, // if left empty it infers directory and file
         })
 
@@ -181,7 +183,7 @@ export class AppStack extends TerraformStack {
 
         // Default to LocalStack hot-reload magic bucket name and prefix to docker mountable path
         let lambdaBucketName = 'hot-reload'
-        let lambdaS3Key = path.resolve(config.lambdaDistPath)
+        let lambdaS3Key = process.env.HOST_PROJECT_PATH + config.lambdaDistPath
         // If not Local, use actual S3 bucket and key
         if (!config.isLocal) {
             lambdaBucketName = bucket.bucket
@@ -202,89 +204,77 @@ export class AppStack extends TerraformStack {
 
         // --------------- Start CloudWatch Splunk HEC forwarder config
         // Create Splunk HEC CloudWatch Lambda function
-        const lambdaSplunkSrcKey = path.resolve("../../../src/lambda-splunk-hec-logger/src")
-
-        // const cwLambdaAsset = new TerraformAsset(this, "cw-lambda-asset", {
-        //     path: lambdaSplunkSrcKey,
-        //     type: AssetType.ARCHIVE, // if left empty it infers directory and file
+        // const lambdaSplunkSrcKey = path.resolve("../../../src/lambda-splunk-hec-logger/src")
+        //
+        //
+        // const logsAssumeRolePolicy = {
+        //     "Version": "2012-10-17",
+        //     "Statement": [
+        //         {
+        //             "Action": "sts:AssumeRole",
+        //             "Principal": {
+        //                 "Service": "logs.amazonaws.com"
+        //             },
+        //             "Effect": "Allow",
+        //             "Sid": ""
+        //         },
+        //     ]
+        // }
+        // // Create Lambda role
+        // const cwRole = new aws.iamRole.IamRole(this, "cw-log-exec", {
+        //     name: `cw-log-role`,
+        //     assumeRolePolicy: JSON.stringify(logsAssumeRolePolicy)
         // })
         //
-        // // Upload Lambda zip file to newly created S3 bucket
-        // const cwLambdaArchive = new aws.s3Object.S3Object(this, "cw-lambda-archive", {
-        //     bucket: bucket.bucket,
-        //     key: `cw-lambda-archive/${config.version}/archive.zip`,
-        //     source: cwLambdaAsset.path, // returns a posix path
-        //     sourceHash: cwLambdaAsset.assetHash
+        // // Add execution role for lambda to write to CloudWatch logs
+        // new aws.iamRolePolicyAttachment.IamRolePolicyAttachment(this, "cw-log-policy", {
+        //     policyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+        //     role: cwRole.name
         // })
-
-        const logsAssumeRolePolicy = {
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Action": "sts:AssumeRole",
-                    "Principal": {
-                        "Service": "logs.amazonaws.com"
-                    },
-                    "Effect": "Allow",
-                    "Sid": ""
-                },
-            ]
-        }
-        // Create Lambda role
-        const cwRole = new aws.iamRole.IamRole(this, "cw-log-exec", {
-            name: `cw-log-role`,
-            assumeRolePolicy: JSON.stringify(logsAssumeRolePolicy)
-        })
-
-        // Add execution role for lambda to write to CloudWatch logs
-        new aws.iamRolePolicyAttachment.IamRolePolicyAttachment(this, "cw-log-policy", {
-            policyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
-            role: cwRole.name
-        })
-
-
-        const splunkFunc = new aws.lambdaFunction.LambdaFunction(this, "cw-splunk-lambda", {
-            functionName: `cw-splunk-lambda`,
-            architectures: archList,
-            // s3Bucket: bucket.bucket,
-            s3Bucket: lambdaBucketName,
-            timeout: 15,
-            // s3Key: cwLambdaArchive.key,
-            s3Key: lambdaSplunkSrcKey,
-            handler: config.handler,
-            runtime: config.runtime,
-            // sourceCodeHash: cwLambdaArchive.checksumSha256,
-            environment: {
-                variables: {
-                    'SPLUNK_HEC_URL': 'http://host.docker.internal:8088',
-                    'SPLUNK_HEC_TOKEN': 'c0922437-b962-4c51-ad0d-4d2c2a56fd5d'
-                }
-            },
-            role: role.arn
-        })
-        const logGroup = new CloudwatchLogGroup(this, "name-lg", {
-            name: "/aws/lambda/name-lambda",
-            tags: {
-                Application: "serviceA",
-                Environment: "production",
-            },
-        })
-        new CloudwatchLogSubscriptionFilter(this, "test_lambdafunction_logfilter", {
-            destinationArn: splunkFunc.arn,
-            filterPattern: "",
-            logGroupName: logGroup.name,
-            name: "test_lambdafunction_logfilter",
-            // roleArn: cwRole.arn,
-        })
-
-        const currentAccountId = new DataAwsCallerIdentity(this, "currentAccount0", {})
-
-        new aws.lambdaPermission.LambdaPermission(this, "logs-lambda", {
-            functionName: splunkFunc.functionName,
-            action: "lambda:InvokeFunction",
-            principal: "logs.amazonaws.com",
-            sourceArn: `arn:aws:logs:${config.region}:${currentAccountId.accountId}:log-group:/aws/lambda/name-lambda:*`,
-        })
+        //
+        //
+        // const splunkFunc = new aws.lambdaFunction.LambdaFunction(this, "cw-splunk-lambda", {
+        //     functionName: `cw-splunk-lambda`,
+        //     architectures: archList,
+        //     // s3Bucket: bucket.bucket,
+        //     s3Bucket: lambdaBucketName,
+        //     timeout: 15,
+        //     // s3Key: cwLambdaArchive.key,
+        //     s3Key: lambdaSplunkSrcKey,
+        //     handler: config.handler,
+        //     runtime: config.runtime,
+        //     // sourceCodeHash: cwLambdaArchive.checksumSha256,
+        //     environment: {
+        //         variables: {
+        //             'SPLUNK_HEC_URL': 'http://host.docker.internal:8088',
+        //             'SPLUNK_HEC_TOKEN': 'c0922437-b962-4c51-ad0d-4d2c2a56fd5d'
+        //         }
+        //     },
+        //     role: role.arn
+        // })
+        // const logGroup = new CloudwatchLogGroup(this, "name-lg", {
+        //     name: "/aws/lambda/name-lambda",
+        //     tags: {
+        //         Application: "serviceA",
+        //         Environment: "production",
+        //     },
+        // })
+        // new CloudwatchLogSubscriptionFilter(this, "test_lambdafunction_logfilter", {
+        //     destinationArn: splunkFunc.arn,
+        //     filterPattern: "",
+        //     logGroupName: logGroup.name,
+        //     name: "test_lambdafunction_logfilter",
+        //     // roleArn: cwRole.arn,
+        // })
+        //
+        // const currentAccountId = new DataAwsCallerIdentity(this, "currentAccount0", {})
+        //
+        // new aws.lambdaPermission.LambdaPermission(this, "logs-lambda", {
+        //     functionName: splunkFunc.functionName,
+        //     action: "lambda:InvokeFunction",
+        //     principal: "logs.amazonaws.com",
+        //     sourceArn: `arn:aws:logs:${config.region}:${currentAccountId.accountId}:log-group:/aws/lambda/name-lambda:*`,
+        // })
 
         // --------------- End CloudWatch Splunk HEC forwarder config
 

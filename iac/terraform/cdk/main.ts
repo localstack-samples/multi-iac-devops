@@ -15,7 +15,7 @@ const sbxVpc = new VpcStack(app, "LsMultiEnvVpc.sbx", {
 new AppStack(app, "LsMultiEnvApp.sbx", {
     isLocal: false,
     environment: 'sbx',
-    lambdaDistPath: "../../../src/lambda-hello-name/dist",
+    lambdaDistPath: "/src/lambda-hello-name/dist",
     handler: "index.handler",
     runtime: "nodejs18.x",
     listBucketName: process.env.LIST_BUCKET_NAME || 'lambda-work',
@@ -43,7 +43,7 @@ const localVpcStack = new VpcStack(app, "LsMultiEnvVpc.local", {
 new AppStack(app, "LsMultiEnvApp.local", {
     isLocal: true,
     environment: 'local',
-    lambdaDistPath: "../../../src/lambda-hello-name/dist",
+    lambdaDistPath: "/src/lambda-hello-name/dist",
     handler: "index.handler",
     runtime: "nodejs20.x",
     listBucketName: process.env.LIST_BUCKET_NAME || 'lambda-work',
