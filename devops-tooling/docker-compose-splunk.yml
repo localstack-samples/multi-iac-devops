@@ -1,0 +1,53 @@
+version: "3.9"
+networks:
+  default:
+    external:
+      name: splunk_net
+services:
+  localstack:
+    container_name: "${APP_NAME}-lsplunk"
+    image: localstack/localstack-pro:latest
+    #    networks:
+    #      devnet:
+    ports:
+      - "4566:4566"            # LocalStack Gateway
+      - "4510-4560:4510-4560"  # external services port range
+      - "8001:8080"            # only required for Pro
+      - "443:443"              # LocalStack HTTPS Gateway (required for Pro)
+      - "4571:4571"            # elasticsearch service
+    environment:
+      - DEBUG=1 # turn debug output on
+      - ENFORCE_IAM=${ENFORCE_IAM-1} # Enable IAM policy evaluation and enforcement
+      - EXTENSION_AUTO_INSTALL=localstack-extension-outages
+      - LAMBDA_RUNTIME_ENVIRONMENT_TIMEOUT=90
+      - PERSIST_ALL=false
+      - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY-}
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN-}
+      - LAMBDA_REMOVE_CONTAINERS=0
+    networks:
+      default:
+        ipv4_address: 172.16.42.11
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Mount the Docker socket into the container
+      - ${LOCALSTACK_VOLUME_DIR:-./ls_volume}:/var/lib/localstack
+
+  so1:
+    container_name: so1
+    image: ${SPLUNK_IMAGE:-splunk/splunk:latest}
+    platform: linux/amd64
+    #    networks:
+    #      devnet:
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_HEC_TOKEN=abcd1234
+      - SPLUNK_PASSWORD=adminadmin
+    networks:
+      default:
+        ipv4_address: 172.16.42.12
+    dns:
+      - 172.16.42.11
+    ports:
+      - 8000:8000
+      - 8088:8088
+    volumes:
+      - ./default.yml:/tmp/defaults/default.yml

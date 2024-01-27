@@ -28,9 +28,9 @@ local-cdktf-invoke:
 
 
 local-cdktf-test:
-	make local-cdktf-output ARGS="--outputs-file ../../../auto_tests/cdktf-output.json"
+	make -s local-cdktf-output ARGS="--outputs-file ../../../auto_tests/cdktf-output.json"
 	cd auto_tests && jq '."$(TFSTACK_NAME)"' cdktf-output.json > iac-output.json;
-	make test
+	make -s test
 
 local-cdktf-clean:
 	- rm -rf iac/terraform/cdk/terraform.Ls*

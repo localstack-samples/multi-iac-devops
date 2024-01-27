@@ -4,6 +4,7 @@ import {VpcStack} from "./vpc"
 import {AppStack} from "./appStack"
 import {JumphostStack} from "./jumphostStack"
 
+
 const app = new App()
 const sbxVpc = new VpcStack(app, "LsMultiEnvVpc.sbx", {
     isLocal: false,
@@ -44,7 +45,7 @@ new AppStack(app, "LsMultiEnvApp.local", {
     environment: 'local',
     lambdaDistPath: "../../../src/lambda-hello-name/dist",
     handler: "index.handler",
-    runtime: "nodejs18.x",
+    runtime: "nodejs20.x",
     listBucketName: process.env.LIST_BUCKET_NAME || 'lambda-work',
     stageName: "hello-name",
     version: '0.0.1',
@@ -53,3 +54,4 @@ new AppStack(app, "LsMultiEnvApp.local", {
     alblogsBucket: localVpcStack.alblogsBucket
 })
 app.synth()
+

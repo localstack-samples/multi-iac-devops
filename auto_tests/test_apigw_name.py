@@ -21,7 +21,9 @@ class TestNameApigw:
 
     def test_get_hello_name_rest(self, iac_output):
         env = TestNameApigw.get_env_vars(iac_output)
-        url = f"http://{env.REST_API_ENDPOINT}?name=Chad"
+        base_url = env.REST_API_ENDPOINT.replace("https", "http")
+
+        url = f"{base_url}?name=Chad"
         logger.info(f"url: {json.dumps(url)}")
         response = requests.get(
             url)

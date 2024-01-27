@@ -25,7 +25,7 @@ new AwscdkStack(app, 'LsMultiEnvApp-local', {
     /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
     isLocal: true,
     environment: 'local',
-    lambdaDistPath: path.resolve("../../src/lambda-hello-name/dist"),
+    lambdaDistPath: process.env.HOST_PROJECT_PATH + "/src/lambda-hello-name/dist",
     handler: "index.handler",
     runtime: Runtime.NODEJS_18_X,
     listBucketName: process.env.LIST_BUCKET_NAME || 'lambda-work',
@@ -51,7 +51,7 @@ new AwscdkStack(app, 'LsMultiEnvApp-sbx', {
     /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
     isLocal: false,
     environment: 'sbx',
-    lambdaDistPath: path.resolve("../../src/lambda-hello-name/dist"),
+    lambdaDistPath: process.env.HOST_PROJECT_PATH + "/src/lambda-hello-name/dist",
     handler: "index.handler",
     runtime: Runtime.NODEJS_18_X,
     listBucketName: process.env.LIST_BUCKET_NAME || 'lambda-work',

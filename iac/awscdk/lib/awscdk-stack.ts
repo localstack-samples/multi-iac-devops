@@ -6,9 +6,10 @@ import * as Iam from "aws-cdk-lib/aws-iam"
 import {PolicyStatement} from "aws-cdk-lib/aws-iam"
 import * as S3 from "aws-cdk-lib/aws-s3"
 // API Gateway V2 HTTP API - ALPHA
-import {HttpLambdaIntegration} from '@aws-cdk/aws-apigatewayv2-integrations-alpha'
-import * as apigwv2 from "@aws-cdk/aws-apigatewayv2-alpha"
-import {HttpApi} from "@aws-cdk/aws-apigatewayv2-alpha"
+// API Gateway V2 HTTP API
+import {HttpLambdaIntegration} from 'aws-cdk-lib/aws-apigatewayv2-integrations'
+import * as apigwv2 from "aws-cdk-lib/aws-apigatewayv2"
+import {HttpApi, HttpStage} from "aws-cdk-lib/aws-apigatewayv2"
 import * as ApiGateway from "aws-cdk-lib/aws-apigateway"
 import {AuthorizationType} from "aws-cdk-lib/aws-apigateway"
 
@@ -97,7 +98,7 @@ export class AwscdkStack extends cdk.Stack {
 
         // Output the HttpApiEndpoint
         new cdk.CfnOutput(this, 'HttpApiEndpoint', {
-            value: this.httpApi.apiEndpoint,
+            value: this.httpApi.url || '',
             exportName: 'HttpApiEndpoint',
         })
         // Create REST API with Proxy to S3

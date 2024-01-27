@@ -1,0 +1,11 @@
+inputs:
+  directory: /opt/splunk/etc/apps/splunk_httpinput/local
+  content:
+    http:
+      disabled: 0
+      port: 8088
+      enableSSL: 0
+    http://host.docker.internal:
+      disabled: 0
+      index: blabla
+      token:

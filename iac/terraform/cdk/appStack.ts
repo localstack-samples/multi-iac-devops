@@ -18,6 +18,8 @@ import {LambdaPermission} from "@cdktf/provider-aws/lib/lambda-permission"
 import {LbTargetGroupAttachment} from "@cdktf/provider-aws/lib/lb-target-group-attachment"
 import {SecurityGroup} from "@cdktf/provider-aws/lib/security-group"
 import {LambdaLayerVersion} from "@cdktf/provider-aws/lib/lambda-layer-version"
+import {CloudwatchLogSubscriptionFilter} from "./.gen/providers/aws/cloudwatch-log-subscription-filter"
+import {CloudwatchLogGroup} from "./.gen/providers/aws/cloudwatch-log-group"
 
 export interface MyMultiStackConfig {
     isLocal: boolean;
@@ -39,14 +41,19 @@ export class AppStack extends TerraformStack {
     constructor(scope: Construct, id: string, config: MyMultiStackConfig) {
         super(scope, id)
         this.config = config
+
         console.log('config', config)
 
-        let arch = 'arm64'
+        let archList = ['arm64']
         const localArch = process.env.LOCAL_ARCH
 
         if (config.isLocal && localArch == 'x86_64') {
-            arch = 'x86_64'
+            archList = ['x86_64']
         }
+        // let archList = undefined
+        // if (!config.isLocal) {
+        //     archList = ["arm64"]
+        // }
         const lambdaDeployDir: string = path.resolve('../../../app')
         // const dockerAppHash: string = await hashFolder(dockerAppDir);
         console.log(lambdaDeployDir)
@@ -108,6 +115,7 @@ export class AppStack extends TerraformStack {
             ]
         }
 
+
         const lambdaListBucketPolicy = {
             "Version": "2012-10-17",
             "Statement": [
@@ -134,21 +142,21 @@ export class AppStack extends TerraformStack {
         }
 
 
+        // Create unique S3 bucket that hosts Lambda executable
+        const bucket = new aws.s3Bucket.S3Bucket(this, "lambda-bucket", {
+            bucketPrefix: `${config.listBucketName}-lambda`
+        })
+
         // Create Lambda archive
         const asset = new TerraformAsset(this, "lambda-asset", {
             path: path.resolve(config.lambdaDistPath),
             type: AssetType.ARCHIVE, // if left empty it infers directory and file
         })
 
-        // Create unique S3 bucket that hosts Lambda executable
-        const bucket = new aws.s3Bucket.S3Bucket(this, "lambda-bucket", {
-            bucketPrefix: `${config.listBucketName}-lambda`
-        })
-
         // Upload Lambda zip file to newly created S3 bucket
         const lambdaArchive = new aws.s3Object.S3Object(this, "lambda-archive", {
             bucket: bucket.bucket,
-            key: `${config.version}/${asset.fileName}`,
+            key: `hello-lambda-archive/${config.version}/archive.zip`,
             source: asset.path, // returns a posix path
         })
 
@@ -180,9 +188,9 @@ export class AppStack extends TerraformStack {
             lambdaS3Key = lambdaArchive.key
         }
         // Create Lambda function
-        const lambdaFunc = new aws.lambdaFunction.LambdaFunction(this, "livedebug-lambda", {
+        const lambdaFunc = new aws.lambdaFunction.LambdaFunction(this, "name-lambda", {
             functionName: `name-lambda`,
-            architectures: [arch],
+            architectures: archList,
             s3Bucket: lambdaBucketName,
             timeout: 15,
             s3Key: lambdaS3Key,
@@ -191,6 +199,94 @@ export class AppStack extends TerraformStack {
             environment: {variables: {'BUCKET': listBucket.bucket}},
             role: role.arn
         })
+
+        // --------------- Start CloudWatch Splunk HEC forwarder config
+        // Create Splunk HEC CloudWatch Lambda function
+        const lambdaSplunkSrcKey = path.resolve("../../../src/lambda-splunk-hec-logger/src")
+
+        // const cwLambdaAsset = new TerraformAsset(this, "cw-lambda-asset", {
+        //     path: lambdaSplunkSrcKey,
+        //     type: AssetType.ARCHIVE, // if left empty it infers directory and file
+        // })
+        //
+        // // Upload Lambda zip file to newly created S3 bucket
+        // const cwLambdaArchive = new aws.s3Object.S3Object(this, "cw-lambda-archive", {
+        //     bucket: bucket.bucket,
+        //     key: `cw-lambda-archive/${config.version}/archive.zip`,
+        //     source: cwLambdaAsset.path, // returns a posix path
+        //     sourceHash: cwLambdaAsset.assetHash
+        // })
+
+        const logsAssumeRolePolicy = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Action": "sts:AssumeRole",
+                    "Principal": {
+                        "Service": "logs.amazonaws.com"
+                    },
+                    "Effect": "Allow",
+                    "Sid": ""
+                },
+            ]
+        }
+        // Create Lambda role
+        const cwRole = new aws.iamRole.IamRole(this, "cw-log-exec", {
+            name: `cw-log-role`,
+            assumeRolePolicy: JSON.stringify(logsAssumeRolePolicy)
+        })
+
+        // Add execution role for lambda to write to CloudWatch logs
+        new aws.iamRolePolicyAttachment.IamRolePolicyAttachment(this, "cw-log-policy", {
+            policyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+            role: cwRole.name
+        })
+
+
+        const splunkFunc = new aws.lambdaFunction.LambdaFunction(this, "cw-splunk-lambda", {
+            functionName: `cw-splunk-lambda`,
+            architectures: archList,
+            // s3Bucket: bucket.bucket,
+            s3Bucket: lambdaBucketName,
+            timeout: 15,
+            // s3Key: cwLambdaArchive.key,
+            s3Key: lambdaSplunkSrcKey,
+            handler: config.handler,
+            runtime: config.runtime,
+            // sourceCodeHash: cwLambdaArchive.checksumSha256,
+            environment: {
+                variables: {
+                    'SPLUNK_HEC_URL': 'http://host.docker.internal:8088',
+                    'SPLUNK_HEC_TOKEN': 'c0922437-b962-4c51-ad0d-4d2c2a56fd5d'
+                }
+            },
+            role: role.arn
+        })
+        const logGroup = new CloudwatchLogGroup(this, "name-lg", {
+            name: "/aws/lambda/name-lambda",
+            tags: {
+                Application: "serviceA",
+                Environment: "production",
+            },
+        })
+        new CloudwatchLogSubscriptionFilter(this, "test_lambdafunction_logfilter", {
+            destinationArn: splunkFunc.arn,
+            filterPattern: "",
+            logGroupName: logGroup.name,
+            name: "test_lambdafunction_logfilter",
+            // roleArn: cwRole.arn,
+        })
+
+        const currentAccountId = new DataAwsCallerIdentity(this, "currentAccount0", {})
+
+        new aws.lambdaPermission.LambdaPermission(this, "logs-lambda", {
+            functionName: splunkFunc.functionName,
+            action: "lambda:InvokeFunction",
+            principal: "logs.amazonaws.com",
+            sourceArn: `arn:aws:logs:${config.region}:${currentAccountId.accountId}:log-group:/aws/lambda/name-lambda:*`,
+        })
+
+        // --------------- End CloudWatch Splunk HEC forwarder config
 
         const layer =
             new LambdaLayerVersion(this, "lambda_layer", {
@@ -201,16 +297,17 @@ export class AppStack extends TerraformStack {
         // Create Lambda function
         const lambdaFuncAlb = new aws.lambdaFunction.LambdaFunction(this, "alb-lambda", {
             functionName: `alb-lambda`,
-            architectures: [arch],
+            architectures: archList,
             s3Bucket: lambdaBucketName,
             timeout: 15,
             s3Key: lambdaS3Key,
             handler: config.handler,
             runtime: config.runtime,
+            sourceCodeHash: asset.assetHash,
             layers: [layer.arn],
             vpcConfig: {
-                subnetIds: Token.asList(this.config.vpc.privateSubnetsOutput),
-                securityGroupIds: [this.config.vpc.defaultSecurityGroupIdOutput]
+                subnetIds: Token.asList(config.vpc.privateSubnetsOutput),
+                securityGroupIds: [config.vpc.defaultSecurityGroupIdOutput]
             },
             environment: {variables: {'BUCKET': listBucket.bucket}},
             role: role.arn
@@ -235,7 +332,6 @@ export class AppStack extends TerraformStack {
             value: api.apiEndpoint
         })
 
-
         // Output the ECR Repository URL
         new TerraformOutput(this, "lambdaFuncName", {
             value: lambdaFunc.functionName,
@@ -248,7 +344,6 @@ export class AppStack extends TerraformStack {
         // Create ALB Solution
         this.addAlbSolution(lambdaFuncAlb)
     }
-
 
     //
     // Create an internal Application Load Balancer (ALB) that routes to a Lambda

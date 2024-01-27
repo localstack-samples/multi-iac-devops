@@ -28,6 +28,13 @@ update-deps: $(PKG_SUB_DIRS)
 start-localstack:
 	cd devops-tooling && docker compose -p $(APP_NAME) up
 
+
+start-localstack-pro:
+	cd devops-tooling && docker compose -p $(APP_NAME)-pro -f docker-compose-pro.yml up
+
+start-localstack-splunk:
+	cd devops-tooling && docker compose -p $(APP_NAME)-splunk -f docker-compose-splunk.yml up
+
 stop-localstack:
 	cd devops-tooling && docker compose down
 
@@ -46,3 +53,6 @@ watch-lambda:
 # Run the tests
 test:
 	$(VENV_RUN) && cd auto_tests && AWS_PROFILE=localstack pytest $(ARGS);
+
+hp:
+	@echo $(HOST_PROJECT_PATH)

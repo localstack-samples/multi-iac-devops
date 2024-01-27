@@ -27,8 +27,8 @@ local-awscdk-destroy: awscdkdestroy
 local-awscdk-output: awscdkoutput
 
 local-awscdk-test:
-	make local-awscdk-output > auto_tests/iac-output.json;
-	make test
+	make -s local-awscdk-output > auto_tests/iac-output.json;
+	make -s test
 
 local-awscdk-invoke:
 	@APIGW=$$(make local-awscdk-output | jq -r '.apigwUrl') && \
