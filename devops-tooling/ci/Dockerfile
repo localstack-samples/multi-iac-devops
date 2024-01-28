@@ -4,8 +4,7 @@ ENV BASH_ENV=~/.profile
 
 # install core
 RUN \
-    --mount=type=cache,target=/var/cache/apt \
-    apt-get install -fy --fix-missing --no-install-recommends locales apt-transport-https \
+    apt-get install -fy --fix-missing --no-install-recommends \
     zip unzip jq \
     curl wget
 
