@@ -6,8 +6,8 @@ ENV BASH_ENV=~/.profile
 RUN \
     --mount=type=cache,target=/var/cache/apt \
     apt-get install -fy --fix-missing --no-install-recommends locales apt-transport-https \
-    zip unzip xz-utils jq \
-    curl wget ca-certificates gnupg2
+    zip unzip jq \
+    curl wget
 
 COPY devops-tooling/ci/setup.sh /tmp/setup.sh
 RUN chmod +x /tmp/setup.sh && /tmp/setup.sh
