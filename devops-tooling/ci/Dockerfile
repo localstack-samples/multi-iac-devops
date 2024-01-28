@@ -2,6 +2,11 @@ FROM ubuntu:latest
 
 ENV BASH_ENV=~/.profile
 
+# update system
+RUN \
+    --mount=type=cache,target=/var/cache/apt \
+    apt-get update -y --fix-missing --no-install-recommends && apt-get -y --fix-missing --no-install-recommends upgrade
+
 # install core
 RUN \
     apt-get install -fy --fix-missing --no-install-recommends \
