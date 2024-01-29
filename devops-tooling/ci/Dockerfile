@@ -1,4 +1,5 @@
 FROM ubuntu:latest
+ENV DEBIAN_FRONTEND noninteractive
 
 ENV BASH_ENV=~/.profile
 
