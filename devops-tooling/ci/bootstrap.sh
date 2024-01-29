@@ -21,5 +21,12 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip3 install --no-cache-dir -r /tmp/requirements.txt
 
+if [ -r "$NVM_DIR/nvm.sh" ]; then
+  echo "activating nvm env"
+  . "$NVM_DIR/nvm.sh"
+  echo "node version $(node --version)"
+  echo "npm version $(npm --version)"
+fi
+
 # Replace current shell with the CI test script 
 exec ${CI_TEST_NAME}

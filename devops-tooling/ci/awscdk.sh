@@ -3,6 +3,9 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Setup NVM and Node.js
+. /usr/local/nvm/nvm.sh use 20
+
 # Create AWS config/credentials
 make setup-aws
 
