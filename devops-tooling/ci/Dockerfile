@@ -17,10 +17,10 @@ RUN \
     postgresql-client mysql-client
 
 # install dev
-RUN \
-    --mount=type=cache,target=/var/cache/apt \
-    apt-get install -fy --fix-missing --no-install-recommends build-essential make libffi-dev libreadline-dev libncursesw5-dev libssl-dev \
-    libsqlite3-dev libgdbm-dev libc6-dev libbz2-dev zlib1g-dev llvm libncurses5-dev liblzma-dev libpq-dev libcurl4-openssl-dev
+#RUN \
+#    --mount=type=cache,target=/var/cache/apt \
+#    apt-get install -fy --fix-missing --no-install-recommends build-essential make libffi-dev libreadline-dev libncursesw5-dev libssl-dev \
+#    libsqlite3-dev libgdbm-dev libc6-dev libbz2-dev zlib1g-dev llvm libncurses5-dev liblzma-dev libpq-dev libcurl4-openssl-dev
 
 # install docker
 RUN install -m 0755 -d /etc/apt/keyrings
