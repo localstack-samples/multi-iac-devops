@@ -2,6 +2,13 @@ SHELL := /bin/bash
 
 PROJECT_MODULE_NAME = ./src/lambda-hello-name/src/
 
+uname_m := $(shell uname -m)
+ifeq ($(uname_m), x86_64)
+	export ARCH := amd64
+else
+	export ARCH := arm64
+endif
+
 -include .env-gdc-local
 -include ./devops-tooling/envs.makefile
 -include ./devops-tooling/nonenv.makefile
@@ -48,7 +55,7 @@ setup-aws:
 	fi
 
 start-localstack:
-	@ARCHITECTURE=$(shell uname -m); \
+	@ARCHITECTURE=$(ARCH); \
     if [ "$$ARCHITECTURE" = "x86_64" ]; then \
         cd devops-tooling && docker-compose -f docker-compose.localstack.yml -f docker-compose.amd64_localstack.yml -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
     else \

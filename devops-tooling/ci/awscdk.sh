@@ -19,10 +19,6 @@ make local-awscdk-deploy
 # Test AWS CDK stacks
 make local-awscdk-test
 
-# Cleanup
-make local-awscdk-destroy
-make local-awscdk-clean
-
 curl -X POST \
      -H "Content-Type: application/json" \
      -d '{"action": "kill"}' \

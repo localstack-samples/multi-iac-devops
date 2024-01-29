@@ -22,10 +22,6 @@ make local-cdktf-deploy
 # Test Terraform stacks
 make local-cdktf-test
 
-# Cleanup
-make local-cdktf-destroy
-make local-cdktf-clean
-
 curl -X POST \
      -H "Content-Type: application/json" \
      -d '{"action": "kill"}' \

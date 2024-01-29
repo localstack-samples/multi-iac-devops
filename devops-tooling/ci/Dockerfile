@@ -2,7 +2,7 @@ FROM ubuntu:latest
 
 ENV BASH_ENV=~/.profile
 
-# update system deps
+# update system
 RUN \
     --mount=type=cache,target=/var/cache/apt \
     apt-get update -y --fix-missing --no-install-recommends && apt-get -y --fix-missing --no-install-recommends upgrade
