@@ -14,6 +14,7 @@ const sbxVpc = new VpcStack(app, "LsMultiEnvVpc.sbx", {
 })
 new AppStack(app, "LsMultiEnvApp.sbx", {
     isLocal: false,
+    hotDeploy: false,
     environment: 'sbx',
     lambdaDistPath: "/src/lambda-hello-name/dist",
     handler: "index.handler",
@@ -41,7 +42,9 @@ const localVpcStack = new VpcStack(app, "LsMultiEnvVpc.local", {
     accountType: "localstack"
 })
 new AppStack(app, "LsMultiEnvApp.local", {
+    // set isLocal to fasle for integration testing to turn hot-reloading off
     isLocal: true,
+    hotDeploy: process.env.IS_INTEGRATION ? false : true,
     environment: 'local',
     lambdaDistPath: "/src/lambda-hello-name/dist",
     handler: "index.handler",

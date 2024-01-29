@@ -20,7 +20,7 @@ PKG_SUB_DIRS := $(dir $(shell find . -type d -name node_modules -prune -o -type 
 
 PULUMI_CONFIG = $(PULUMI_EXE) config --stack $(STACK_PREFIX).$(STACK_SUFFIX) --cwd $(STACK_DIR)
 
-ENDPOINT_HOST ?= localhost
+export ENDPOINT_HOST ?= localhost.localstack.cloud
 
 DOCKER_COMPOSE_FLAGS ?=
 
@@ -39,7 +39,7 @@ setup-aws:
 		echo "[profile localstack]" >> ~/.aws/config; \
 		echo "region=us-east-1" >> ~/.aws/config; \
 		echo "output=json" >> ~/.aws/config; \
-		echo "endpoint_url = http://$(ENDPOINT_HOST):4566" >> ~/.aws/config; \
+		echo "endpoint_url = http://localhost.localstack.cloud:4566" >> ~/.aws/config; \
 	fi
 	@if ! grep -q '\[localstack\]' ~/.aws/credentials ; then \
 		echo "[localstack]" >> ~/.aws/credentials; \
@@ -92,6 +92,7 @@ test:
 # Targets that can be run from the CI/CD pipeline.
 
 run-ci-test:
+	# override IS_LOCAL so we don't do hot reloading in CI
 	if [ "$(OVERRIDE_LOCAL_ARCH)" != "$(ARCH)" ]; then \
 		ARCH=$(OVERRIDE_LOCAL_ARCH); \
 		echo "Override local architecture with $(OVERRIDE_LOCAL_ARCH)"; \
@@ -110,3 +111,7 @@ run-ci-test:
 					   -f docker-compose.ci_test.yml \
 					   -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
 	fi
+
+stuff:
+	@echo pwd $(PWD);
+	@echo hpp $(HOST_PROJECT_PATH);

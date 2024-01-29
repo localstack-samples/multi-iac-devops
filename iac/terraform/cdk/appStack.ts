@@ -23,6 +23,7 @@ import {CloudwatchLogGroup} from "./.gen/providers/aws/cloudwatch-log-group"
 
 export interface MyMultiStackConfig {
     isLocal: boolean;
+    hotDeploy: boolean;
     environment: string;
     handler: string;
     runtime: string;
@@ -166,6 +167,25 @@ export class AppStack extends TerraformStack {
                     "Resource": [`${listBucket.arn}/*`, listBucket.arn],
                     "Sid": "AllowAccessObjectsToS3",
                 },
+                // policy for Lambda to write to ddbTable
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "dynamodb:BatchGetItem",
+                        "dynamodb:GetItem",
+                        "dynamodb:Query",
+                        "dynamodb:Scan",
+                        "dynamodb:BatchWriteItem",
+                        "dynamodb:PutItem",
+                        "dynamodb:UpdateItem",
+                        "dynamodb:DeleteItem"
+                    ],
+                    "Resource": [
+                        `${ddbTable.arn}`,
+                        `${ddbTable.arn}/*`
+                    ],
+                    "Sid": "AllowAccessToDynamoDB"
+                },
                 {
                     "Effect": "Allow",
                     "Action": [
@@ -224,7 +244,7 @@ export class AppStack extends TerraformStack {
         let lambdaBucketName = 'hot-reload'
         let lambdaS3Key = process.env.HOST_PROJECT_PATH + config.lambdaDistPath
         // If not Local, use actual S3 bucket and key
-        if (!config.isLocal) {
+        if (!config.hotDeploy) {
             lambdaBucketName = bucket.bucket
             lambdaS3Key = lambdaArchive.key
         }

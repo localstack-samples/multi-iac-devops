@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  localstack:
+  localhost.localstack.cloud:
     container_name: "${APP_NAME}-localstack"
     image: localstack/localstack-pro:latest
     platform: linux/arm64
