@@ -42,8 +42,11 @@ else
    curl -o /usr/local/bin/aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/arm64/aws-iam-authenticator
 fi
 chmod +x /usr/local/bin/aws-iam-authenticator
-unzip -q "awscliv2.zip" && ./aws/install && rm awscliv2.zip
-dpkg -i session-manager-plugin.deb && rm ./session-manager-plugin.deb
+unzip -q "awscliv2.zip"
+./aws/install
+rm awscliv2.zip
+dpkg -i session-manager-plugin.deb
+rm ./session-manager-plugin.deb
 apt install -fy --fix-missing --no-install-recommends amazon-ecr-credential-helper
 
 
