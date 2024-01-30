@@ -40,5 +40,5 @@ jobs:
           unset LOCALSTACK_API_KEY
           
           echo "Starting Localstack and running tests"
-          #        make run-ci-test
+          # make run-ci-test
           make stuff
