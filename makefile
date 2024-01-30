@@ -4,9 +4,9 @@ PROJECT_MODULE_NAME = ./src/lambda-hello-name/src/
 
 uname_m := $(shell uname -m)
 ifeq ($(uname_m), x86_64)
-	export ARCH := amd64
+	export ARCHITECTURE := amd64
 else
-	export ARCH := arm64
+	export ARCHITECTURE := arm64
 endif
 
 -include .env-gdc-local
@@ -55,7 +55,7 @@ setup-aws:
 	fi
 
 start-localstack:
-	@ARCHITECTURE=$(ARCH); \
+	@ARCHITECTURE=$(ARCHITECTURE); \
     if [ "$$ARCHITECTURE" = "x86_64" ]; then \
         cd devops-tooling && docker-compose -f docker-compose.localstack.yml -f docker-compose.amd64_localstack.yml -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
     else \
@@ -100,12 +100,12 @@ test:
 
 run-ci-test:
 	# override IS_LOCAL so we don't do hot reloading in CI
-	if [ "$(OVERRIDE_LOCAL_ARCH)" != "$(ARCH)" ]; then \
-		ARCH=$(OVERRIDE_LOCAL_ARCH); \
+	if [ "$(OVERRIDE_LOCAL_ARCH)" != "$(ARCHITECTURE)" ]; then \
+		ARCHITECTURE=$(OVERRIDE_LOCAL_ARCH); \
 		echo "Override local architecture with $(OVERRIDE_LOCAL_ARCH)"; \
 	fi; \
-	echo "Running CI test for architecture $$ARCH"; \
-	if echo "$$ARCH" | grep -q "x86_64"; then \
+	echo "Running CI test for architecture $$ARCHITECTURE"; \
+	if echo "$$ARCHITECTURE" | grep -q "x86_64"; then \
 		cd devops-tooling && \
 		docker compose -f docker-compose.localstack.yml \
 					   -f docker-compose.ci_test.yml \

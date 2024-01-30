@@ -1,6 +1,6 @@
 ARG VERSION
-ARG ARCH
-FROM public.ecr.aws/lambda/nodejs:${VERSION}-${ARCH}
+ARG ARCHITECTURE
+FROM public.ecr.aws/lambda/nodejs:${VERSION}-${ARCHITECTURE}
 
 ENV HOME_DIR=/usr/local/layer
 

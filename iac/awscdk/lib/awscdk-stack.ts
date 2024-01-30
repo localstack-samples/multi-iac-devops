@@ -37,7 +37,7 @@ export class AwscdkStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props: LsMultiEnvAppProps) {
         super(scope, id, props)
 
-        const architecture = process.env.ARCH
+        const architecture = process.env.ARCHITECTURE
         const overridingLocalArch = process.env.OVERRIDE_LOCAL_ARCH
 
         let targetArchitecture = undefined

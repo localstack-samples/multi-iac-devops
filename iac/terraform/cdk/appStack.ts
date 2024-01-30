@@ -45,7 +45,7 @@ export class AppStack extends TerraformStack {
 
         console.log('config', config)
 
-        const architecture = process.env.ARCH
+        const architecture = process.env.ARCHITECTURE
         const overridingLocalArch = process.env.OVERRIDE_LOCAL_ARCH || architecture
 
         let archList: string[] = []

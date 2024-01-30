@@ -1,7 +1,7 @@
 # Use an official Python runtime as a parent image
 ARG VERSION
-ARG ARCH
-FROM public.ecr.aws/lambda/python:${VERSION}-${ARCH}
+ARG ARCHITECTURE
+FROM public.ecr.aws/lambda/python:${VERSION}-${ARCHITECTURE}
 
 ENV LAMBDA_HOME=/usr/local/lhome
 ARG HANDLER_NAME=handler

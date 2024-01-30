@@ -36,8 +36,8 @@ RUN apt-get install -fy --fix-missing  docker-ce docker-ce-cli containerd.io doc
 ARG AWS_VERSION=2.15.12
 RUN  /bin/bash -c 'if [ "${USE_AWS}" = "yes" ] ; then \
     set -ex && \
-    ARCH=`uname -m` && \
-    if [ "$ARCH" = "x86_64" ]; then \
+    ARCHITECTURE=`uname -m` && \
+    if [ "ARCHITECTURE" = "x86_64" ]; then \
        echo "aws x86_64" && \
        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_VERSION}.zip" -o "awscliv2.zip" && \
        curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" && \

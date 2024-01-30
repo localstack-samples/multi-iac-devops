@@ -30,7 +30,7 @@ save-checksum:
 package:
 	docker build --platform $(DOCKER_PLATFORM) \
 	--build-arg VERSION=3.11 \
-	--build-arg "ARCH=$(ARCH)" \
+	--build-arg "ARCHITECTURE=$(ARCHITECTURE)" \
 	--build-arg "PIP_PLATFORM=$(PIP_PLATFORM)" \
 	-t $${PWD##*/} .
 	docker create -it --name $${PWD##*/} $${PWD##*/} bash
