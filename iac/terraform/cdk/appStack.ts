@@ -45,16 +45,15 @@ export class AppStack extends TerraformStack {
 
         console.log('config', config)
 
-        const architecture = process.env.ARCHITECTURE
+        const architecture = process.env.ARCHITECTURE || 'arm64'
         const overridingLocalArch = process.env.OVERRIDE_LOCAL_ARCH || architecture
 
         let archList: string[] = []
-        if (architecture != overridingLocalArch && overridingLocalArch != undefined) {
-            archList.push(overridingLocalArch)
-        }
         // props.isLocal is true when stacks are deployed using localstack
         if (!config.isLocal) {
             archList.push("arm64")
+        } else {
+            archList.push(overridingLocalArch)
         }
 
         const lambdaDeployDir: string = path.resolve('../../../app')
@@ -99,22 +98,7 @@ export class AppStack extends TerraformStack {
                 region: config.region
             })
         }
-        // Create a DynamoDB table with a primary key named 'id'
-        // const table = new aws.dynamodbTable.DynamodbTable(this, "table", {
-        //     name: "livedebug-table",
-        //     attributes: [
-        //         {
-        //             name: "id",
-        //             type: "S",
-        //         },
-        //     ],
-        //     hashKey: "id",
-        //     readCapacity: 5,
-        //     writeCapacity: 5,
-        //     tags: {
-        //         Environment: "dev",
-        //     },
-        // })
+    
         // Create a DynamoDB table with a primary key named 'id'
         const ddbTable = new aws.dynamodbTable.DynamodbTable(this, "table", {
             name: "livedebug-table",

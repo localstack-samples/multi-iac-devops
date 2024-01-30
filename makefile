@@ -120,5 +120,11 @@ run-ci-test:
 	fi
 
 stuff:
+	if [ "$(OVERRIDE_LOCAL_ARCH)" != "$(ARCHITECTURE)" ]; then \
+		ARCHITECTURE=$(OVERRIDE_LOCAL_ARCH); \
+		echo "Override local architecture with $(OVERRIDE_LOCAL_ARCH)"; \
+	fi;
+	@echo "Running CI test for architecture $$ARCHITECTURE"
 	@echo pwd $(PWD);
 	@echo hpp $(HOST_PROJECT_PATH);
+	@echo arch $(ARCHITECTURE);
