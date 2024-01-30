@@ -37,20 +37,15 @@ export class AwscdkStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props: LsMultiEnvAppProps) {
         super(scope, id, props)
 
-        const architecture = process.env.ARCHITECTURE
-        const overridingLocalArch = process.env.OVERRIDE_LOCAL_ARCH
+        const architecture = process.env.ARCHITECTURE || 'arm64'
+        const overridingLocalArch = process.env.OVERRIDE_LOCAL_ARCH || architecture
 
         let targetArchitecture = undefined
-        if (architecture != overridingLocalArch) {
-            if (overridingLocalArch == "x86_64" || overridingLocalArch == "amd64") {
-                targetArchitecture = Architecture.X86_64
-            } else {
-                targetArchitecture = Architecture.ARM_64
-            }
-        }
-        // props.isLocal is true when stacks are deployed using localstack
+        // If AWS deployment, set architecture to ARM_64, else set to native OS unless overridden
         if (!props.isLocal) {
             targetArchitecture = Architecture.ARM_64
+        } else {
+            targetArchitecture = architecture == "x86_64" ? Architecture.X86_64 : Architecture.ARM_64
         }
 
         // Lambda Source Code

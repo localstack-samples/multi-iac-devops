@@ -2,11 +2,8 @@ SHELL := /bin/bash
 
 PROJECT_MODULE_NAME = ./src/lambda-hello-name/src/
 
-uname_m1=$(shell uname -m)
-uname_m=$(shell uname -m | sed 's/amd64/x86_64/')
-ifeq ($(uname_m), x86_64)
-	export ARCHITECTURE := amd64
-else
+uname_m=$(shell uname -m)
+ifneq ($(uname_m), x86_64)
 	export ARCHITECTURE := arm64
 endif
 
@@ -106,7 +103,7 @@ run-ci-test:
 		echo "Override local architecture with $(OVERRIDE_LOCAL_ARCH)"; \
 	fi; \
 	echo "Running CI test for architecture $$ARCHITECTURE"; \
-	if [ "$(ARCHITECTURE)" = "amd64" ]; then \
+	if [ "$(ARCHITECTURE)" == "x86_64" ]; then \
 		cd devops-tooling && \
 		docker compose -f docker-compose.localstack.yml \
 					   -f docker-compose.ci_test.yml \
@@ -131,3 +128,8 @@ stuff:
 	@echo uname_m $(uname_m)
 	@echo uname_m1 $(uname_m1)
 	@echo arch $(ARCHITECTURE);
+	if [ "$(ARCHITECTURE)" == "amd64" ]; then \
+		echo "amd64 build"; \
+	else \
+		echo "arm64 build"; \
+	fi
