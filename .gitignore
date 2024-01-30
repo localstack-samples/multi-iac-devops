@@ -101,3 +101,4 @@ cdktf-output.json
 hello.txt
 venv2
 bundle
+iac/awscdk/stack-outputs-local.json

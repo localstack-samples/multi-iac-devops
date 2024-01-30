@@ -1,8 +1,0 @@
-{
-  "LsMultiEnvApp-local": {
-    "HttpApiEndpoint": "https://eb556c05.execute-api.localhost.localstack.cloud:4566/",
-    "assetsapiEndpoint28D4D3D2": "https://ff7wcd9tx4.execute-api.localhost.localstack.cloud:4566/prod/",
-    "RestApiEndpoint": "https://ff7wcd9tx4.execute-api.localhost.localstack.cloud:4566/prod/",
-    "ddbTableName": "mytable-local"
-  }
-}
