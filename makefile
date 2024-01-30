@@ -127,4 +127,5 @@ stuff:
 	@echo "Running CI test for architecture $$ARCHITECTURE"
 	@echo pwd $(PWD);
 	@echo hpp $(HOST_PROJECT_PATH);
+	@echo uname_m $(uname_m)
 	@echo arch $(ARCHITECTURE);
