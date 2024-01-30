@@ -16,6 +16,7 @@ import {AuthorizationType} from "aws-cdk-lib/aws-apigateway"
 
 export interface LsMultiEnvAppProps extends cdk.StackProps {
     isLocal: boolean;
+    hotDeploy: boolean;
     environment: string;
     handler: string;
     runtime: Runtime;
@@ -50,7 +51,7 @@ export class AwscdkStack extends cdk.Stack {
 
         // Lambda Source Code
         // If running on LocalStack, setup Hot Reloading with a fake bucked named hot-reload
-        if (props.isLocal) {
+        if (props.hotDeploy) {
             const lambdaBucket = s3.Bucket.fromBucketName(this, "HotReloadingBucket", "hot-reload")
             this.lambdaCode = Code.fromBucket(lambdaBucket, props.lambdaDistPath)
         } else {

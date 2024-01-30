@@ -11,8 +11,8 @@ const app = new cdk.App()
 // AWS CDK App Stack on LocalStack
 new AwscdkStack(app, 'LsMultiEnvApp-local', {
     // set isLocal to fasle for integration testing to turn hot-reloading off
-    isLocal: process.env.IS_INTEGRATION ? false : true,
-    // isLocal: false,
+    isLocal: true,
+    hotDeploy: process.env.IS_INTEGRATION ? false : true,
     environment: 'local',
     lambdaDistPath: process.env.HOST_PROJECT_PATH + "/src/lambda-hello-name/dist",
     handler: "index.handler",
@@ -39,6 +39,7 @@ new AwscdkStack(app, 'LsMultiEnvApp-sbx', {
 
     /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
     isLocal: false,
+    hotDeploy: false,
     environment: 'sbx',
     lambdaDistPath: process.env.HOST_PROJECT_PATH + "/src/lambda-hello-name/dist",
     handler: "index.handler",
