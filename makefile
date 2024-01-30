@@ -2,6 +2,7 @@ SHELL := /bin/bash
 
 PROJECT_MODULE_NAME = ./src/lambda-hello-name/src/
 
+uname_m1=$(uname -m)
 uname_m=$(uname -m | sed 's/amd64/x86_64/')
 ifeq ($(uname_m), x86_64)
 	export ARCHITECTURE := amd64
@@ -128,4 +129,5 @@ stuff:
 	@echo pwd $(PWD);
 	@echo hpp $(HOST_PROJECT_PATH);
 	@echo uname_m $(uname_m)
+	@echo uname_m1 $(uname_m1)
 	@echo arch $(ARCHITECTURE);
