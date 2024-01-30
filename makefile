@@ -128,7 +128,7 @@ stuff:
 	@echo uname_m $(uname_m)
 	@echo uname_m1 $(uname_m1)
 	@echo arch $(ARCHITECTURE);
-	if [ "$(ARCHITECTURE)" == "amd64" ]; then \
+	if [ "$(ARCHITECTURE)" == "x86_64" ]; then \
 		echo "amd64 build"; \
 	else \
 		echo "arm64 build"; \
