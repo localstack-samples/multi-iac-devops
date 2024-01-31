@@ -99,3 +99,6 @@ auto_tests/*-output.json
 local-cdktf-output.json
 cdktf-output.json
 hello.txt
+venv2
+bundle
+iac/awscdk/stack-outputs-local.json

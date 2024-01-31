@@ -1,9 +1,14 @@
 ARG VERSION
-ARG ARCH
-FROM public.ecr.aws/lambda/nodejs:${VERSION}-${ARCH}
+ARG ARCHITECTURE
+FROM public.ecr.aws/lambda/nodejs:${VERSION}-${ARCHITECTURE}
 
 ENV HOME_DIR=/usr/local/layer
-RUN yum install -y zip
+
+RUN --mount=type=cache,target=/var/cache/yum \
+    yum makecache && \
+    yum update && \
+    yum install zip -y
+
 RUN mkdir -p ${HOME_DIR}
 WORKDIR ${HOME_DIR}
 

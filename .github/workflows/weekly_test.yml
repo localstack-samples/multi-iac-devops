@@ -19,25 +19,25 @@ jobs:
     concurrency: 1
     strategy:
       matrix:
-        test_name: [awscdk, awscdktf]
+        test_name: [ awscdk, awscdktf ]
     steps:
-    # Checkout code
-    - name: Checkout code
-      uses: actions/checkout@v2
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    # Install prerequisites
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      # Install prerequisites
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-    # Start Localstack
-    - name: Test
-      env:
-        LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
-        CI_TEST_NAME: ${{ matrix.test_name }}
-      run: |
-        # Unset stale org secret
-        printenv
-        unset LOCALSTACK_API_KEY
-
-        echo "Starting Localstack and running tests"
-        make run-ci-test
+      # Start Localstack
+      - name: Test
+        env:
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+          CI_TEST_NAME: ${{ matrix.test_name }}
+        run: |
+          # Unset stale org secret
+          printenv
+          unset LOCALSTACK_API_KEY
+          
+          echo "Starting Localstack and running tests"
+          make run-ci-test
