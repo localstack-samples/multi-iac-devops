@@ -18,6 +18,7 @@ endif
 # Some defaults
 export SBX_ACCOUNT_CONFIG?=devops-tooling/accounts/my-sb.json
 export ENFORCE_IAM?=1
+export HOST_PROJECT_PATH ?= $(PWD)
 
 .PHONY: clean update-deps delete-zips iac-shared local-top-level
 
@@ -89,7 +90,7 @@ watch-lambda:
 	cd src/lambda-hello-name && npm install && npm run watch
 
 # Run the tests
-test:
+test: venv
 	$(VENV_RUN) && cd auto_tests && AWS_PROFILE=localstack pytest $(ARGS);
 
 
@@ -117,19 +118,4 @@ run-ci-test:
 					   -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
 	fi
 
-stuff:
-	if [ "$(OVERRIDE_LOCAL_ARCH)" != "$(ARCHITECTURE)" ]; then \
-		ARCHITECTURE=$(OVERRIDE_LOCAL_ARCH); \
-		echo "Override local architecture with $(OVERRIDE_LOCAL_ARCH)"; \
-	fi;
-	@echo "Running CI test for architecture $$ARCHITECTURE"
-	@echo pwd $(PWD);
-	@echo hpp $(HOST_PROJECT_PATH);
-	@echo uname_m $(uname_m)
-	@echo uname_m1 $(uname_m1)
-	@echo arch $(ARCHITECTURE);
-	if [ "$(ARCHITECTURE)" == "x86_64" ]; then \
-		echo "amd64 build"; \
-	else \
-		echo "arm64 build"; \
-	fi
+
