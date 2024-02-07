@@ -19,6 +19,7 @@ endif
 export SBX_ACCOUNT_CONFIG?=devops-tooling/accounts/my-sb.json
 export ENFORCE_IAM?=1
 export HOST_PROJECT_PATH ?= $(PWD)
+export MAPPING_DIR_NAME ?= /workspace
 
 .PHONY: clean update-deps delete-zips iac-shared local-top-level
 
