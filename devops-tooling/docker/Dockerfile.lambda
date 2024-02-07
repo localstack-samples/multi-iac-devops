@@ -8,7 +8,7 @@ ARG HANDLER_NAME=handler
 
 RUN --mount=type=cache,target=/var/cache/yum \
     yum makecache && \
-    yum update && \
+    yum update -y && \
     yum install zip -y
 
 RUN mkdir -p ${LAMBDA_HOME}/dist/requirements

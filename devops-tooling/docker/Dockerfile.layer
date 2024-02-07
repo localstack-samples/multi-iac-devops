@@ -5,7 +5,7 @@ FROM public.ecr.aws/lambda/python:${VERSION}-${ARCHITECTURE}
 
 RUN --mount=type=cache,target=/var/cache/yum \
     yum makecache && \
-    yum update && yum install zip -y
+    yum update -y && yum install zip -y
 
 ENV HOME_DIR=/usr/local/layer
 RUN mkdir -p ${HOME_DIR}/requirements

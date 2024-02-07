@@ -6,7 +6,7 @@ ENV HOME_DIR=/usr/local/layer
 
 RUN --mount=type=cache,target=/var/cache/yum \
     yum makecache && \
-    yum update && \
+    yum update -y && \
     yum install zip -y
 
 RUN mkdir -p ${HOME_DIR}
