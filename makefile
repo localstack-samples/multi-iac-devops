@@ -19,6 +19,7 @@ endif
 export SBX_ACCOUNT_CONFIG?=devops-tooling/accounts/my-sb.json
 export ENFORCE_IAM?=1
 export HOST_PROJECT_PATH ?= $(PWD)
+export MAPPING_DIR_NAME ?= /workspace
 
 .PHONY: clean update-deps delete-zips iac-shared local-top-level
 
@@ -99,6 +100,7 @@ test: venv
 
 run-ci-test:
 	# override IS_LOCAL so we don't do hot reloading in CI
+	# If MAPPING_DIR_NAME isn't set, print error message and exit with error
 	if [ "$(OVERRIDE_LOCAL_ARCH)" != "$(ARCHITECTURE)" ]; then \
 		ARCHITECTURE=$(OVERRIDE_LOCAL_ARCH); \
 		echo "Override local architecture with $(OVERRIDE_LOCAL_ARCH)"; \
@@ -118,4 +120,6 @@ run-ci-test:
 					   -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
 	fi
 
-
+run-all-ci-tests:
+	CI_TEST_NAME=awscdk make run-ci-test;
+	CI_TEST_NAME=awscdktf make run-ci-test;
