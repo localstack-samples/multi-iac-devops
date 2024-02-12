@@ -15,7 +15,7 @@ services:
       - LAMBDA_RUNTIME_ENVIRONMENT_TIMEOUT=90
       - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN-}
       - DOCKER_HOST=unix:///var/run/docker.sock
-    #      - AUTO_LOAD_POD=chads33
+      #      - AUTO_LOAD_POD=chads33
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock  # Mount the Docker socket into the container
