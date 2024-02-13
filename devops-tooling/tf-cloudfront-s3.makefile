@@ -19,4 +19,5 @@ local-tf-cfs3-plan: tf-stack-plan
 # Apply the terraform stack
 local-tf-cfs3-apply: local-tf-cfs3-build tf-stack-apply
 
-local-tf-cfs3-output: tf-stack-output
+local-tf-cfs3-output:
+	make tf-stack-output > $(IAC_DIR)/terraform_output.json
