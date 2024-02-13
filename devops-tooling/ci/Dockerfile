@@ -34,7 +34,7 @@ RUN apt-get update
 RUN apt-get install -fy --fix-missing  docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 ARG AWS_VERSION=2.15.12
-RUN  /bin/bash -c 'if [ "${USE_AWS}" = "yes" ] ; then \
+RUN  /bin/bash -c ' \
     set -ex && \
     ARCHITECTURE=`uname -m` && \
     if [ "ARCHITECTURE" = "x86_64" ]; then \
@@ -52,7 +52,7 @@ RUN  /bin/bash -c 'if [ "${USE_AWS}" = "yes" ] ; then \
     unzip -q "awscliv2.zip" && ./aws/install && rm awscliv2.zip && \
     dpkg -i session-manager-plugin.deb && rm ./session-manager-plugin.deb; \
     apt install -fy --fix-missing --no-install-recommends amazon-ecr-credential-helper; \
-fi'
+'
 
 # if bitwarden is enabled so will node
 ARG NODE_VERSION=20
@@ -77,7 +77,6 @@ RUN  /bin/bash -c 'if [ "${USE_CDK}" = "yes" ] ; then \
   npm -g i aws-cdk-local@latest aws-cdk@latest; \
 fi'
 
-ARG TERRAFORM_VERSION
 
 # terraform is installed
 RUN /bin/bash -c 'set -ex; \
@@ -92,10 +91,8 @@ RUN chmod +x /tmp/setup.sh && /tmp/setup.sh
 # copy test scripts
 COPY devops-tooling/ci/awscdk.sh /usr/local/bin/awscdk
 RUN chmod +x /usr/local/bin/awscdk
-
 COPY devops-tooling/ci/awscdktf.sh /usr/local/bin/awscdktf
 RUN chmod +x /usr/local/bin/awscdktf
-
 COPY devops-tooling/ci/cloudfront-tf.sh /usr/local/bin/cloudfront-tf
 RUN chmod +x /usr/local/bin/cloudfront-tf
 
