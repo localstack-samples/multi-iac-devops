@@ -9,6 +9,7 @@ set -e
 # Create AWS config/credentials
 make setup-aws
 
+echo "ARCHITECTURE is '$(uname -m)'"
 echo "AWS Version is $(aws --version)"
 
 export AWS_PROFILE=localstack
