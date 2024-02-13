@@ -34,9 +34,9 @@ RUN apt-get update
 RUN apt-get install -fy --fix-missing  docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 ARG AWS_VERSION=2.15.12
-RUN  /bin/bash -c ' \
-    set -ex && \
+RUN  /bin/bash -c 'set -ex && \
     ARCHITECTURE=`uname -m` && \
+    echo "AWSCLI ARCHITECTURE: $ARCHITECTURE" && \
     if [ "ARCHITECTURE" = "x86_64" ]; then \
        echo "aws x86_64" && \
        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_VERSION}.zip" -o "awscliv2.zip" && \
