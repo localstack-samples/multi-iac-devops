@@ -40,8 +40,6 @@ jobs:
           # Unset stale org secret
           printenv
           unset LOCALSTACK_API_KEY
-          echo "Starting Localstack and running tests for arch ${uname -m}"
-#
-#          echo "Starting Localstack and running tests"
-#          make run-ci-test
+          echo "Starting Localstack and running tests"
+          make run-ci-test
 

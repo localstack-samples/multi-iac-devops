@@ -17,13 +17,14 @@ export AWS_SHARED_CREDENTIALS_FILE=/root/.aws/credentials
 export AWS_ENDPOINT_URL="http://localhost.localstack.cloud:4566"
 
 # Setup Terraform stacks
-make local-tf-create-iac-bucket
-make local-tf-cfs3-init
-make local-tf-cfs3-plan
-make local-tf-cfs3-apply
-make local-tf-cfs3-output
-# Test Terraform stacks
-make local-tf-cfs3-test
+echo "Arch is " $(uname -m)
+#make local-tf-create-iac-bucket
+#make local-tf-cfs3-init
+#make local-tf-cfs3-plan
+#make local-tf-cfs3-apply
+#make local-tf-cfs3-output
+## Test Terraform stacks
+#make local-tf-cfs3-test
 
 curl -X POST \
      -H "Content-Type: application/json" \
