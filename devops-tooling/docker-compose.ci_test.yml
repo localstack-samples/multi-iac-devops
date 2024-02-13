@@ -5,6 +5,11 @@ services:
     build:
       context: ..
       dockerfile: devops-tooling/ci/Dockerfile
+      cache_to:
+        - type=${CACHE_TYPE},mode=max
+      cache_from:
+        - type=${CACHE_TYPE}
+
     environment:
       - MAPPING_DIR_NAME=${MAPPING_DIR_NAME}
       - CI_TEST_NAME=${CI_TEST_NAME}
@@ -18,6 +23,7 @@ services:
       - ../makefile:${MAPPING_DIR_NAME}/makefile
       - ../run-lambdas.sh:${MAPPING_DIR_NAME}/run-lambdas.sh
       - ../src:${MAPPING_DIR_NAME}/src
+      - ../ui:${MAPPING_DIR_NAME}/ui
     depends_on:
       - localhost.localstack.cloud
     network_mode: "service:localhost.localstack.cloud"

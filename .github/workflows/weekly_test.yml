@@ -11,6 +11,7 @@ on:
       - '*'
 env:
   LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+  CACHE_TYPE: gha
 
 jobs:
   test:
