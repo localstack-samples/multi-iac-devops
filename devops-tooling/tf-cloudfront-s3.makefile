@@ -21,3 +21,6 @@ local-tf-cfs3-apply: local-tf-cfs3-build tf-stack-apply
 
 local-tf-cfs3-output:
 	make tf-stack-output > $(IAC_DIR)/terraform_output.json
+
+local-tf-cfs3-test:
+	cd auto_tests/jest && npm install && npx jest

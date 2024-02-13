@@ -59,9 +59,9 @@ setup-aws:
 start-localstack:
 	@ARCHITECTURE=$(ARCHITECTURE); \
     if [ "$$ARCHITECTURE" = "x86_64" ]; then \
-        cd devops-tooling && docker-compose -f docker-compose.localstack.yml -f docker-compose.amd64_localstack.yml -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
+        cd devops-tooling && docker compose -f docker-compose.localstack.yml -f docker-compose.amd64_localstack.yml -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
     else \
-        cd devops-tooling && docker-compose -f docker-compose.localstack.yml -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
+        cd devops-tooling && docker compose -f docker-compose.localstack.yml -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
     fi
 
 
