@@ -9,6 +9,8 @@ set -e
 # Create AWS config/credentials
 make setup-aws
 
+echo "AWS Version is $(aws --version)"
+
 export AWS_PROFILE=localstack
 export AWS_CONFIG_FILE=/root/.aws/config
 export AWS_SHARED_CREDENTIALS_FILE=/root/.aws/credentials
