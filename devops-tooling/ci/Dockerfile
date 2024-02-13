@@ -89,12 +89,15 @@ RUN /bin/bash -c 'set -ex; \
 COPY devops-tooling/ci/setup.sh /tmp/setup.sh
 RUN chmod +x /tmp/setup.sh && /tmp/setup.sh
 
-# copy awssdk
+# copy test scripts
 COPY devops-tooling/ci/awscdk.sh /usr/local/bin/awscdk
 RUN chmod +x /usr/local/bin/awscdk
 
 COPY devops-tooling/ci/awscdktf.sh /usr/local/bin/awscdktf
 RUN chmod +x /usr/local/bin/awscdktf
+
+COPY devops-tooling/ci/cloudfront-tf.sh /usr/local/bin/cloudfront-tf
+RUN chmod +x /usr/local/bin/cloudfront-tf
 
 # copy bootstrap script
 COPY devops-tooling/ci/bootstrap.sh /usr/local/bin/bootstrap
