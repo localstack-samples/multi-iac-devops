@@ -34,26 +34,21 @@ RUN apt-get update
 RUN apt-get install -fy --fix-missing  docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 ARG AWS_VERSION=2.15.12
-RUN  /bin/bash -c 'set -ex && \
-    ARCHITECTURE=`uname -m` && \
-    echo "AWSCLI ARCHITECTURE: $ARCHITECTURE" && \
-    if [ "ARCHITECTURE" = "x86_64" ]; then \
-        curl -L -o install-aws.sh https://raw.githubusercontent.com/unfor19/install-aws-cli-action/master/entrypoint.sh && \
-        sudo chmod +x install-aws.sh && \
-        sudo ./install-aws.sh "v2" "amd64" && \
-        sudo rm install-aws.sh; \
+RUN  /bin/bash -c '    set -ex && \
+    ARCH=$(uname -m | sed "s/amd64/x86_64/") && \
+    if [ "$ARCH" = "x86_64" ]; then \
+       echo "aws x86_64" && \
+       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_VERSION}.zip" -o "awscliv2.zip" && \
        curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" && \
        curl -o /usr/local/bin/aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator; \
     else \
        echo "aws assuming ARM" && \
-        curl -L -o install-aws.sh https://raw.githubusercontent.com/unfor19/install-aws-cli-action/master/entrypoint.sh && \
-        sudo chmod +x install-aws.sh && \
-        sudo ./install-aws.sh "v2" "arm64" && \
-        sudo rm install-aws.sh; \
+       curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64-${AWS_VERSION}.zip" -o "awscliv2.zip" && \
        curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_arm64/session-manager-plugin.deb" -o "session-manager-plugin.deb" && \
        curl -o /usr/local/bin/aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/arm64/aws-iam-authenticator; \
     fi; \
     chmod +x /usr/local/bin/aws-iam-authenticator && \
+    unzip -q "awscliv2.zip" && ./aws/install && rm awscliv2.zip && \
     dpkg -i session-manager-plugin.deb && rm ./session-manager-plugin.deb; \
     apt install -fy --fix-missing --no-install-recommends amazon-ecr-credential-helper; \
 '
@@ -105,6 +100,8 @@ COPY devops-tooling/ci/bootstrap.sh /usr/local/bin/bootstrap
 RUN chmod +x /usr/local/bin/bootstrap
 
 COPY devops-tooling/requirements.txt /tmp/requirements.txt
+
+#CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
 
 ENTRYPOINT ["/bin/bash"]
 CMD ["bootstrap"]

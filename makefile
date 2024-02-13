@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 PROJECT_MODULE_NAME = ./src/lambda-hello-name/src/
 
-export ARCHITECTURE=$(shell uname -m)
+export ARCHITECTURE=$(shell uname -m | sed 's/amd64/x86_64/')
 ifneq ($(ARCHITECTURE), x86_64)
 	export ARCHITECTURE := arm64
 endif
