@@ -40,14 +40,19 @@ export LOGGING_LEVEL=DEBUG
 export AWS_ACCOUNT=000000000000
 export AWS_ACCOUNT_TYPE=LOCALSTACK
 export STACK_SUFFIX=local
+export STACK_ENV=local
 export CDK_CMD=cdklocal
-#export CDK_CMD=cdk
+export TFORM_CMD=tflocal
 export DOCKER_DEFAULT_PLATFORM=linux/arm64
 
 # Pattern specific variables for each pipeline
 # Global local pipeline vars
 local%: export ACCOUNT_JSON_CONFIG=../../../../devops-tooling/accounts/localstack.json
 local%: export LOCALSTACK=1
+local%: export AWS_CMD=AWS_PROFILE=localstack aws
+local%: export STACK_AWS_PROFILE=localstack
+local-tf%: export IAC_BUCKET=terraform-state
+
 # Terraform CDK local pipeline vars
 local-cdktf%: export STACK_DIR=iac/terraform/cdk
 local-cdktf%: export TFSTACK_NAME=LsMultiEnvApp.$(STACK_SUFFIX)
@@ -64,6 +69,7 @@ non%: export LOGGING_LEVEL=INFO
 non%: export AWS_ACCOUNT_TYPE=NONPROD
 non%: export AWS_REGION=us-east-1
 non%: export STACK_SUFFIX=non
+non%: export STACK_ENV=non
 non%: export CDK_CMD=cdk
 non-cdktf%: export STACK_DIR=iac/terraform/cdk
 non-cdktf%: export TFSTACK_NAME=LsMultiEnvApp.$(STACK_SUFFIX)
@@ -75,6 +81,7 @@ sbx%: export LOGGING_LEVEL=INFO
 sbx%: export AWS_ACCOUNT_TYPE=sandbox
 sbx%: export AWS_REGION=us-east-1
 sbx%: export STACK_SUFFIX=sbx
+sbx%: export STACK_ENV=sbx
 sbx%: export CDK_CMD=cdk
 sbx-cdktf%: export STACK_DIR=iac/terraform/cdk
 sbx-cdktf%: export TFSTACK_NAME=LsMultiEnvApp.$(STACK_SUFFIX)
