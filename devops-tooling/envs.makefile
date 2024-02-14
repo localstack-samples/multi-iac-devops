@@ -97,6 +97,7 @@ sbx-awscdk-vpc%: export TFSTACK_NAME=LsMultiEnvVpc-$(STACK_SUFFIX)
 # Does affect Lambdas, Fargate, EC2, etc.
 # Necessary for deploying ARM64 on x86_64 with Rosetta.
 export OVERRIDE_LOCAL_ARCH?=$(ARCHITECTURE)
+export CACHE_TYPE?=inline
 
 # Internal mapping directory for run-ci-test
 export MAPPING_DIR_NAME=$(PWD)
