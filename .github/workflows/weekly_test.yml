@@ -22,8 +22,7 @@ jobs:
     concurrency: 1
     strategy:
       matrix:
-        #          test_name: [ awscdk, awscdktf, cloudfront-tf ]
-        test_name: [ cloudfront-tf ]
+        test_name: [ awscdk, awscdktf, cloudfront-tf ]
     steps:
       # Checkout code
       - name: Checkout code
