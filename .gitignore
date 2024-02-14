@@ -87,7 +87,11 @@ output.txt
 
 .terraform*
 terraform.tfstate*
+*.auto.tfvars
+*.tfplan
+errored.tfstate
 nonenv.makefile
+terraform_output.json
 
 !devops-tooling/accounts/non-demo.json
 !devops-tooling/accounts/localstack.json

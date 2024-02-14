@@ -21,6 +21,14 @@ Features deploying a VPC, Private Application Load Balancer (ALB), and Lambda.
 
 ![ALB Solution](./docs/img/solution-diags-priv-alb.drawio.png "ALB Solution")
 
+## Cloudfront S3 Static Website Solution with Jest Test
+
+Features deploying a Cloudfront distribution, S3 bucket, and a React web app.
+Checkout the test [here](./auto_tests/jest/cloudfront.test.ts).
+The Terraform pipeline is [here](./iac/terraform/hcl/react-ui/main.tf).
+
+![Cloudfront Solution](./docs/img/solution-diags-cloudfront-jest.drawio.png "Cloudfront Solution")
+
 ## Private Jumphost on Private VPC Subnet Solution
 
 Features using private jumphost in private VPC for secure access to protected resources.
@@ -41,7 +49,6 @@ at layer 5 and account level VPC configuration pipelines at level 3.
 To deploy your infrastructure, follow the steps below.
 
 ### Prerequisites
-
 
 1. [Install unzip](https://www.tecmint.com/install-zip-and-unzip-in-linux/)
 
@@ -68,11 +75,14 @@ nvm install 18
 npm install --global cdktf-cli@^0.18.0
 ```
 
-9. Install `make`, `gcc`, `g++`, etc. For MacOS, run `brew install make gcc openssl readline sqlite3 xz` and for Ubuntu machines run `apt install build-essential libbz2-dev libssl-dev libreadline-dev libffi-dev zlib1g-dev libsqlite3-dev liblzma-dev`.
+9. Install `make`, `gcc`, `g++`, etc. For MacOS, run `brew install make gcc openssl readline sqlite3 xz` and for Ubuntu
+   machines
+   run `apt install build-essential libbz2-dev libssl-dev libreadline-dev libffi-dev zlib1g-dev libsqlite3-dev liblzma-dev`.
 
 10. Install `zlib1g-dev`. For MacOS, run `xcode-select --install` and for Ubuntu machines run `apt install zlib1g-dev`.
 
-11. [Install Pyenv](https://github.com/pyenv/pyenv#installation). Make sure the [prerequisites](https://github.com/pyenv/pyenv/wiki/Common-build-problems#prerequisites) are also there.
+11. [Install Pyenv](https://github.com/pyenv/pyenv#installation). Make sure
+    the [prerequisites](https://github.com/pyenv/pyenv/wiki/Common-build-problems#prerequisites) are also there.
 
 ### Steps
 
@@ -153,7 +163,8 @@ export CI_TEST_NAME=awscdk make run-ci-test
 export CI_TEST_NAME=awscdktf make run-ci-test
 ```
 
-***Note: If you run the above tests with Rosetta turned on, and still want to go with `arm64`, you need to export `export OVERRIDE_LOCAL_ARCH=arm64`.***
+***Note: If you run the above tests with Rosetta turned on, and still want to go with `arm64`, you need to
+export `export OVERRIDE_LOCAL_ARCH=arm64`.***
 
 # Hot Reloading!
 

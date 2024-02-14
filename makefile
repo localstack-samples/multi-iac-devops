@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 PROJECT_MODULE_NAME = ./src/lambda-hello-name/src/
 
-export ARCHITECTURE=$(shell uname -m)
+export ARCHITECTURE=$(shell uname -m | sed 's/amd64/x86_64/')
 ifneq ($(ARCHITECTURE), x86_64)
 	export ARCHITECTURE := arm64
 endif
@@ -14,6 +14,8 @@ endif
 -include ./devops-tooling/pulumi.makefile
 -include ./devops-tooling/cdktf.makefile
 -include ./devops-tooling/awscdk.makefile
+-include ./devops-tooling/tf.makefile
+-include ./devops-tooling/tf-cloudfront-s3.makefile
 
 # Some defaults
 export SBX_ACCOUNT_CONFIG?=devops-tooling/accounts/my-sb.json
@@ -57,9 +59,9 @@ setup-aws:
 start-localstack:
 	@ARCHITECTURE=$(ARCHITECTURE); \
     if [ "$$ARCHITECTURE" = "x86_64" ]; then \
-        cd devops-tooling && docker-compose -f docker-compose.localstack.yml -f docker-compose.amd64_localstack.yml -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
+        cd devops-tooling && docker compose -f docker-compose.localstack.yml -f docker-compose.amd64_localstack.yml -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
     else \
-        cd devops-tooling && docker-compose -f docker-compose.localstack.yml -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
+        cd devops-tooling && docker compose -f docker-compose.localstack.yml -p $(APP_NAME) up $(DOCKER_COMPOSE_FLAGS); \
     fi
 
 

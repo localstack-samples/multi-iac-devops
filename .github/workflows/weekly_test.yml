@@ -9,6 +9,9 @@ on:
   pull_request:
     branches:
       - '*'
+env:
+  LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+  CACHE_TYPE: gha
 
 jobs:
   test:
@@ -19,7 +22,7 @@ jobs:
     concurrency: 1
     strategy:
       matrix:
-        test_name: [ awscdk, awscdktf ]
+        test_name: [ awscdk, awscdktf, cloudfront-tf ]
     steps:
       # Checkout code
       - name: Checkout code
@@ -32,12 +35,11 @@ jobs:
       # Start Localstack
       - name: Test
         env:
-          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
           CI_TEST_NAME: ${{ matrix.test_name }}
         run: |
           # Unset stale org secret
           printenv
           unset LOCALSTACK_API_KEY
-          
           echo "Starting Localstack and running tests"
           make run-ci-test
+
