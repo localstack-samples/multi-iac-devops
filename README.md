@@ -21,7 +21,7 @@ Features deploying a VPC, Private Application Load Balancer (ALB), and Lambda.
 
 ![ALB Solution](./docs/img/solution-diags-priv-alb.drawio.png "ALB Solution")
 
-## Cloudfront S3 Static Website Solution with Jest Test
+## Cloudfront S3 React UI Solution with Jest Test
 
 Features deploying a Cloudfront distribution, S3 bucket, and a React web app.
 Checkout the test [here](./auto_tests/jest/cloudfront.test.ts).
