@@ -26,7 +26,7 @@ make local-tf-cfs3-plan
 make local-tf-cfs3-apply
 make local-tf-cfs3-output
 # Test Terraform stacks
-make local-tf-cfs3-test
+make --silent local-tf-cfs3-test
 
 curl -X POST \
      -H "Content-Type: application/json" \
