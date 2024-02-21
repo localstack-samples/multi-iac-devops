@@ -11,12 +11,11 @@ else
 endif
 
 VENV_RUN = . $(VENV_ACTIVATE)
+.PHONY: $(VENV_ACTIVATE)
 $(VENV_ACTIVATE):
 	test -d $(VENV_DIR) || $(VENV_BIN) $(VENV_DIR)
 	$(VENV_RUN); $(PIP_CMD) install --upgrade pip
 	$(VENV_RUN); $(PIP_CMD) install $(PIP_OPTS) -r ./devops-tooling/requirements.txt
-	touch $(VENV_ACTIVATE)
-
 
 venv-pulumi-pip-install:
 	$(VENV_RUN); $(PIP_CMD) install $(PIP_OPTS) -r ./devops-tooling/requirements-pulumi.txt
