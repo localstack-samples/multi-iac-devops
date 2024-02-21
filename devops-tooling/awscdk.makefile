@@ -28,12 +28,12 @@ local-awscdk-test:
 	make test
 
 local-awscdk-invoke:
-	@APIGW=$$($(MAKE) --silent local-awscdk-output | jq -r '.apigwUrl') && \
-	curl "http://$${APIGW}";
+	@APIGW="$$($(MAKE) --silent local-awscdk-output | jq -r '.apigwUrl')" && \
+	curl "$${APIGW}";
 
 local-awscdk-invoke-loop:
-	@APIGW=$$($(MAKE) --silent local-awscdk-output | jq -r '.apigwUrl') && \
-	sh run-lambdas.sh "http://$${APIGW}"
+	@APIGW="$$($(MAKE) --silent local-awscdk-output | jq -r '.apigwUrl')" && \
+	sh run-lambdas.sh "$${APIGW}"
 
 local-awscdk-clean:
 	- rm -rf iac/awscdk/cdk.out
