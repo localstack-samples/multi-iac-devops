@@ -24,8 +24,8 @@ local-cdktf-deploy: build cdktfdeploy
 
 
 local-cdktf-invoke:
-	APIGW=$$(jq -r '."$(TFSTACK_NAME)".apigwUrl' auto_tests/local-cdktf-output.json) && \
-	curl "http://$${APIGW}";
+	APIGW="$$(jq -r '."$(TFSTACK_NAME)".apigwUrl' auto_tests/local-cdktf-output.json)" && \
+	curl "$${APIGW}";
 	@rm -f local-cdktf-output.json
 
 
