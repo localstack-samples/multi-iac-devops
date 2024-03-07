@@ -27,6 +27,6 @@ module "vpc" {
   }
 }
 #
-output "vpc_name" {
-  value = module.vpc.name
+output "base_vpc" {
+  value = module.vpc
 }

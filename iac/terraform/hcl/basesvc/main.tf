@@ -31,5 +31,5 @@ data "terraform_remote_state" "vpc" {
 #
 
 output "vpc_name" {
-  value = data.terraform_remote_state.vpc.outputs.vpc_name
+  value = data.terraform_remote_state.vpc.outputs.base_vpc.name
 }
