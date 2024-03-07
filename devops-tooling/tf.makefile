@@ -1,6 +1,8 @@
 local-tf-create-iac-bucket:
 	$(AWS_CMD) s3api create-bucket --region $(AWS_REGION) --bucket $(IAC_BUCKET)
 	$(AWS_CMD) s3api put-bucket-versioning --bucket $(IAC_BUCKET) --versioning-configuration Status=Enabled
+	$(AWS_CMD) dynamodb create-table --table-name $(IAC_DDB_TABLE) --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=5
+
 
 make-tf-vars:
 	@rm -f $(IAC_DIR)/*.auto.tfvars
