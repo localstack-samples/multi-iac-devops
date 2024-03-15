@@ -16,6 +16,8 @@ endif
 -include ./devops-tooling/awscdk.makefile
 -include ./devops-tooling/tf.makefile
 -include ./devops-tooling/tf-cloudfront-s3.makefile
+-include ./devops-tooling/tf-basevpc.makefile
+-include ./devops-tooling/tf-basesvc.makefile
 
 # Some defaults
 export SBX_ACCOUNT_CONFIG?=devops-tooling/accounts/my-sb.json

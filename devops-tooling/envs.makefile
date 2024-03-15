@@ -43,6 +43,7 @@ export STACK_ENV=local
 export CDK_CMD=cdklocal
 export TFORM_CMD=tflocal
 export DOCKER_DEFAULT_PLATFORM=linux/arm64
+export IAC_DDB_TABLE=terraform_locks
 
 # Pattern specific variables for each pipeline
 # Global local pipeline vars
