@@ -92,7 +92,7 @@ From the working directory:
    your actual LocalStack key.
 
       ```bash
-      export LOCALSTACK_AUTH_TOKEN=<your key>
+      export LOCALSTACK_AUTH_TOKEN=<your auth token>
       ```
 
 2. Start LocalStack.
