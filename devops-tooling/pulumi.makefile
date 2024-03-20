@@ -60,7 +60,7 @@ stack-output: stack-init stack-init-application
 #
 stack-init-application:
 	$(VENV_RUN) && $(PULUMI_CONFIG) set-all \
-	--plaintext local_arch=$(ARCH) \
+	--plaintext local_arch=$(ARCHITECTURE) \
 	--plaintext aws_region=$(AWS_REGION) \
 	--plaintext aws_account=$(AWS_ACCOUNT) \
 	--plaintext aws_account_type=$(AWS_ACCOUNT_TYPE) \

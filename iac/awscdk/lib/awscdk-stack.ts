@@ -1,19 +1,22 @@
 import * as cdk from 'aws-cdk-lib'
 import {aws_s3 as s3, Duration, RemovalPolicy} from 'aws-cdk-lib'
 import {Architecture, AssetCode, Code, Function, Runtime} from "aws-cdk-lib/aws-lambda"
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import {Construct} from 'constructs'
 import * as Iam from "aws-cdk-lib/aws-iam"
 import {PolicyStatement} from "aws-cdk-lib/aws-iam"
 import * as S3 from "aws-cdk-lib/aws-s3"
 // API Gateway V2 HTTP API - ALPHA
-import {HttpLambdaIntegration} from '@aws-cdk/aws-apigatewayv2-integrations-alpha'
-import * as apigwv2 from "@aws-cdk/aws-apigatewayv2-alpha"
-import {HttpApi} from "@aws-cdk/aws-apigatewayv2-alpha"
+// API Gateway V2 HTTP API
+import {HttpLambdaIntegration} from 'aws-cdk-lib/aws-apigatewayv2-integrations'
+import * as apigwv2 from "aws-cdk-lib/aws-apigatewayv2"
+import {HttpApi, HttpStage} from "aws-cdk-lib/aws-apigatewayv2"
 import * as ApiGateway from "aws-cdk-lib/aws-apigateway"
 import {AuthorizationType} from "aws-cdk-lib/aws-apigateway"
 
 export interface LsMultiEnvAppProps extends cdk.StackProps {
     isLocal: boolean;
+    hotDeploy: boolean;
     environment: string;
     handler: string;
     runtime: Runtime;
@@ -34,31 +37,35 @@ export class AwscdkStack extends cdk.Stack {
 
     constructor(scope: Construct, id: string, props: LsMultiEnvAppProps) {
         super(scope, id, props)
-        
-        const architecture = process.env.ARCH
-        const overridingLocalArch = process.env.OVERRIDE_LOCAL_ARCH
-        
+
+        const architecture = process.env.ARCHITECTURE || 'arm64'
+        const overridingLocalArch = process.env.OVERRIDE_LOCAL_ARCH || architecture
+
         let targetArchitecture = undefined
-        if (architecture != overridingLocalArch) {
-            if (overridingLocalArch == "x86_64" || overridingLocalArch == "amd64") {
-                targetArchitecture = Architecture.X86_64
-            } else {
-                targetArchitecture = Architecture.ARM_64
-            }
-        }
-        // props.isLocal is true when stacks are deployed using localstack
+        // If AWS deployment, set architecture to ARM_64, else set to native OS unless overridden
         if (!props.isLocal) {
             targetArchitecture = Architecture.ARM_64
+        } else {
+            targetArchitecture = architecture == "x86_64" ? Architecture.X86_64 : Architecture.ARM_64
         }
-        
+
         // Lambda Source Code
         // If running on LocalStack, setup Hot Reloading with a fake bucked named hot-reload
-        if (props.isLocal) {
+        if (props.hotDeploy) {
             const lambdaBucket = s3.Bucket.fromBucketName(this, "HotReloadingBucket", "hot-reload")
             this.lambdaCode = Code.fromBucket(lambdaBucket, props.lambdaDistPath)
         } else {
             this.lambdaCode = new AssetCode(`../../src/lambda-hello-name/dist`)
         }
+        // create a table
+        const ddbTable = new dynamodb.Table(this, `mytable-${props.environment}`, {
+            tableName: `mytable-${props.environment}`,
+            partitionKey: {
+                name: 'id',
+                type: dynamodb.AttributeType.STRING,
+            },
+        })
+
 
         // Create a bucket for something future purpose
         this.bucket = new s3.Bucket(this, 'lambdawork', {
@@ -87,9 +94,12 @@ export class AwscdkStack extends cdk.Stack {
             timeout: Duration.seconds(10),
             environment: {
                 BUCKET: this.bucket.bucketName,
+                DDB_TABLE_NAME: ddbTable.tableName,
             },
             initialPolicy: [lambdaPolicy],
         })
+        // Allow Lambda to write to this DDB table
+        ddbTable.grantWriteData(this.lambdaFunction)
 
         // HttpAPI Lambda Integration for the above Lambda
         const nameIntegration =
@@ -107,7 +117,7 @@ export class AwscdkStack extends cdk.Stack {
 
         // Output the HttpApiEndpoint
         new cdk.CfnOutput(this, 'HttpApiEndpoint', {
-            value: this.httpApi.apiEndpoint,
+            value: this.httpApi.url || '',
             exportName: 'HttpApiEndpoint',
         })
         // Create REST API with Proxy to S3
@@ -124,6 +134,12 @@ export class AwscdkStack extends cdk.Stack {
             value: apiGateway.url,
             exportName: 'RestApiEndpoint',
         })
+        // Output the DDB Table Name
+        new cdk.CfnOutput(this, 'ddbTableName', {
+            value: ddbTable.tableName,
+            exportName: 'ddbTableName',
+        })
+
     }
 
     private createAPIGateway() {

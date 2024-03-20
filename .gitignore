@@ -87,7 +87,11 @@ output.txt
 
 .terraform*
 terraform.tfstate*
+*.auto.tfvars
+*.tfplan
+errored.tfstate
 nonenv.makefile
+terraform_output.json
 
 !devops-tooling/accounts/non-demo.json
 !devops-tooling/accounts/localstack.json
@@ -99,3 +103,6 @@ auto_tests/*-output.json
 local-cdktf-output.json
 cdktf-output.json
 hello.txt
+venv2
+bundle
+iac/awscdk/stack-outputs-local.json

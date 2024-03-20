@@ -18,9 +18,12 @@ import {LambdaPermission} from "@cdktf/provider-aws/lib/lambda-permission"
 import {LbTargetGroupAttachment} from "@cdktf/provider-aws/lib/lb-target-group-attachment"
 import {SecurityGroup} from "@cdktf/provider-aws/lib/security-group"
 import {LambdaLayerVersion} from "@cdktf/provider-aws/lib/lambda-layer-version"
+import {CloudwatchLogSubscriptionFilter} from "./.gen/providers/aws/cloudwatch-log-subscription-filter"
+import {CloudwatchLogGroup} from "./.gen/providers/aws/cloudwatch-log-group"
 
 export interface MyMultiStackConfig {
     isLocal: boolean;
+    hotDeploy: boolean;
     environment: string;
     handler: string;
     runtime: string;
@@ -39,18 +42,18 @@ export class AppStack extends TerraformStack {
     constructor(scope: Construct, id: string, config: MyMultiStackConfig) {
         super(scope, id)
         this.config = config
+
         console.log('config', config)
-        
-        const architecture = process.env.ARCH
+
+        const architecture = process.env.ARCHITECTURE || 'arm64'
         const overridingLocalArch = process.env.OVERRIDE_LOCAL_ARCH || architecture
-        
+
         let archList: string[] = []
-        if (architecture != overridingLocalArch && overridingLocalArch != undefined) {
-            archList.push(overridingLocalArch)
-        }
         // props.isLocal is true when stacks are deployed using localstack
         if (!config.isLocal) {
             archList.push("arm64")
+        } else {
+            archList.push(overridingLocalArch)
         }
 
         const lambdaDeployDir: string = path.resolve('../../../app')
@@ -95,6 +98,30 @@ export class AppStack extends TerraformStack {
                 region: config.region
             })
         }
+    
+        // Create a DynamoDB table with a primary key named 'id'
+        const ddbTable = new aws.dynamodbTable.DynamodbTable(this, "table", {
+            name: "livedebug-table",
+            attribute: [
+                {
+                    name: "id",
+                    type: "S",
+                },
+            ],
+            hashKey: "id",
+            readCapacity: 5,
+            writeCapacity: 5,
+            tags: {
+                Environment: "dev",
+            },
+        })
+
+        // Create CloudWatch Log Group
+        const logGroup = new CloudwatchLogGroup(this, "cloudwatch-log-group", {
+            name: "livedebug-log-group",
+            retentionInDays: 14,
+        })
+
         // Bucket the lambda is going to get a list of objects from
         const listBucket = new S3Bucket(this, "list-bucket", {
             bucket: `${config.listBucketName}-${randomId.id}`,
@@ -114,6 +141,7 @@ export class AppStack extends TerraformStack {
             ]
         }
 
+
         const lambdaListBucketPolicy = {
             "Version": "2012-10-17",
             "Statement": [
@@ -122,6 +150,25 @@ export class AppStack extends TerraformStack {
                     "Action": ["s3:ListBucket"],
                     "Resource": [`${listBucket.arn}/*`, listBucket.arn],
                     "Sid": "AllowAccessObjectsToS3",
+                },
+                // policy for Lambda to write to ddbTable
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "dynamodb:BatchGetItem",
+                        "dynamodb:GetItem",
+                        "dynamodb:Query",
+                        "dynamodb:Scan",
+                        "dynamodb:BatchWriteItem",
+                        "dynamodb:PutItem",
+                        "dynamodb:UpdateItem",
+                        "dynamodb:DeleteItem"
+                    ],
+                    "Resource": [
+                        `${ddbTable.arn}`,
+                        `${ddbTable.arn}/*`
+                    ],
+                    "Sid": "AllowAccessToDynamoDB"
                 },
                 {
                     "Effect": "Allow",
@@ -140,21 +187,21 @@ export class AppStack extends TerraformStack {
         }
 
 
-        // Create Lambda archive
-        const asset = new TerraformAsset(this, "lambda-asset", {
-            path: path.resolve(config.lambdaDistPath),
-            type: AssetType.ARCHIVE, // if left empty it infers directory and file
-        })
-
         // Create unique S3 bucket that hosts Lambda executable
         const bucket = new aws.s3Bucket.S3Bucket(this, "lambda-bucket", {
             bucketPrefix: `${config.listBucketName}-lambda`
         })
 
+        // Create Lambda archive
+        const asset = new TerraformAsset(this, "lambda-asset", {
+            path: path.resolve("../../.." + config.lambdaDistPath),
+            type: AssetType.ARCHIVE, // if left empty it infers directory and file
+        })
+
         // Upload Lambda zip file to newly created S3 bucket
         const lambdaArchive = new aws.s3Object.S3Object(this, "lambda-archive", {
             bucket: bucket.bucket,
-            key: `${config.version}/${asset.fileName}`,
+            key: `hello-lambda-archive/${config.version}/archive.zip`,
             source: asset.path, // returns a posix path
         })
 
@@ -179,14 +226,14 @@ export class AppStack extends TerraformStack {
 
         // Default to LocalStack hot-reload magic bucket name and prefix to docker mountable path
         let lambdaBucketName = 'hot-reload'
-        let lambdaS3Key = path.resolve(config.lambdaDistPath)
+        let lambdaS3Key = process.env.HOST_PROJECT_PATH + config.lambdaDistPath
         // If not Local, use actual S3 bucket and key
-        if (!config.isLocal) {
+        if (!config.hotDeploy) {
             lambdaBucketName = bucket.bucket
             lambdaS3Key = lambdaArchive.key
         }
         // Create Lambda function
-        const lambdaFunc = new aws.lambdaFunction.LambdaFunction(this, "livedebug-lambda", {
+        const lambdaFunc = new aws.lambdaFunction.LambdaFunction(this, "name-lambda", {
             functionName: `name-lambda`,
             architectures: archList,
             s3Bucket: lambdaBucketName,
@@ -194,9 +241,29 @@ export class AppStack extends TerraformStack {
             s3Key: lambdaS3Key,
             handler: config.handler,
             runtime: config.runtime,
-            environment: {variables: {'BUCKET': listBucket.bucket}},
+            environment: {
+                variables: {
+                    'BUCKET': listBucket.bucket,
+                    DDB_TABLE_NAME: ddbTable.name,
+                }
+            },
             role: role.arn
         })
+
+        // --------------- Start CloudWatch Splunk HEC forwarder config
+        // Create Splunk HEC CloudWatch Lambda function
+
+
+        // Create CloudWatch Log Subscription Filter
+        // new CloudwatchLogSubscriptionFilter(this, "cloudwatch-log-subscription-filter", {
+        //     name: "livedebug-log-subscription-filter",
+        //     destinationArn: "arn:aws:lambda:us-east-1:123456789012:function:cloudwatch-splunk-hec-forwarder",
+        //     logGroupName: logGroup.name,
+        //     filterPattern: "",
+        // })
+
+
+        // --------------- End CloudWatch Splunk HEC forwarder config
 
         const layer =
             new LambdaLayerVersion(this, "lambda_layer", {
@@ -213,10 +280,11 @@ export class AppStack extends TerraformStack {
             s3Key: lambdaS3Key,
             handler: config.handler,
             runtime: config.runtime,
+            sourceCodeHash: asset.assetHash,
             layers: [layer.arn],
             vpcConfig: {
-                subnetIds: Token.asList(this.config.vpc.privateSubnetsOutput),
-                securityGroupIds: [this.config.vpc.defaultSecurityGroupIdOutput]
+                subnetIds: Token.asList(config.vpc.privateSubnetsOutput),
+                securityGroupIds: [config.vpc.defaultSecurityGroupIdOutput]
             },
             environment: {variables: {'BUCKET': listBucket.bucket}},
             role: role.arn
@@ -238,9 +306,12 @@ export class AppStack extends TerraformStack {
         })
 
         new TerraformOutput(this, 'apigwUrl', {
-            value: api.apiEndpoint
+            value: 'https://' + api.apiEndpoint
         })
 
+        new TerraformOutput(this, 'ddbTableName', {
+            value: ddbTable.name
+        })
 
         // Output the ECR Repository URL
         new TerraformOutput(this, "lambdaFuncName", {
@@ -254,7 +325,6 @@ export class AppStack extends TerraformStack {
         // Create ALB Solution
         this.addAlbSolution(lambdaFuncAlb)
     }
-
 
     //
     // Create an internal Application Load Balancer (ALB) that routes to a Lambda

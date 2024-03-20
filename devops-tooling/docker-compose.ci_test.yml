@@ -5,10 +5,16 @@ services:
     build:
       context: ..
       dockerfile: devops-tooling/ci/Dockerfile
+      cache_to:
+        - type=${CACHE_TYPE},mode=max
+      cache_from:
+        - type=${CACHE_TYPE}
+
     environment:
       - MAPPING_DIR_NAME=${MAPPING_DIR_NAME}
       - CI_TEST_NAME=${CI_TEST_NAME}
-      - ENDPOINT_HOST=localstack
+      - IS_INTEGRATION=true
+      - ARCHITECTURE=${ARCHITECTURE}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ../auto_tests:${MAPPING_DIR_NAME}/auto_tests
@@ -17,6 +23,7 @@ services:
       - ../makefile:${MAPPING_DIR_NAME}/makefile
       - ../run-lambdas.sh:${MAPPING_DIR_NAME}/run-lambdas.sh
       - ../src:${MAPPING_DIR_NAME}/src
+      - ../ui:${MAPPING_DIR_NAME}/ui
     depends_on:
-      - localstack
-    network_mode: "service:localstack"
+      - localhost.localstack.cloud
+    network_mode: "service:localhost.localstack.cloud"

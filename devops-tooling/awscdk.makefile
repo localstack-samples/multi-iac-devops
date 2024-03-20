@@ -4,15 +4,12 @@ awscdkinstall:
 awscdkbootstrap: iac-shared awscdkinstall build
 	cd $(STACK_DIR) && $(CDK_CMD) bootstrap
 awscdkdeploy: iac-shared
-	cd $(STACK_DIR) && $(CDK_CMD) deploy $(TFSTACK_NAME) --require-approval=never
+	cd $(STACK_DIR) && $(CDK_CMD) deploy $(TFSTACK_NAME) --require-approval=never  --outputs-file stack-outputs-$(STACK_SUFFIX).json
 awscdkdestroy: iac-shared
 	cd $(STACK_DIR) && $(CDK_CMD) destroy $(TFSTACK_NAME) --require-approval=never
 awscdkoutput:
-	@aws cloudformation describe-stacks \
-  --stack-name $(TFSTACK_NAME) \
-  --query "Stacks[0].Outputs[?ExportName=='HttpApiEndpoint'].OutputValue" \
-  --output text \
-  --profile localstack | jq -R -c '{apigwUrl: .}'
+	jq '{ apigwUrl: ."LsMultiEnvApp-$(STACK_SUFFIX)".HttpApiEndpoint, ddbTableName: ."LsMultiEnvApp-$(STACK_SUFFIX)".ddbTableName }' \
+	iac/awscdk/stack-outputs-$(STACK_SUFFIX).json
 
 
 # LocalStack target groups
@@ -31,12 +28,12 @@ local-awscdk-test:
 	make test
 
 local-awscdk-invoke:
-	@APIGW=$$($(MAKE) --silent local-awscdk-output | jq -r '.apigwUrl') && \
-	curl "http://$${APIGW}";
+	@APIGW="$$($(MAKE) --silent local-awscdk-output | jq -r '.apigwUrl')" && \
+	curl "$${APIGW}";
 
 local-awscdk-invoke-loop:
-	@APIGW=$$($(MAKE) --silent local-awscdk-output | jq -r '.apigwUrl') && \
-	sh run-lambdas.sh "http://$${APIGW}"
+	@APIGW="$$($(MAKE) --silent local-awscdk-output | jq -r '.apigwUrl')" && \
+	sh run-lambdas.sh "$${APIGW}"
 
 local-awscdk-clean:
 	- rm -rf iac/awscdk/cdk.out

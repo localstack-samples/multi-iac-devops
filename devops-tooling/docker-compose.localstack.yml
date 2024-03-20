@@ -1,28 +1,28 @@
 version: "3.9"
 services:
-  localstack:
+  localhost.localstack.cloud:
     container_name: "${APP_NAME}-localstack"
     image: localstack/localstack-pro:latest
     platform: linux/arm64
     ports:
       - "4566:4566"            # LocalStack Gateway
       - "4510-4560:4510-4560"  # external services port range
-      - "8001:8080"            # only required for Pro
       - "443:443"              # LocalStack HTTPS Gateway (required for Pro)
-      - "4571:4571"            # elasticsearch service
     environment:
       - DEBUG=1 # turn debug output on
       - ENFORCE_IAM=${ENFORCE_IAM-1} # Enable IAM policy evaluation and enforcement
-      - EXTENSION_AUTO_INSTALL=localstack-extension-outages
+      - EXTRA_CORS_ALLOWED_ORIGINS=*
+      - PERSISTENCE=0 # Disable persistence
       - LAMBDA_RUNTIME_ENVIRONMENT_TIMEOUT=90
-      - PERSIST_ALL=false
-      - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY-}
       - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN-}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      #      - AUTO_LOAD_POD=chads33
+
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock  # Mount the Docker socket into the container
       - ${LOCALSTACK_VOLUME_DIR:-./ls_volume}:/var/lib/localstack
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    #    extra_hosts:
+    #      - "host.docker.internal:host-gateway"
     networks:
       - localstack_network
 networks:

@@ -1,14 +1,14 @@
 # Use an official Python runtime as a parent image
 ARG VERSION
-ARG ARCH
-FROM public.ecr.aws/lambda/python:${VERSION}-${ARCH}
+ARG ARCHITECTURE
+FROM public.ecr.aws/lambda/python:${VERSION}-${ARCHITECTURE}
 
 ENV LAMBDA_HOME=/usr/local/lhome
 ARG HANDLER_NAME=handler
 
 RUN --mount=type=cache,target=/var/cache/yum \
     yum makecache && \
-    yum update && \
+    yum update -y && \
     yum install zip -y
 
 RUN mkdir -p ${LAMBDA_HOME}/dist/requirements

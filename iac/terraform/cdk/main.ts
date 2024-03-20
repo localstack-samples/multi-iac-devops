@@ -4,6 +4,7 @@ import {VpcStack} from "./vpc"
 import {AppStack} from "./appStack"
 import {JumphostStack} from "./jumphostStack"
 
+
 const app = new App()
 const sbxVpc = new VpcStack(app, "LsMultiEnvVpc.sbx", {
     isLocal: false,
@@ -13,8 +14,9 @@ const sbxVpc = new VpcStack(app, "LsMultiEnvVpc.sbx", {
 })
 new AppStack(app, "LsMultiEnvApp.sbx", {
     isLocal: false,
+    hotDeploy: false,
     environment: 'sbx',
-    lambdaDistPath: "../../../src/lambda-hello-name/dist",
+    lambdaDistPath: "/src/lambda-hello-name/dist",
     handler: "index.handler",
     runtime: "nodejs18.x",
     listBucketName: process.env.LIST_BUCKET_NAME || 'lambda-work',
@@ -40,11 +42,13 @@ const localVpcStack = new VpcStack(app, "LsMultiEnvVpc.local", {
     accountType: "localstack"
 })
 new AppStack(app, "LsMultiEnvApp.local", {
+    // set isLocal to fasle for integration testing to turn hot-reloading off
     isLocal: true,
+    hotDeploy: process.env.IS_INTEGRATION ? false : true,
     environment: 'local',
-    lambdaDistPath: "../../../src/lambda-hello-name/dist",
+    lambdaDistPath: "/src/lambda-hello-name/dist",
     handler: "index.handler",
-    runtime: "nodejs18.x",
+    runtime: "nodejs20.x",
     listBucketName: process.env.LIST_BUCKET_NAME || 'lambda-work',
     stageName: "hello-name",
     version: '0.0.1',
@@ -53,3 +57,4 @@ new AppStack(app, "LsMultiEnvApp.local", {
     alblogsBucket: localVpcStack.alblogsBucket
 })
 app.synth()
+

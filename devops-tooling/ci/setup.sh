@@ -23,36 +23,48 @@ apt-get update && apt-get install -y \
   gnupg2 \
   jq
 
-# Setup AWS CLI
-arch=$(uname -m)
-curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-$arch.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-./aws/install
+# Install puppeteer dependencies
+apt-get install -y \
+  ca-certificates \
+  fonts-liberation \
+  libasound2 \
+  libatk-bridge2.0-0 \
+  libatk1.0-0 \
+  libc6 \
+  libcairo2 \
+  libcups2 \
+  libdbus-1-3 \
+  libexpat1 \
+  libfontconfig1 \
+  libgbm1 \
+  libgcc1 \
+  libglib2.0-0 \
+  libgtk-3-0 \
+  libnspr4 \
+  libnss3 \
+  libpango-1.0-0 \
+  libpangocairo-1.0-0 \
+  libstdc++6 \
+  libx11-6 \
+  libx11-xcb1 \
+  libxcb1 \
+  libxcomposite1 \
+  libxcursor1 \
+  libxdamage1 \
+  libxext6 \
+  libxfixes3 \
+  libxi6 \
+  libxrandr2 \
+  libxrender1 \
+  libxss1 \
+  libxtst6 \
+  lsb-release \
+  wget \
+  xdg-utils
 
-
-# Setup Terraform
-if [ "$arch" = "aarch64" ]; then
-    arch="arm64"
-elif [ "$arch" = "x86_64" ]; then
-    arch="amd64"
-fi
-curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
-apt-add-repository "deb [arch=$arch] https://apt.releases.hashicorp.com $(lsb_release -cs) main" -y
-apt-get update && apt-get install terraform -y
-
-# Install Docker client
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-add-apt-repository "deb [arch=$arch] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" -y
-apt-get update
-apt-get install -y docker-ce
 
 # Setup NVM and Node.js
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-echo 'export NVM_DIR=$HOME/.nvm' >> ~/.profile
-echo '[ -s "$NVM_DIR/nvm.sh" ] && \. $NVM_DIR/nvm.sh' >> ~/.profile
-source ~/.profile
-nvm install 18
-nvm use 18
+. /usr/local/nvm/nvm.sh use 20
 
 # Setup Pyenv and Python
 curl https://pyenv.run | bash

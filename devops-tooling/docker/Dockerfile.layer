@@ -1,11 +1,11 @@
 # Use an official Python runtime as a parent image
 ARG VERSION
-ARG ARCH
-FROM public.ecr.aws/lambda/python:${VERSION}-${ARCH}
+ARG ARCHITECTURE
+FROM public.ecr.aws/lambda/python:${VERSION}-${ARCHITECTURE}
 
 RUN --mount=type=cache,target=/var/cache/yum \
     yum makecache && \
-    yum update && yum install zip -y
+    yum update -y && yum install zip -y
 
 ENV HOME_DIR=/usr/local/layer
 RUN mkdir -p ${HOME_DIR}/requirements
